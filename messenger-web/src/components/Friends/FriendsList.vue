@@ -1,35 +1,43 @@
 <template>
   <div>
     <div v-if="friends != null">
-        <div class="box" v-for="f in friends" :key="f.id">
-          <h1>{{ f.first_name }} {{ f.last_name }}</h1>
-        </div>
+      <button class="button is-primary is-light" @click="openAddFriendModal">Add new friend</button>
+      <div class="box" v-for="f in friends" :key="f.id">
+        <h1>{{ f.first_name }} {{ f.last_name }}</h1>
+      </div>
     </div>
-<!--    <div v-else>-->
-<!--      <p>Error loading data...</p>-->
-<!--    </div>-->
+
+    <div class="modal" id="add-friend-modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <AddFriend></AddFriend>
+      </div>
+      <button class="modal-close is-large" aria-label="close" @click="closeAddFriendModal"></button>
+    </div>
   </div>
 </template>
 
 <script>
 import ApiService from "@/service/api";
+import AddFriend from "@/components/Friends/AddFriend";
 
 const api = new ApiService();
 
 export default {
   name: "FriendsList",
+  components: {AddFriend},
   data() {
     return {
-      friends: null
+      friends: null,
     }
   },
   mounted() {
     this.getFriends()
   },
-  methods:{
-    getFriends(){
+  methods: {
+    getFriends() {
       api.getData("friends")
-          .then(response=> {
+          .then(response => {
             console.log(response)
             if (response.ok == true) {
               response.json()
@@ -45,6 +53,14 @@ export default {
           .catch(err => {
             console.log(err)
           })
+    },
+    openAddFriendModal(){
+      var element = document.getElementById("add-friend-modal");
+      element.classList.add("is-active");
+    },
+    closeAddFriendModal() {
+      var element = document.getElementById("add-friend-modal");
+      element.classList.remove("is-active");
     }
   }
 }

@@ -39,7 +39,31 @@ namespace Messenger.Api.Controllers
                 return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
             }
         }
-        
+
+        // GET: Get friend requests for a user by his session token
+        [HttpGet("request")]
+        [Authorize]
+        public ReturnApiObject GetFriendRequests()
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _friendService.GetFriendsRequestByUser(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
         // GET: Search friends for a user by his session token and search term
         [HttpGet("search/{searchTerm}")]
         [Authorize]

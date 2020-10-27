@@ -26,10 +26,17 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public ReturnApiObject GetFriendsByUser(int userId)
         {
-            List<User> friends = _userRelationRepository.List()
+            List<UserBasicModel> friends = _userRelationRepository.List()
                 .Where(x => (x.FriendId == userId) && x.State == UserRelationState.Accepted).Select(x => x.User)
                 .Union(_userRelationRepository.List()
                     .Where(x => (x.UserId == userId) && x.State == UserRelationState.Accepted).Select(x => x.Friend))
+                .Select(x => new UserBasicModel()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                })
                 .ToList();
 
             return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
@@ -124,6 +131,27 @@ namespace Messenger.Service.Implementation
                 .SingleOrDefault();
 
             return relation;
+        }
+
+        /// <summary>
+        /// Get all friend requests
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetFriendsRequestByUser(int userId)
+        {
+            List<UserBasicModel> friends = _userRelationRepository.List()
+                .Where(x => (x.FriendId == userId) && x.State == UserRelationState.Requested).Select(x => x.User)
+                .Select(x => new UserBasicModel()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                })
+                .ToList();
+
+            return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
         }
     }
 }
