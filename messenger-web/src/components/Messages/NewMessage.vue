@@ -60,7 +60,7 @@
 
 <script>
 import ApiService from "../../service/api";
-import MessageList from "@/components/MessagesView/MessageList";
+import MessageList from "@/components/Messages/MessageList";
 
 const api = new ApiService();
 

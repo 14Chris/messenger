@@ -7,7 +7,7 @@
       <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c"></ConversationListItem>
     </div>
     <div class="conversation-list-bottom">
-      <router-link id="new-conversation-button" to="/new">
+      <router-link id="new-conversation-button" to="/conv/new">
       <button class="button navbar-icon">
               <span class="icon">
                 <i class="fas fa-plus"></i>
@@ -21,7 +21,7 @@
 
 <script>
 import ApiService from "../../service/api";
-import ConversationListItem from "@/components/ConversationView/ConversationListItem";
+import ConversationListItem from "@/components/Conversation/ConversationListItem";
 
 import eventBus from "@/eventBus";
 

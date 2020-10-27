@@ -3,35 +3,61 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Home from './components/Home'
 import store from './store'
-// import MessageList from "@/components/MessagesView/MessageList";
-import NewMessage from "@/components/MessagesView/NewMessage";
-import Conversation from "@/components/ConversationView/Conversation";
+// import MessageList from "@/components/Messages/MessageList";
+import NewMessage from "@/components/Messages/NewMessage";
+import Conversation from "@/components/Conversation/Conversation";
+import ConversationHome from "@/components/Conversation/ConversationHome";
+import Friends from "@/components/Friends/Friends";
+import FriendRequests from "@/components/Friends/FriendRequests";
+import FriendsList from "@/components/Friends/FriendsList";
 
 const routes = [
     {
         path: '/',
         name: 'home',
         component: Home,
+        redirect: '/conv',
         meta: {
             requiresAuth: true
         },
         children: [
-            // {
-            //     path: '',
-            //     name: 'message',
-            //     component: MessageList
-            // },
             {
-                path: 'new',
-                name: 'newMessage',
-                component: NewMessage
+                path: 'conv',
+                name: 'conv',
+                component: ConversationHome,
+                children: [
+                    {
+                        path: 'new',
+                        name: 'newMessage',
+                        component: NewMessage
+                    },
+                    {
+                        path: ':id',
+                        name: 'conversation',
+                        component: Conversation
+
+                    }
+                ]
             },
             {
-                path: 'conv/:id',
-                name: 'conversation',
-                component: Conversation
+                path: 'friends',
+                name: 'friends',
+                component: Friends,
+                children: [
+                    {
+                        path: '',
+                        name: 'friendsList',
+                        component: FriendsList,
+                    },
+                    {
+                        path: 'requests',
+                        name: 'friendsRequests',
+                        component: FriendRequests
 
+                    }
+                ]
             }
+
         ]
     },
     {
