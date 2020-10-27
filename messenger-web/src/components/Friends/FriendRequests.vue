@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     getFriendRequests() {
-      api.getData("friends/requests")
+      api.getData("friends/request")
           .then(response => {
             console.log(response)
             if (response.ok == true) {
