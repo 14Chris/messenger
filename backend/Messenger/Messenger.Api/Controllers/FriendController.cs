@@ -91,7 +91,7 @@ namespace Messenger.Api.Controllers
         // POST: Add a friend request
         [HttpPost("request")]
         [Authorize]
-        public async Task<ReturnApiObject> PostFriendRequest([FromBody]int friendId)
+        public async Task<ReturnApiObject> PostFriendRequest([FromBody]string friendEmail)
         {
             int id = -1;
 
@@ -104,7 +104,7 @@ namespace Messenger.Api.Controllers
 
             try
             {
-                return await _friendService.AddFriend(id, friendId);
+                return await _friendService.AddFriend(id, friendEmail);
             }
             catch (Exception)
             {

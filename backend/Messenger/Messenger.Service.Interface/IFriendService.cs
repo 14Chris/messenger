@@ -12,6 +12,6 @@ namespace Messenger.Service.Interface
         public ReturnApiObject GetFriendsRequestByUser(int userId);
 
         public ReturnApiObject SearchFriendsByUser(int userId, string searchTerm);
-        public Task<ReturnApiObject> AddFriend(int userId, int friendId);
+        public Task<ReturnApiObject> AddFriend(int userId, string friendEmail);
     }
 }
