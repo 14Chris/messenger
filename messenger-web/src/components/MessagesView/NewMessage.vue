@@ -173,7 +173,6 @@ export default {
           .catch(err => {
             console.log(err)
           })
-
     }
   }
 }
@@ -183,16 +182,4 @@ export default {
 .div-to {
   display: flex;
 }
-
-/*.friends-div{*/
-/*  height:10%;*/
-/*}*/
-
-/*.conv-div{*/
-/*  height:80%;*/
-/*}*/
-
-/*.message-div{*/
-/*  height:10%;*/
-/*}*/
 </style>
