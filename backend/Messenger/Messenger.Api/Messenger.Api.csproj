@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Messenger.Facade\Messenger.Facade.csproj" />
+    <ProjectReference Include="..\Messenger.Repository.Implementation\Messenger.Repository.Interface.csproj" />
+    <ProjectReference Include="..\Messenger.Repository.Interface\Messenger.Repository.Implementation.csproj" />
+    <ProjectReference Include="..\Messenger.Service.Interface\Messenger.Service.Interface.csproj" />
+    <ProjectReference Include="..\Messenger.Service\Messenger.Service.Implementation.csproj" />
+  </ItemGroup>
+
+
+</Project>
