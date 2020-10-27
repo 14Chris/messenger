@@ -1,6 +1,6 @@
 <template>
   <div class="full-page">
-    <div class="field is-horizontal friends-div">
+    <div class="field is-horizontal conv-header">
       <div class="field-label is-normal">
         <label>To : </label>
         <b-tag v-for="f in selected" :key="f.id"
@@ -37,10 +37,10 @@
         </div>
       </div>
     </div>
-    <div class="conv-div">
+    <div class="conv-messages">
       <MessageList v-if="conversation != null" :messages="conversation.messages"></MessageList>
     </div>
-    <div class="message-div">
+    <div class="conv-send-message">
       <div class="field is-horizontal">
         <div class="field-label is-normal">
           <label></label>
@@ -155,6 +155,25 @@ export default {
     },
     deleteFriendFromSelected(friendId){
       this.selected = this.selected.filter(arrayItem => arrayItem.id !== friendId);
+
+      api.create("conversation/exists/", JSON.stringify(this.selected.map(x=>x.id)))
+          .then(response=> {
+            console.log(response)
+            if (response.ok == true) {
+              response.json()
+                  .then(data => {
+                    if (data.ResponseType == 1) {
+                      this.conversation = data.Result
+                    } else {
+                      this.conversation = null
+                    }
+                  })
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+
     }
   }
 }
@@ -165,15 +184,15 @@ export default {
   display: flex;
 }
 
-.friends-div{
-  height:10%;
-}
+/*.friends-div{*/
+/*  height:10%;*/
+/*}*/
 
-.conv-div{
-  height:80%;
-}
+/*.conv-div{*/
+/*  height:80%;*/
+/*}*/
 
-.message-div{
-  height:10%;
-}
+/*.message-div{*/
+/*  height:10%;*/
+/*}*/
 </style>

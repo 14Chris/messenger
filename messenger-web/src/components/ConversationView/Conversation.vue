@@ -106,8 +106,7 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
 .conversation{
   height:100%;
   display:flex;
