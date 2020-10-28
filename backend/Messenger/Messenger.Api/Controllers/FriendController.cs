@@ -159,5 +159,29 @@ namespace Messenger.Api.Controllers
                 return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
             }
         }
+
+        // Delete: Delete a friend
+        [HttpDelete]
+        [Authorize]
+        public async Task<ReturnApiObject> DeleteFriend([FromBody] int friendId)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return await _friendService.DeleteFriend(id, friendId);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
     }
 }

@@ -25,10 +25,11 @@ export default class ApiService {
         });
     }
 
-    delete(route) {
+    delete(route, body) {
         return fetch(this.createCompleteRoute(route, this.apiUrl), {
             method: 'DELETE',
-            headers: this.generateHeaders()
+            headers: this.generateHeaders(),
+            body: body
         });
     }
 

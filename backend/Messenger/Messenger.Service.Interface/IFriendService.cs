@@ -15,5 +15,6 @@ namespace Messenger.Service.Interface
         public Task<ReturnApiObject> AddFriend(int userId, string friendEmail);
         public Task<ReturnApiObject> AcceptFriendRequest(int userId, int friendId);
         public Task<ReturnApiObject> DeleteFriendRequest(int userId, int friendId);
+        public Task<ReturnApiObject> DeleteFriend(int userId, int friendId);
     }
 }

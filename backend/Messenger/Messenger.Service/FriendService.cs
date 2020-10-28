@@ -215,5 +215,24 @@ namespace Messenger.Service.Implementation
                 return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
             }
         }
+
+        public async Task<ReturnApiObject> DeleteFriend(int userId, int friendId)
+        {
+            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            if (relation != null)
+            {
+
+                relation.State = UserRelationState.Deleted;
+
+                UserRelation result = await _userRelationRepository.UpdateAsync(relation);
+
+                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
     }
 }

@@ -4,6 +4,11 @@
       <button class="button is-primary is-light" @click="openAddFriendModal">Add new friend</button>
       <div class="box" v-for="f in friends" :key="f.id">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
+        <button class="button button is-danger is-light" @click="deleteFriend(f.id)">
+              <span class="icon">
+                <i class="fas fa-times"></i>
+              </span>
+        </button>
       </div>
     </div>
 
@@ -54,13 +59,37 @@ export default {
             console.log(err)
           })
     },
-    openAddFriendModal(){
+    openAddFriendModal() {
       var element = document.getElementById("add-friend-modal");
       element.classList.add("is-active");
     },
     closeAddFriendModal() {
       var element = document.getElementById("add-friend-modal");
       element.classList.remove("is-active");
+    },
+    deleteFriend(id) {
+      api.delete("friends", JSON.stringify(id))
+          .then(response => {
+            console.log(response)
+            if (response.ok == true) {
+              response.json()
+                  .then(data => {
+                    if (data.ResponseType == 1) {
+                      this.getFriends()
+                    } else {
+                      this.$buefy.notification.open({
+                        message: 'Error while deleting the friend',
+                        type: 'is-danger',
+                        duration: 5000,
+                        closable: true
+                      })
+                    }
+                  })
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
     }
   }
 }
