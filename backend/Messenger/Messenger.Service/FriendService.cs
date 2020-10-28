@@ -165,5 +165,55 @@ namespace Messenger.Service.Implementation
 
             return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
         }
+
+        /// <summary>
+        /// Accept a friend request
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="friendId"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> AcceptFriendRequest(int userId, int friendId)
+        {
+            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            if(relation.State == UserRelationState.Requested)
+            {
+
+                relation.State = UserRelationState.Accepted;
+
+                UserRelation result = await _userRelationRepository.UpdateAsync(relation);
+
+                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
+            }
+        }
+
+        /// <summary>
+        /// Delete a friend request
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="friendId"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> DeleteFriendRequest(int userId, int friendId)
+        {
+            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            if (relation.State == UserRelationState.Requested)
+            {
+
+                relation.State = UserRelationState.Deleted;
+
+                UserRelation result = await _userRelationRepository.UpdateAsync(relation);
+
+                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
+            }
+        }
     }
 }

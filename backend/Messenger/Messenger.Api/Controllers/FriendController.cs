@@ -112,52 +112,52 @@ namespace Messenger.Api.Controllers
             }
         }
 
-        //// DELETE: friend
-        //[HttpDelete]
-        //[Authorize]
-        //public async Task<ReturnApiObject> DeleteFriend([FromBody] int friendId)
-        //{
-        //    int id = -1;
+        // POST: Accept a friend's request
+        [HttpPost("request/accept")]
+        [Authorize]
+        public async Task<ReturnApiObject> PostAcceptFriendRequest([FromBody] int friendId)
+        {
+            int id = -1;
 
-        //    var claimsIdentity = this.User.Identity as ClaimsIdentity;
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
 
-        //    bool ok = int.TryParse(claimsIdentity.Name, out id);
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
 
-        //    if (!ok)
-        //        return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
 
-        //    try
-        //    {
-        //        return await _friendService.AddFriend(id, friendId);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
-        //    }
-        //}
+            try
+            {
+                return await _friendService.AcceptFriendRequest(id, friendId);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
 
-        // POST: Add a friend request
-        //[HttpPost("accept")]
-        //[Authorize]
-        //public async Task<ReturnApiObject> PostFriendAcceptRequest([FromBody] int friendId)
-        //{
-        //    int id = -1;
+        // POST: Delete a friend's request
+        [HttpPost("request/delete")]
+        [Authorize]
+        public async Task<ReturnApiObject> PostDeleteFriendRequest([FromBody] int friendId)
+        {
+            int id = -1;
 
-        //    var claimsIdentity = this.User.Identity as ClaimsIdentity;
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
 
-        //    bool ok = int.TryParse(claimsIdentity.Name, out id);
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
 
-        //    if (!ok)
-        //        return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
 
-        //    try
-        //    {
-        //        return await _friendService.AddFriend(id, friendId);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
-        //    }
-        //}
+            try
+            {
+                return await _friendService.DeleteFriendRequest(id, friendId);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
     }
 }
