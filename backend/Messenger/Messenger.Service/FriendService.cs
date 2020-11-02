@@ -206,6 +206,11 @@ namespace Messenger.Service.Implementation
         {
             UserRelation relation = RetrieveUserRelation(userId, friendId);
 
+            if (relation == null)
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NO_REQUEST", null);
+            }
+
             if (relation.State == UserRelationState.Requested)
             {
 
