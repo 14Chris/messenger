@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import MessageItem from "@/components/MessagesView/MessageItem";
+import MessageItem from "@/components/Messages/MessageItem";
 export default {
   name: "MessageList",
   components: {MessageItem},

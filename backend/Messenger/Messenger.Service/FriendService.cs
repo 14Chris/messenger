@@ -26,10 +26,17 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public ReturnApiObject GetFriendsByUser(int userId)
         {
-            List<User> friends = _userRelationRepository.List()
+            List<UserBasicModel> friends = _userRelationRepository.List()
                 .Where(x => (x.FriendId == userId) && x.State == UserRelationState.Accepted).Select(x => x.User)
                 .Union(_userRelationRepository.List()
                     .Where(x => (x.UserId == userId) && x.State == UserRelationState.Accepted).Select(x => x.Friend))
+                .Select(x => new UserBasicModel()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                })
                 .ToList();
 
             return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
@@ -70,15 +77,23 @@ namespace Messenger.Service.Implementation
         /// <param name="userId"></param>
         /// <param name="friendId"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> AddFriend(int userId, int friendId)
+        public async Task<ReturnApiObject> AddFriend(int userId, string friendEmail)
         {
-            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            User friend = _userRepository.List().Where(x => x.Email == friendEmail).SingleOrDefault();
+
+            if(friend == null)
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "FRIEND_DOESNT_EXIST", null);
+            }
+
+            UserRelation relation = RetrieveUserRelation(userId, friend.Id);
 
             if (relation == null)
             {
                 relation = new UserRelation();
                 relation.UserId = userId;
-                relation.FriendId = friendId;
+                relation.FriendId = friend.Id;
                 relation.State = UserRelationState.Requested;
 
                 UserRelation result = await _userRelationRepository.CreateAsync(relation);
@@ -90,7 +105,7 @@ namespace Messenger.Service.Implementation
 
                 return new ReturnApiObject(System.Net.HttpStatusCode.Created, ResponseType.Success, "", result);
             }
-            else
+            else if (relation.State == UserRelationState.Deleted)
             {
                 relation.State = UserRelationState.Requested;
 
@@ -103,6 +118,10 @@ namespace Messenger.Service.Implementation
                 }
 
                 return new ReturnApiObject(System.Net.HttpStatusCode.Created, ResponseType.Success, "", result);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error);
             }
         }
 
@@ -124,6 +143,106 @@ namespace Messenger.Service.Implementation
                 .SingleOrDefault();
 
             return relation;
+        }
+
+        /// <summary>
+        /// Get all friend requests
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetFriendsRequestByUser(int userId)
+        {
+            List<UserBasicModel> friends = _userRelationRepository.List()
+                .Where(x => (x.FriendId == userId) && x.State == UserRelationState.Requested).Select(x => x.User)
+                .Select(x => new UserBasicModel()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                })
+                .ToList();
+
+            return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
+        }
+
+        /// <summary>
+        /// Accept a friend request
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="friendId"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> AcceptFriendRequest(int userId, int friendId)
+        {
+            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            if(relation == null)
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NO_REQUEST", null);
+            }
+
+            if(relation.State == UserRelationState.Requested)
+            {
+
+                relation.State = UserRelationState.Accepted;
+
+                UserRelation result = await _userRelationRepository.UpdateAsync(relation);
+
+                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
+            }
+        }
+
+        /// <summary>
+        /// Delete a friend request
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="friendId"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> DeleteFriendRequest(int userId, int friendId)
+        {
+            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            if (relation == null)
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NO_REQUEST", null);
+            }
+
+            if (relation.State == UserRelationState.Requested)
+            {
+
+                relation.State = UserRelationState.Deleted;
+
+                UserRelation result = await _userRelationRepository.UpdateAsync(relation);
+
+                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
+            }
+        }
+
+        public async Task<ReturnApiObject> DeleteFriend(int userId, int friendId)
+        {
+            UserRelation relation = RetrieveUserRelation(userId, friendId);
+
+            if (relation != null)
+            {
+
+                relation.State = UserRelationState.Deleted;
+
+                UserRelation result = await _userRelationRepository.UpdateAsync(relation);
+
+                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+            }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest);
+            }
         }
     }
 }

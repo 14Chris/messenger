@@ -18,6 +18,15 @@
           <Search></Search>
       </div>
       <div class="navbar-item">
+        <router-link id="new-conversation-button" to="/friends">
+          <button class="button navbar-icon">
+                <span class="icon">
+                  <i class="fas fa-users"></i>
+                </span>
+          </button>
+        </router-link>
+      </div>
+      <div class="navbar-item">
         <button class="button navbar-icon">
               <span class="icon">
                 <i class="fas fa-cog"></i>
