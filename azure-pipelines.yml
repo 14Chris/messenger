@@ -6,12 +6,12 @@
 pool:
     vmImage: 'windows-latest'
   
-  variables:
+variables:
     solution: '**/*.sln'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
   
-  steps:
+steps:
   - task: NuGetToolInstaller@1
   
   - task: NuGetCommand@2
@@ -26,5 +26,5 @@ pool:
   - task: DotNetCoreCLI@2
     inputs:
       command: test
-      projects: '*/*Test.Api/*.csproj'
+      projects: '**/*Test.Api/*.csproj'
       arguments: '--configuration $(buildConfiguration)'
