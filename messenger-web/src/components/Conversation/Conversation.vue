@@ -35,7 +35,7 @@
 
 <script>
 import ApiService from "@/service/api";
-import MessageList from "@/components/MessagesView/MessageList";
+import MessageList from "@/components/Messages/MessageList";
 
 import eventBus from "../../eventBus.js";
 
@@ -106,8 +106,7 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
 .conversation{
   height:100%;
   display:flex;
@@ -125,6 +124,7 @@ export default {
 
 .conv-send-message{
   height:50px;
+  margin-top:10px;
 }
 
 #send-message-button{
