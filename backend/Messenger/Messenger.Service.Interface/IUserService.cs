@@ -23,5 +23,9 @@ namespace Messenger.Service.Interface
         public Task<ReturnApiObject> ValidateTokenPasswordReset(string token);
 
         public Task<ReturnApiObject> ResetPassword(string token, string newPassword);
+
+        public ReturnApiObject GetUserProfile(int id);
+
+        public byte[] GetUserProfilePicture(int id)
     }
 }

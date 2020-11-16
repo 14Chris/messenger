@@ -4,6 +4,7 @@ using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Messenger.Facade.Settings;
 using Messenger.Service.Interface;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -280,6 +281,41 @@ namespace Messenger.Service.Implementation
         public Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get the user profile informations
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetUserProfile(int id)
+        {
+            UserProfileModel userProfile = _userRepository.List().Where(x => x.Id == id).Select(x => new UserProfileModel()
+            {
+                Id = x.Id,
+                Email = x.Email,
+                FirstName = x.FirstName,
+                LastName = x.LastName
+            }).SingleOrDefault();
+
+            if(userProfile == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+            }
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", userProfile);
+        }
+
+        /// <summary>
+        /// Get the profile picture of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public byte[] GetUserProfilePicture(int id)
+        {
+            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            return user.ProfilePicture;
         }
     }
 

@@ -157,5 +157,40 @@ namespace Messenger.Api.Controllers
                 return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
             }
         }
+
+        // GET: User profile informations
+        [HttpGet("{id}/profile")]
+        [Authorize]
+        public ReturnApiObject GetUserProfile(int id)
+        {
+            try
+            {
+                return _userService.GetUserProfile(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // GET: User profile picture
+        [HttpGet("{id}/picture")]
+        [Authorize]
+        public IActionResult GetUserProfilePicture(int id)
+        {
+            try
+            {
+                byte[] userPicture = _userService.GetUserProfilePicture(id);
+
+                if (userPicture == null || userPicture.Length == 0)
+                    return NotFound();
+
+                return File(userPicture, "image/jpeg");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
     }
 }
