@@ -59,15 +59,16 @@ const routes = [
                 ]
             },
             {
+                path: 'profile/edit',
+                name: 'EditProfile',
+                component: EditProfile,
+            },
+            {
                 path: 'profile/:id',
                 name: 'ProfilePage',
                 component: Profile,
             },
-            {
-                path: 'profile/edit',
-                name: 'EditProfile',
-                component: EditProfile,
-            }
+            
 
         ]
     },
