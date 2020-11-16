@@ -192,5 +192,53 @@ namespace Messenger.Api.Controllers
                 return BadRequest();
             }
         }
+
+        // POST: Chnage user profile picture
+        [HttpPost("{id}/picture")]
+        [Authorize]
+        public ReturnApiObject ChangeProfilePicture(ChangeProfilePictureModel model)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _userService.ChangeUserProfilePicture(id, model.picture);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // Delete: Delete user profile picture
+        [HttpDelete("{id}/picture")]
+        [Authorize]
+        public ReturnApiObject DeleteProfilePicture(ChangeProfilePictureModel model)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _userService.DeleteUserProfilePicture(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
     }
 }

@@ -317,6 +317,16 @@ namespace Messenger.Service.Implementation
 
             return user.ProfilePicture;
         }
+
+        public ReturnApiObject ChangeUserProfilePicture(int id, string pictureBase64)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReturnApiObject DeleteUserProfilePicture(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
