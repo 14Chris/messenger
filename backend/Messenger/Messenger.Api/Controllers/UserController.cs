@@ -218,6 +218,26 @@ namespace Messenger.Api.Controllers
             }
         }
 
+        // GET: User profile picture
+        [HttpHead("{id}/picture")]
+        [Authorize]
+        public IActionResult HeadUserProfilePicture(int id)
+        {
+            try
+            {
+                byte[] userPicture = _userService.GetUserProfilePicture(id);
+
+                if (userPicture == null || userPicture.Length == 0)
+                    return NotFound();
+
+                return File(userPicture, "image/jpeg");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         // POST: Chnage user profile picture
         [HttpPost("{id}/picture")]
         [Authorize]

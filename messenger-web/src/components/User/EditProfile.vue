@@ -6,6 +6,7 @@
     </div>
     <div v-else>
         <div v-if="userProfile != null">
+          <AvatarEdit :userId="userProfile.id"></AvatarEdit>
           {{userProfile.first_name}}
           {{userProfile.last_name}}
           {{userProfile.email}}
@@ -19,8 +20,12 @@
 
 <script>
 import ApiService from "@/service/api";
+import AvatarEdit from "@/components/User/Avatar/AvatarEdit"
 const api = new ApiService();
 export default {
+  components:{
+    AvatarEdit
+  },
   data(){
       return {
         userProfile: null,

@@ -11,6 +11,13 @@ export default class ApiService {
         });
     }
 
+    headData(route) {
+        return fetch(this.createCompleteRoute(route, this.apiUrl), {
+            method: 'HEAD',
+            headers: this.generateHeaders(),
+        });
+    }
+
     create(route, body) {
         return fetch(this.createCompleteRoute(route, this.apiUrl), {
             method: 'POST',
