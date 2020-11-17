@@ -173,6 +173,31 @@ namespace Messenger.Api.Controllers
             }
         }
 
+        // GET: User session profile informations
+        [HttpGet("profile")]
+        [Authorize]
+        public ReturnApiObject GetUserSessionProfile()
+        {
+
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _userService.GetUserProfile(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
         // GET: User profile picture
         [HttpGet("{id}/picture")]
         [Authorize]
