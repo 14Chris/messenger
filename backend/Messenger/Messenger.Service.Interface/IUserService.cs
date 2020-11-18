@@ -28,8 +28,8 @@ namespace Messenger.Service.Interface
 
         public byte[] GetUserProfilePicture(int id);
 
-        public ReturnApiObject ChangeUserProfilePicture(int id, string pictureBase64);
+        public Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64);
 
-        public ReturnApiObject DeleteUserProfilePicture(int id);
+        public Task<ReturnApiObject> DeleteUserProfilePicture(int id);
     }
 }

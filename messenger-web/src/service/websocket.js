@@ -5,21 +5,21 @@ export default function CreateWebSocket(token){
         ["access_token", token]
     );
 
-    socket.onopen = function (event) {
-        console.log("on open", event)
+    socket.onopen = function () {
+        // console.log("on open", event)
     };
 
     socket.onmessage = function (event) {
-        console.log("receive data from server : ", event.data);
+        // console.log("receive data from server : ", event.data);
         eventBus.$emit('message-received', event.data)
     }
 
-    socket.onclose = function (event) {
-        console.log("on close", event)
+    socket.onclose = function () {
+        // console.log("on close", event)
     };
 
-    socket.onerror = function (event) {
-        console.log("on error", event)
+    socket.onerror = function () {
+        // console.log("on error", event)
     };
 
     return socket;

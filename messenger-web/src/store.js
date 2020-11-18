@@ -89,26 +89,6 @@ export default new Vuex.Store({
                     })
             })
         },
-        // getConversationsFromServer({commit}){
-        //     return new Promise((resolve, reject) => {
-        //         api.getData("conversations/user")
-        //             .then(response => {
-        //                 if (response.ok) {
-        //                     response.json()
-        //                         .then(resp => {
-        //                             if (resp.ResponseType == 1) {
-        //                                 const conversations = resp.Result
-        //                                 commit('add_conversation', conversations)
-        //                                 resolve(resp)
-        //                             }
-        //                         })
-        //                 }
-        //             })
-        //             .catch(err => {
-        //                 reject(err)
-        //             })
-        //     })
-        // }
     },
     getters: {
         isLoggedIn(state) {

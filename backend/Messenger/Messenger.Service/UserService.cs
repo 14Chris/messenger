@@ -318,14 +318,32 @@ namespace Messenger.Service.Implementation
             return user.ProfilePicture;
         }
 
-        public ReturnApiObject ChangeUserProfilePicture(int id, string pictureBase64)
+        public async Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64)
         {
-            throw new NotImplementedException();
+            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            user.ProfilePicture = Convert.FromBase64String(pictureBase64);
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if(userUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
-        public ReturnApiObject DeleteUserProfilePicture(int id)
+        public async Task<ReturnApiObject> DeleteUserProfilePicture(int id)
         {
-            throw new NotImplementedException();
+            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            user.ProfilePicture = null;
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if(userUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
     }
 

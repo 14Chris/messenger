@@ -241,7 +241,7 @@ namespace Messenger.Api.Controllers
         // POST: Chnage user profile picture
         [HttpPost("{id}/picture")]
         [Authorize]
-        public ReturnApiObject ChangeProfilePicture(ChangeProfilePictureModel model)
+        public async Task<ReturnApiObject> ChangeProfilePicture(ChangeProfilePictureModel model)
         {
             int id = -1;
 
@@ -254,7 +254,7 @@ namespace Messenger.Api.Controllers
 
             try
             {
-                return _userService.ChangeUserProfilePicture(id, model.picture);
+                return await _userService.ChangeUserProfilePicture(id, model.picture);
             }
             catch (Exception)
             {
@@ -265,7 +265,7 @@ namespace Messenger.Api.Controllers
         // Delete: Delete user profile picture
         [HttpDelete("{id}/picture")]
         [Authorize]
-        public ReturnApiObject DeleteProfilePicture(ChangeProfilePictureModel model)
+        public async Task<ReturnApiObject> DeleteProfilePicture(ChangeProfilePictureModel model)
         {
             int id = -1;
 
@@ -278,7 +278,7 @@ namespace Messenger.Api.Controllers
 
             try
             {
-                return _userService.DeleteUserProfilePicture(id);
+                return await _userService.DeleteUserProfilePicture(id);
             }
             catch (Exception)
             {
