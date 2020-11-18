@@ -200,7 +200,7 @@ namespace Messenger.Api.Controllers
 
         // GET: User profile picture
         [HttpGet("{id}/picture")]
-        [Authorize]
+        //[Authorize]
         public IActionResult GetUserProfilePicture(int id)
         {
             try
