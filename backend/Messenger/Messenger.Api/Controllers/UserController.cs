@@ -1,13 +1,13 @@
-﻿using Messenger.Facade.Response;
+﻿using Messenger.Api.ApiModels;
 using Messenger.Database;
+using Messenger.Facade.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Messenger.Api.ApiModels;
 
 namespace Messenger.Api.Controllers
 {

@@ -4,7 +4,6 @@ using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Messenger.Facade.Settings;
 using Messenger.Service.Interface;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
