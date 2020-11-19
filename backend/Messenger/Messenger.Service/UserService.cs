@@ -323,6 +323,12 @@ namespace Messenger.Service.Implementation
             return user.ProfilePicture;
         }
 
+        /// <summary>
+        /// Change the profile picture of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="pictureBase64"></param>
+        /// <returns></returns>
         public async Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64)
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
@@ -337,6 +343,11 @@ namespace Messenger.Service.Implementation
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
+        /// <summary>
+        /// Delete the profile picture of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ReturnApiObject> DeleteUserProfilePicture(int id)
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();

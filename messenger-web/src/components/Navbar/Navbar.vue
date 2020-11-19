@@ -38,40 +38,100 @@
           </span>
         </button>
       </div>
+
       <div class="navbar-item">
-        <b-dropdown aria-role="list" position="is-bottom-left" append-to-body>
-          <button class="button navbar-icon" slot="trigger">
-            <span class="icon">
-              <i class="fas fa-user"></i>
-            </span>
-          </button>
-          <router-link to="/profile/edit">
-            <b-dropdown-item aria-role="listitem"
-              >{{ $store.state.user.first_name }}
-              {{ $store.state.user.last_name }}</b-dropdown-item
-            >
-          </router-link>
-          <b-dropdown-item aria-role="listitem" @click="logout"
-            >Logout</b-dropdown-item
-          >
-        </b-dropdown>
+        <div
+          id="user-dropdown"
+          class="dropdown is-right"
+          @click="UserDropdownClick"
+        >
+          <div class="dropdown-trigger">
+            <img
+              v-if="imageExists"
+              :src="userPictureUrl"
+              alt="Avatar"
+              class="avatar"
+              slot="trigger"
+            />
+
+            <button v-else class="button navbar-icon" slot="trigger">
+              <span class="icon">
+                <i class="fas fa-user"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <router-link to="/profile/edit">
+                <a class="dropdown-item"
+                  >{{ connectedUser.first_name }}
+                  {{ connectedUser.last_name }}</a
+                >
+              </router-link>
+              <a class="dropdown-item" @click="logout">Logout</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script>
+import ApiService from "@/service/api";
 import Search from "./Search";
 
+const api = new ApiService();
 export default {
   components: {
     Search,
+  },
+  data() {
+    return {
+      imageExists: false,
+      connectedUser: null,
+    };
+  },
+  mounted() {
+    api.getData("users/session").then((response) => {
+      if (response.ok) {
+        response.json().then((resp) => {
+          if (resp.ResponseType == 1) {
+            const user = resp.Result;
+            this.connectedUser = user;
+            this.CheckUrlValidity();
+          }
+        });
+      }
+    });
+  },
+  computed: {
+    userPictureUrl() {
+      return api.apiUrl + "/users/" + this.connectedUser.id + "/picture";
+    },
   },
   methods: {
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/login");
       });
+    },
+    CheckUrlValidity() {
+      api
+        .headData("users/" + this.connectedUser.id + "/picture")
+        .then((response) => {
+          console.log(response);
+          this.imageExists = response.ok;
+        });
+    },
+    UserDropdownClick() {
+      var element = document.getElementById("user-dropdown");
+
+      if (element.classList.contains("is-active")) {
+        element.classList.remove("is-active");
+      } else {
+        element.classList.add("is-active");
+      }
     },
   },
 };
@@ -96,5 +156,22 @@ export default {
 
 .navbar-icon {
   border-radius: 50% !important;
+}
+
+
+</style>
+
+<style scoped>
+
+.avatar {
+  width: 40px !important;
+  height: 40px !important;
+  max-height: none !important;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dropdown{
+  height: 40px;
 }
 </style>

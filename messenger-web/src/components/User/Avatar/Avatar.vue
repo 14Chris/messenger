@@ -34,7 +34,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .avatar {
   vertical-align: middle;
   width: 100px;
@@ -43,6 +43,6 @@ export default {
 }
 
 .avatar-empty {
-  background-color: red;
+  background-color: lightblue;
 }
 </style>

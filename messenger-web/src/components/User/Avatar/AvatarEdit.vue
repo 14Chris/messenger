@@ -118,7 +118,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .avatar {
   vertical-align: middle;
   width: 200px;
@@ -127,6 +127,6 @@ export default {
 }
 
 .avatar-empty {
-  background-color: red;
+  background-color: lightblue;
 }
 </style>
