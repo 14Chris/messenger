@@ -1,6 +1,7 @@
 ﻿using Messenger.Facade.Response;
 using Messenger.Database;
 using System.Threading.Tasks;
+using Messenger.Facade.Models;
 
 namespace Messenger.Service.Interface
 {
@@ -10,7 +11,7 @@ namespace Messenger.Service.Interface
       
         public ReturnApiObject GetUser(int id);
 
-        public Task<ReturnApiObject> UpdateUser(User user);
+        public Task<ReturnApiObject> UpdateUserInformations(UserBasicModel user);
 
         public ReturnApiObject EmailAlreadyExists(string email);
 

@@ -1,5 +1,6 @@
 ﻿using Messenger.Api.ApiModels;
 using Messenger.Database;
+using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -262,7 +263,7 @@ namespace Messenger.Api.Controllers
             }
         }
 
-        // Delete: Delete user profile picture
+        // DELETE: Delete user profile picture
         [HttpDelete("{id}/picture")]
         [Authorize]
         public async Task<ReturnApiObject> DeleteProfilePicture(ChangeProfilePictureModel model)
@@ -279,6 +280,30 @@ namespace Messenger.Api.Controllers
             try
             {
                 return await _userService.DeleteUserProfilePicture(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // PUT: Update user informations
+        [HttpPut]
+        [Authorize]
+        public async Task<ReturnApiObject> UpdateUser(UserBasicModel user)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok || user.Id != id)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return await _userService.UpdateUserInformations(user);
             }
             catch (Exception)
             {

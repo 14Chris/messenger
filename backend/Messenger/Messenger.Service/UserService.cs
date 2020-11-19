@@ -68,13 +68,19 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> UpdateUser(User user)
+        public async Task<ReturnApiObject> UpdateUserInformations(UserBasicModel updatedUser)
         {
+            User user = _userRepository.List().Where(x => x.Id == updatedUser.Id)
+             .SingleOrDefault();
+
+            user.LastName = updatedUser.LastName;
+            user.FirstName = updatedUser.FirstName;
+
             PrepareUser(user);
 
             User result = await _userRepository.UpdateAsync(user);
 
-            if (user == null)
+            if (result == null)
             {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
             }

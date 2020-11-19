@@ -67,7 +67,7 @@ namespace Messenger.Test.Api.User
             string newName = "TestUpdateName";
             user.FirstName = newName;
 
-            ReturnApiObject resultUpdate = await _userService.UpdateUser(user);
+            ReturnApiObject resultUpdate = await _userService.UpdateUserInformations(user);
 
             Assert.IsNotNull(resultUpdate);
             Assert.IsTrue(resultUpdate.HttpStatus == HttpStatusCode.OK);

@@ -121,8 +121,8 @@ export default {
 <style>
 .avatar {
   vertical-align: middle;
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
 }
 
