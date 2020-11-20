@@ -1,15 +1,15 @@
 <template>
   <div>
     <div v-if="requests != null">
-      <div class="box" v-for="f in requests" :key="f.id">
+      <div class="box" v-for="f in requests" :key="f.id" @click="GoToUserProfile(f.id)">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
         <div class="request-actions">
-          <button class="button is-success is-light" @click="acceptFriendRequest(f.id)">
+          <button class="button is-success is-light" @click="AcceptFriendRequest(f.id)">
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
           </button>
-          <button class="button button is-danger is-light" @click="deleteFriendRequest(f.id)">
+          <button class="button button is-danger is-light" @click="AeleteFriendRequest(f.id)">
               <span class="icon">
                 <i class="fas fa-times"></i>
               </span>
@@ -34,10 +34,10 @@ export default {
     }
   },
   mounted() {
-    this.getFriendRequests()
+    this.GetFriendRequests()
   },
   methods: {
-    getFriendRequests() {
+    GetFriendRequests() {
       api.getData("friends/request")
           .then(response => {
             console.log(response)
@@ -56,7 +56,7 @@ export default {
             console.log(err)
           })
     },
-    acceptFriendRequest(id){
+    AcceptFriendRequest(id){
       api.create("friends/request/accept", JSON.stringify(id))
           .then(response => {
             console.log(response)
@@ -80,7 +80,7 @@ export default {
             console.log(err)
           })
     },
-    deleteFriendRequest(id){
+    DeleteFriendRequest(id){
       api.create("friends/request/delete", JSON.stringify(id))
           .then(response => {
             console.log(response)
@@ -104,6 +104,9 @@ export default {
           .catch(err => {
             console.log(err)
           })
+    },
+     GoToUserProfile(userId){
+      this.$router.push("profile/"+userId)
     }
   }
 }

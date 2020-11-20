@@ -5,7 +5,7 @@
   <div v-else class="full-page">
     <div v-if="conversation" class="conversation">
       <div class="conv-header">
-      <h4 class="title is-4">{{conversation.name}}</h4>
+      <h4 class="title is-4 conversation-name">{{conversation.name}}</h4>
       </div>
       <div class="conv-messages">
         <MessageList :messages="conversation.messages"></MessageList>
@@ -101,7 +101,7 @@ export default {
         console.log('new message received', object.message)
         this.conversation.messages.push(object.message)
       }
-    }
+    },
   }
 }
 </script>

@@ -68,13 +68,19 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> UpdateUser(User user)
+        public async Task<ReturnApiObject> UpdateUserInformations(UserBasicModel updatedUser)
         {
+            User user = _userRepository.List().Where(x => x.Id == updatedUser.Id)
+             .SingleOrDefault();
+
+            user.LastName = updatedUser.LastName;
+            user.FirstName = updatedUser.FirstName;
+
             PrepareUser(user);
 
             User result = await _userRepository.UpdateAsync(user);
 
-            if (user == null)
+            if (result == null)
             {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
             }
@@ -280,6 +286,80 @@ namespace Messenger.Service.Implementation
         public Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get the user profile informations
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetUserProfile(int id)
+        {
+            UserProfileModel userProfile = _userRepository.List().Where(x => x.Id == id).Select(x => new UserProfileModel()
+            {
+                Id = x.Id,
+                Email = x.Email,
+                FirstName = x.FirstName,
+                LastName = x.LastName
+            }).SingleOrDefault();
+
+            if(userProfile == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+            }
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", userProfile);
+        }
+
+        /// <summary>
+        /// Get the profile picture of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public byte[] GetUserProfilePicture(int id)
+        {
+            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            return user.ProfilePicture;
+        }
+
+        /// <summary>
+        /// Change the profile picture of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="pictureBase64"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64)
+        {
+            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            user.ProfilePicture = Convert.FromBase64String(pictureBase64);
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if(userUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        /// <summary>
+        /// Delete the profile picture of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> DeleteUserProfilePicture(int id)
+        {
+            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            user.ProfilePicture = null;
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if(userUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
     }
 

@@ -1,13 +1,14 @@
-﻿using Messenger.Facade.Response;
+﻿using Messenger.Api.ApiModels;
 using Messenger.Database;
+using Messenger.Facade.Models;
+using Messenger.Facade.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Messenger.Api.ApiModels;
 
 namespace Messenger.Api.Controllers
 {
@@ -151,6 +152,158 @@ namespace Messenger.Api.Controllers
             try
             {
                 return await _userService.ResetPassword(model.token, model.newPassword);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // GET: User profile informations
+        [HttpGet("{id}/profile")]
+        [Authorize]
+        public ReturnApiObject GetUserProfile(int id)
+        {
+            try
+            {
+                return _userService.GetUserProfile(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // GET: User session profile informations
+        [HttpGet("profile")]
+        [Authorize]
+        public ReturnApiObject GetUserSessionProfile()
+        {
+
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _userService.GetUserProfile(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // GET: User profile picture
+        [HttpGet("{id}/picture")]
+        //[Authorize]
+        public IActionResult GetUserProfilePicture(int id)
+        {
+            try
+            {
+                byte[] userPicture = _userService.GetUserProfilePicture(id);
+
+                if (userPicture == null || userPicture.Length == 0)
+                    return NotFound();
+
+                return File(userPicture, "image/jpeg");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        // GET: User profile picture
+        [HttpHead("{id}/picture")]
+        [Authorize]
+        public IActionResult HeadUserProfilePicture(int id)
+        {
+            try
+            {
+                byte[] userPicture = _userService.GetUserProfilePicture(id);
+
+                if (userPicture == null || userPicture.Length == 0)
+                    return NotFound();
+
+                return File(userPicture, "image/jpeg");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        // POST: Chnage user profile picture
+        [HttpPost("{id}/picture")]
+        [Authorize]
+        public async Task<ReturnApiObject> ChangeProfilePicture(ChangeProfilePictureModel model)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return await _userService.ChangeUserProfilePicture(id, model.picture);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // DELETE: Delete user profile picture
+        [HttpDelete("{id}/picture")]
+        [Authorize]
+        public async Task<ReturnApiObject> DeleteProfilePicture(ChangeProfilePictureModel model)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return await _userService.DeleteUserProfilePicture(id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
+        // PUT: Update user informations
+        [HttpPut]
+        [Authorize]
+        public async Task<ReturnApiObject> UpdateUser(UserBasicModel user)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok || user.Id != id)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return await _userService.UpdateUserInformations(user);
             }
             catch (Exception)
             {

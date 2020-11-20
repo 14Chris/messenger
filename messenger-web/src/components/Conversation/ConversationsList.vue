@@ -90,21 +90,21 @@ export default {
 .conversations{
   height:100%;
   margin-left: 20px;
+  display: flex;
+    flex-direction: column;
 }
 
   .conversation-list-header{
-    display: flex;
-    flex-direction: row;
-    margin-left: 10px;
+    
     margin-bottom: 20px;
   }
   .conversation-list{
-    height:90%;
+    flex:1;
   }
+
   .conversation-list-bottom{
-
+    height : 60px;
   }
-
 
 
   #new-conversation-button{

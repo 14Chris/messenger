@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import ApiService from './service/api'
+// import ApiService from './service/api'
 import CreateWebSocket from './service/websocket'
 
-var api = new ApiService
+// var api = new ApiService
 
 Vue.use(Vuex)
 
@@ -20,7 +20,7 @@ export default new Vuex.Store({
         auth_request(state) {
             state.status = 'loading'
         },
-        auth_success(state, {token, user}) {
+        auth_success(state, { token, user }) {
             state.status = 'success'
             state.token = token
             state.user = user
@@ -37,28 +37,28 @@ export default new Vuex.Store({
         set_user(state, user) {
             state.user = user
         },
-        create_websocket(state){
+        create_websocket(state) {
             var websocket = CreateWebSocket(state.token)
             //Creation of chat websocket object
             state.chatWebsocket = websocket
         },
-        add_conversation(state, conversations){
+        add_conversation(state, conversations) {
             state.conversations = conversations
         }
     },
     actions: {
-        login({commit}, {token, user}) {
+        login({ commit }, { token, user }) {
             return new Promise((resolve,) => {
                 commit('auth_request')
                 localStorage.setItem('token', token)
                 axios.defaults.headers.common['Authorization'] = token
-                commit('auth_success', {token, user})
+                commit('auth_success', { token, user })
                 commit('create_websocket')
                 resolve()
 
             })
         },
-        logout({commit}) {
+        logout({ commit }) {
             return new Promise((resolve) => {
                 commit('logout')
                 localStorage.removeItem('token')
@@ -66,49 +66,13 @@ export default new Vuex.Store({
                 resolve()
             })
         },
-        getUserSession({commit}) {
-            return new Promise((resolve, reject) => {
-                api.getData("users/session")
-                    .then(response => {
-                        if (response.ok) {
-                            response.json()
-                                .then(resp => {
-                                    if (resp.ResponseType == 1) {
-                                        const user = resp.Result
-                                        commit('set_user', user)
-                                        commit('create_websocket')
-                                        resolve(resp)
-                                    } else {
-                                        commit('logout')
-                                    }
-                                })
-                        }
-                    })
-                    .catch(err => {
-                        reject(err)
-                    })
+        setUserSession({ commit }, user) {
+            return new Promise((resolve) => {
+                commit('set_user', user)
+                commit('create_websocket')
+                resolve()
             })
         },
-        // getConversationsFromServer({commit}){
-        //     return new Promise((resolve, reject) => {
-        //         api.getData("conversations/user")
-        //             .then(response => {
-        //                 if (response.ok) {
-        //                     response.json()
-        //                         .then(resp => {
-        //                             if (resp.ResponseType == 1) {
-        //                                 const conversations = resp.Result
-        //                                 commit('add_conversation', conversations)
-        //                                 resolve(resp)
-        //                             }
-        //                         })
-        //                 }
-        //             })
-        //             .catch(err => {
-        //                 reject(err)
-        //             })
-        //     })
-        // }
     },
     getters: {
         isLoggedIn(state) {

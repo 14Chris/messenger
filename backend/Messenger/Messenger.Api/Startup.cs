@@ -1,5 +1,6 @@
-using Messenger.Facade.Settings;
+using Messenger.Api.WebSocketsHandlers;
 using Messenger.Database;
+using Messenger.Facade.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,15 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Text;
-using Microsoft.AspNetCore.WebSockets;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
-using Messenger.Api.WebSocketsHandlers;
-using Microsoft.AspNetCore.Http;
 
 namespace Messenger.Api
 {

@@ -1,6 +1,7 @@
 ﻿using Messenger.Facade.Response;
 using Messenger.Database;
 using System.Threading.Tasks;
+using Messenger.Facade.Models;
 
 namespace Messenger.Service.Interface
 {
@@ -10,7 +11,7 @@ namespace Messenger.Service.Interface
       
         public ReturnApiObject GetUser(int id);
 
-        public Task<ReturnApiObject> UpdateUser(User user);
+        public Task<ReturnApiObject> UpdateUserInformations(UserBasicModel user);
 
         public ReturnApiObject EmailAlreadyExists(string email);
 
@@ -23,5 +24,13 @@ namespace Messenger.Service.Interface
         public Task<ReturnApiObject> ValidateTokenPasswordReset(string token);
 
         public Task<ReturnApiObject> ResetPassword(string token, string newPassword);
+
+        public ReturnApiObject GetUserProfile(int id);
+
+        public byte[] GetUserProfilePicture(int id);
+
+        public Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64);
+
+        public Task<ReturnApiObject> DeleteUserProfilePicture(int id);
     }
 }

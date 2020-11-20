@@ -1,5 +1,3 @@
-const axios = require('axios').default;
-
 export default class ApiService {
     apiUrl = process.env.VUE_APP_API_URL;
     apiKey = "003026bbc133714df1834b8638bb496e-8f4b3d9a-e931-478d-a994-28a725159ab9"
@@ -7,6 +5,13 @@ export default class ApiService {
     getData(route) {
         return fetch(this.createCompleteRoute(route, this.apiUrl), {
             method: 'GET',
+            headers: this.generateHeaders(),
+        });
+    }
+
+    headData(route) {
+        return fetch(this.createCompleteRoute(route, this.apiUrl), {
+            method: 'HEAD',
             headers: this.generateHeaders(),
         });
     }
@@ -20,8 +25,10 @@ export default class ApiService {
     }
 
     update(route, body) {
-        return axios.put(this.createCompleteRoute(route, this.apiUrl), body, {
-            headers: this.generateHeaders()
+        return fetch(this.createCompleteRoute(route, this.apiUrl), {
+            method: 'PUT',
+            headers: this.generateHeaders(),
+            body: body
         });
     }
 

@@ -3,13 +3,14 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Home from './components/Home'
 import store from './store'
-// import MessageList from "@/components/Messages/MessageList";
 import NewMessage from "@/components/Messages/NewMessage";
 import Conversation from "@/components/Conversation/Conversation";
 import ConversationHome from "@/components/Conversation/ConversationHome";
 import Friends from "@/components/Friends/Friends";
 import FriendRequests from "@/components/Friends/FriendRequests";
 import FriendsList from "@/components/Friends/FriendsList";
+import Profile from "@/components/User/Profile"
+import EditProfile from "@/components/User/EditProfile"
 
 const routes = [
     {
@@ -56,7 +57,18 @@ const routes = [
 
                     }
                 ]
-            }
+            },
+            {
+                path: 'profile/edit',
+                name: 'EditProfile',
+                component: EditProfile,
+            },
+            {
+                path: 'profile/:id',
+                name: 'ProfilePage',
+                component: Profile,
+            },
+            
 
         ]
     },
