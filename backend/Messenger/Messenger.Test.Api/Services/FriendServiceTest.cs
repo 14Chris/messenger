@@ -15,9 +15,6 @@ namespace Messenger.Test.Api.User
     [TestClass]
     public class FriendServiceTest : BaseTest
     {
-
-
-
         [TestMethod]
         public async Task TestAddFriend()
         {
