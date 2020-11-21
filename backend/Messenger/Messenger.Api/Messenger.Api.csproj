@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
@@ -17,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Messenger.EmailSending\Messenger.EmailSending.csproj" />
     <ProjectReference Include="..\Messenger.Facade\Messenger.Facade.csproj" />
     <ProjectReference Include="..\Messenger.Repository.Implementation\Messenger.Repository.Interface.csproj" />
     <ProjectReference Include="..\Messenger.Repository.Interface\Messenger.Repository.Implementation.csproj" />
