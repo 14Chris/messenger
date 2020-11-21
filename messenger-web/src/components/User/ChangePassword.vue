@@ -118,8 +118,21 @@ export default {
                     closable: true,
                   });
                 } else {
+
+                  var errorMessage = ""
+
+                  switch(data.Message){
+                    case "OLD_PASSWORD_DIFFERENT":errorMessage = "Old password is incorrect"
+                      break;
+                      case "SAME_NEW_PASSWORD":errorMessage = "New password has to be different from old password"
+                      break;
+                      case "NEW_PASSWORD_TOO_WEAK":errorMessage = "New password is too weak"
+                      break;
+                      default:errorMessage = "Error while changing password"
+                  }
+
                   this.$buefy.notification.open({
-                    message: "Error while changing password",
+                    message: errorMessage,
                     type: "is-danger",
                     duration: 5000,
                     closable: true,

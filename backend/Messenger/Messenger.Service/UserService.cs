@@ -201,6 +201,11 @@ namespace Messenger.Service.Implementation
                 return "EMAIL_ALREADY_USED";
             }
 
+            if(user.Password == null)
+            {
+                return "NO_PASSWORD";
+            }
+
             //Check password strength
             if (!SecurityHelper.PasswordMatchRegex(user.Password))
             {
@@ -242,6 +247,11 @@ namespace Messenger.Service.Implementation
             if(user.Password != hashedOldPwd)
             {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "OLD_PASSWORD_DIFFERENT", null);
+            }
+
+            if (oldPassword == newPassword)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
             }
 
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
