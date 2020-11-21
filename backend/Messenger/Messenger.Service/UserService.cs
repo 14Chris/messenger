@@ -1,5 +1,8 @@
-﻿using JWT.Algorithms;
+﻿using JWT;
+using JWT.Algorithms;
 using JWT.Builder;
+using JWT.Exceptions;
+using JWT.Serializers;
 using Messenger.Database;
 using Messenger.EmailSending.Models;
 using Messenger.Facade.Helpers;
@@ -328,9 +331,35 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
+        public async Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
         {
-            throw new NotImplementedException();
+            Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token).SingleOrDefault();
+
+            if(tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+
+            //Token verification (expiration, key, ...)
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                IDateTimeProvider provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, new HMACSHA256Algorithm());
+
+                var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
+            }
+            catch (TokenExpiredException)
+            {
+                await _tokenRepository.DeleteAsync(tokenResult);
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+            catch (SignatureVerificationException)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
         /// <summary>
@@ -339,9 +368,65 @@ namespace Messenger.Service.Implementation
         /// <param name="token"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public Task<ReturnApiObject> ResetPassword(string token, string newPassword)
+        public async Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
-            throw new NotImplementedException();
+            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token).SingleOrDefault();
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+
+            //Token verification (expiration, key, ...)
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                IDateTimeProvider provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, new HMACSHA256Algorithm());
+
+                var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
+            }
+            catch (TokenExpiredException)
+            {
+                await _tokenRepository.DeleteAsync(tokenResult);
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+            catch (SignatureVerificationException)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            await _tokenRepository.DeleteAsync(tokenResult);
+
+
+            User user = _userRepository.List().Where(x => x.Id == tokenResult.Id).SingleOrDefault();
+
+            if(user == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            string newPasswordHash = SecurityHelper.HashPassword(newPassword);
+
+            if (user.Password.Equals(newPasswordHash))
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
+            }
+
+            if (!SecurityHelper.PasswordMatchRegex(newPassword))
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
+            }
+
+            user.Password = newPasswordHash;
+
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if (userUpdated == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
         /// <summary>
