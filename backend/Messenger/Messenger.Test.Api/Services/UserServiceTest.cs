@@ -1,6 +1,6 @@
-﻿using Messenger.Facade.Models;
+﻿using Messenger.Facade.Helpers;
+using Messenger.Facade.Models;
 using Messenger.Facade.Response;
-using Messenger.Service.Implementation;
 using Messenger.Service.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +32,7 @@ namespace Messenger.Test.Api.User
             Assert.IsTrue(result.HttpStatus == HttpStatusCode.Created);
             Assert.IsTrue(result.ResponseType == ResponseType.Success);
 
-            //Test brand with same email
+            //Test create user with same email
             Database.User userSameEmail = new Database.User();
             user.FirstName = "TestFirstName2";
             user.LastName = "TestLastName2";
@@ -45,6 +45,34 @@ namespace Messenger.Test.Api.User
             Assert.IsTrue(resultSameEmail.HttpStatus == HttpStatusCode.BadRequest, resultSameEmail.HttpStatus.ToString());
             Assert.IsTrue(resultSameEmail.ResponseType == ResponseType.Error);
 
+        }
+
+        [TestMethod]
+        public async Task TestCreateUserWithoutPassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            //Test without password
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+
+            ReturnApiObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ResponseType == ResponseType.Error);
+
+            Database.User user2 = new Database.User();
+            user2.FirstName = "TestFirstName";
+            user2.LastName = "TestLastName";
+            user2.Email = "lenfant.chris@hotmail.fr";
+            user2.Password = "";
+
+            ReturnApiObject result2 = await _userService.CreateUser(user2);
+
+            Assert.IsNotNull(result2);
+            Assert.IsTrue(result2.ResponseType == ResponseType.Error);
         }
 
         [TestMethod]
@@ -163,5 +191,94 @@ namespace Messenger.Test.Api.User
 
             Assert.IsTrue(userPictureString.Equals(base64Picture));
         }
+
+        [TestMethod]
+        public async Task TestChangeUserPassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            string oldPassword = "ChrisChris11!";
+            string newPassword = "TestPASSWord28&";
+
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = oldPassword;
+
+            ReturnApiObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+
+            //Change password user
+            ReturnApiObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, newPassword);
+            Assert.IsNotNull(resultPasswordChange);
+            Assert.IsTrue(resultPasswordChange.HttpStatus == HttpStatusCode.OK);
+            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Success);
+
+
+            ReturnApiObject resultUser = _userService.GetUser(user.Id);
+
+            Database.User updatedUser = (Database.User)resultUser.Result;
+            Assert.IsTrue(updatedUser.Password.Equals(SecurityHelper.HashPassword(newPassword)));
+
+        }
+
+        [TestMethod]
+        public async Task TestChangeUserPasswordWithSamePassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            string oldPassword = "ChrisChris11!";
+
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = oldPassword;
+
+            ReturnApiObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+
+            //Change password user with same password
+            ReturnApiObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, oldPassword);
+            Assert.IsNotNull(resultPasswordChange);
+            Assert.IsTrue(resultPasswordChange.HttpStatus == HttpStatusCode.BadRequest);
+            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Error);
+            Assert.IsTrue(resultPasswordChange.Message == "SAME_NEW_PASSWORD");
+
+        }
+
+        [TestMethod]
+        public async Task TestChangeUserPasswordWithWeakPassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            string oldPassword = "ChrisChris11!";
+            string newPassword = "Chris";
+
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = oldPassword;
+
+            ReturnApiObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+
+            //Change password user with weak password
+            ReturnApiObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, newPassword);
+            Assert.IsNotNull(resultPasswordChange);
+            Assert.IsTrue(resultPasswordChange.HttpStatus == HttpStatusCode.BadRequest);
+            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Error);
+            Assert.IsTrue(resultPasswordChange.Message == "NEW_PASSWORD_TOO_WEAK");
+
+        }
     }
 }
+

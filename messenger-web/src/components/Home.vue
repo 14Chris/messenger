@@ -41,6 +41,6 @@ export default {
 
 .home{
   flex:1;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 </style>

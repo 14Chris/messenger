@@ -7,7 +7,9 @@
     <div v-else>
       <div v-if="userProfile != null">
         <AvatarEdit :userId="userProfile.id"></AvatarEdit>
-        <div class="box">
+
+        <!-- Informations -->
+        <div class="box"> 
           <form @submit.prevent="UpdateUserInformations">
             <h4 class="title is-4">Informations</h4>
 
@@ -68,6 +70,12 @@
             <button class="button is-primary">Save</button>
           </form>
         </div>
+
+        <!-- Security -->
+         <div class="box">
+            <h4 class="title is-4">Security</h4>
+            <ChangePassword></ChangePassword>
+        </div>
       </div>
       <div v-else>
         <p>An error occured while retrieving user profile</p>
@@ -80,10 +88,13 @@
 import { required } from "vuelidate/lib/validators";
 import ApiService from "@/service/api";
 import AvatarEdit from "@/components/User/Avatar/AvatarEdit";
+import ChangePassword from "@/components/User/ChangePassword";
+
 const api = new ApiService();
 export default {
   components: {
     AvatarEdit,
+    ChangePassword
   },
   data() {
     return {
@@ -177,7 +188,11 @@ export default {
 </script>
 
 <style scoped>
-.box {
+.box:first{
   margin-top: 25px;
+}
+
+.box{
+   margin-bottom: 25px;
 }
 </style>
