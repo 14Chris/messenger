@@ -1,9 +1,11 @@
 using Messenger.Api.WebSocketsHandlers;
 using Messenger.Database;
+using Messenger.EmailSending;
 using Messenger.Facade.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
