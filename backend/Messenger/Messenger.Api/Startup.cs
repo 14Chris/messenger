@@ -58,6 +58,20 @@ namespace Messenger.Api
                 };
             });
 
+            services.Configure<AppSettings>(options =>
+            {
+                options.WebAppUrl = Configuration["AppSettings:WebAppUrl"];
+
+            });
+
+            services.Configure<EmailSenderSettings>(options =>
+            {
+                options.ApiKey = Configuration["EmailSending:SendGrid:ApiKey"];
+                options.SenderEmail = Configuration["EmailSending:SendGrid:SenderEmail"];
+                options.SenderName = Configuration["EmailSending:SendGrid:SenderName"];
+            });
+
+            services.AddTransient<IEmailSender, SendGridEmailSender>();
 
             //Add dependency injection for JWT Settings from appsettings
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
