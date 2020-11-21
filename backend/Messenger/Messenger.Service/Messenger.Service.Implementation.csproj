@@ -5,12 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JWT" Version="7.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.7.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Messenger.EmailSending\Messenger.EmailSending.csproj" />
     <ProjectReference Include="..\Messenger.Repository.Implementation\Messenger.Repository.Interface.csproj" />
     <ProjectReference Include="..\Messenger.Service.Interface\Messenger.Service.Interface.csproj" />
   </ItemGroup>

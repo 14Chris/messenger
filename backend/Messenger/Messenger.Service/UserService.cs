@@ -1,4 +1,7 @@
-﻿using Messenger.Database;
+﻿using JWT.Algorithms;
+using JWT.Builder;
+using Messenger.Database;
+using Messenger.EmailSending.Models;
 using Messenger.Facade.Helpers;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
@@ -278,9 +281,46 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public Task<ReturnApiObject> ForgotPassword(string email)
+        public async Task<ReturnApiObject> ForgotPassword(string email)
         {
-            throw new NotImplementedException();
+            User user = _userRepository.List().Where(x => x.Email == email).SingleOrDefault();
+
+            if(user == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            // Generate JWT token to authenticate user reset password request
+            var tokenValue = new JwtBuilder()
+                  .WithAlgorithm(new HMACSHA256Algorithm())
+                  .WithSecret(_jwtSettings.Key)
+                  .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(24).ToUnixTimeSeconds())
+                  .AddClaim("claim2", "claim2-value")
+                  .Encode();
+
+
+            //Create and save reset password token
+            Token token = new Token()
+            {
+                Type = TokenType.ForgotPassword,
+                UserId = user.Id,
+                Value = tokenValue,
+                Date = DateTime.Now
+            };
+
+            Token tokenResult = await _tokenRepository.CreateAsync(token);
+
+            if(tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            //Create email model
+            ResetPasswordEmailModel emailModel = new ResetPasswordEmailModel()
+            {
+
+            };
+
+            //Send reset password email
+            _emailSender.SendResetPasswordEmail(emailModel);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
         /// <summary>
@@ -293,6 +333,12 @@ namespace Messenger.Service.Implementation
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Reset the user password by using email token
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
         public Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
             throw new NotImplementedException();

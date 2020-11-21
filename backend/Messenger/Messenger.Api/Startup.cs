@@ -73,7 +73,7 @@ namespace Messenger.Api
                 options.SenderName = Configuration["EmailSending:SendGrid:SenderName"];
             });
 
-            services.AddTransient<IEmailSender, SendGridEmailSender>();
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
 
             //Add dependency injection for JWT Settings from appsettings
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
