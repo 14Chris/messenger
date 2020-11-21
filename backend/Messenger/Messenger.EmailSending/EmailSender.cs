@@ -1,15 +1,18 @@
-﻿using SendGrid;
+﻿using Messenger.Facade.Settings;
+using Microsoft.Extensions.Options;
+using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Messenger.EmailSending
 {
     public class SendGridEmailSender : IEmailSender
     {
-        private readonly SendGridEmailSenderOptions _emailSenderSettings { get; set; }
-        private readonly AppSettings _appSettings { get; set; }
+        private readonly EmailSenderSettings _emailSenderSettings;
+        private readonly AppSettings _appSettings;
 
-        public SendGridEmailSender(IOptions<SendGridEmailSenderOptions> emailSenderSettings, IOptions<AppSettings> appSettings)
+        public SendGridEmailSender(IOptions<EmailSenderSettings> emailSenderSettings, IOptions<AppSettings> appSettings)
         {
             this._emailSenderSettings = emailSenderSettings.Value;
             this._appSettings = appSettings.Value;
