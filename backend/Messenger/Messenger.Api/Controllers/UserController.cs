@@ -145,7 +145,7 @@ namespace Messenger.Api.Controllers
         }
 
         // POST: Reset password
-        [HttpPost("reset_password/{token}")]
+        [HttpPost("reset_password")]
         [AllowAnonymous]
         public async Task<ReturnApiObject> ResetPassword(ResetPasswordModel model)
         {
