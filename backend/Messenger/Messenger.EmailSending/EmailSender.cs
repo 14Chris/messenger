@@ -11,11 +11,13 @@ namespace Messenger.EmailSending
     {
         private readonly EmailSenderSettings _emailSenderSettings;
         private readonly AppSettings _appSettings;
+        private readonly EmailTemplatesSettings _emailTemplatesSettings;
 
-        public SendGridEmailSender(IOptions<EmailSenderSettings> emailSenderSettings, IOptions<AppSettings> appSettings)
+        public SendGridEmailSender(IOptions<EmailSenderSettings> emailSenderSettings, IOptions<AppSettings> appSettings, IOptions<EmailTemplatesSettings> emailTemplatesSettings)
         {
             this._emailSenderSettings = emailSenderSettings.Value;
             this._appSettings = appSettings.Value;
+            this._emailTemplatesSettings = emailTemplatesSettings.Value;
         }
 
         public async Task SendEmailAsync(

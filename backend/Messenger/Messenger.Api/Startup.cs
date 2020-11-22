@@ -5,7 +5,6 @@ using Messenger.Facade.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,14 +38,16 @@ namespace Messenger.Api
                 opt.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
             });
 
+            // Get connection string from config file
             string dbConnectString = Configuration.GetConnectionString("MessengerConnectionString");
 
+            // Configure database context
             services.AddDbContext<MessengerDbContext>(options =>
             {
                 options.UseMySql(dbConnectString, b => b.ServerVersion("8.0.20-mysql"));
             });
 
-            //Authentication with JWT
+            // Authentication with JWT
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -60,12 +61,13 @@ namespace Messenger.Api
                 };
             });
 
+            // Add app settings
             services.Configure<AppSettings>(options =>
             {
                 options.WebAppUrl = Configuration["AppSettings:WebAppUrl"];
-
             });
 
+            // Add email sender settings
             services.Configure<EmailSenderSettings>(options =>
             {
                 options.ApiKey = Configuration["EmailSending:SendGrid:ApiKey"];
@@ -73,14 +75,21 @@ namespace Messenger.Api
                 options.SenderName = Configuration["EmailSending:SendGrid:SenderName"];
             });
 
+            // Add email templates settings
+            services.Configure<EmailTemplatesSettings>(options =>
+            {
+                options.ActivateAccountId = Configuration["EmailSending:SendGridTemplates:ActivateAccountId"];
+                options.ResetPasswordId = Configuration["EmailSending:SendGridTemplates:ResetPasswordId"];
+            });
+
+            // Add dependency injection for Email sender service
             services.AddTransient<IEmailSenderService, EmailSenderService>();
 
-            //Add dependency injection for JWT Settings from appsettings
+            // Add dependency injection for JWT Settings from appsettings
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
-            //Messenger utility class for depedency injection
+            // Messenger utility class for depedency injection
             MessengerRegister.Configuration(services);
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

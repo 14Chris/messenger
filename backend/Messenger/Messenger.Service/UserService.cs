@@ -24,8 +24,11 @@ namespace Messenger.Service.Implementation
 {
     public class UserService : BaseService, IUserService
     {
-        public UserService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings) : base(serviceProvider, jwtSettings)
+        protected readonly AppSettings _appSettings;
+
+        public UserService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings, IOptions<AppSettings> appSettings) : base(serviceProvider, jwtSettings)
         {
+            this._appSettings = appSettings.Value;
         }
 
         /// <summary>
@@ -317,7 +320,9 @@ namespace Messenger.Service.Implementation
             //Create email model
             ResetPasswordEmailModel emailModel = new ResetPasswordEmailModel()
             {
-
+                link = _appSettings.WebAppUrl+"/reset_password/"+ tokenResult.Value,
+                userName = user.FirstName + " " + user.LastName,
+                userEmail = user.Email
             };
 
             //Send reset password email

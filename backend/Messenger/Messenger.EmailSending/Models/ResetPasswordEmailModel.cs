@@ -6,5 +6,8 @@ namespace Messenger.EmailSending.Models
 {
     public class ResetPasswordEmailModel
     {
+        public string userName { get; set; }
+        public string link { get; set; }
+        public string userEmail { get; set; }
     }
 }

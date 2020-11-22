@@ -12,11 +12,13 @@ namespace Messenger.Service.Implementation
     {
         private IServiceProvider _serviceProvider;
         protected readonly JwtSettings _jwtSettings;
+        
 
         public BaseService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings)
         {
             this._serviceProvider = serviceProvider;
             this._jwtSettings = jwtSettings.Value;
+           
         }
 
         protected IEmailSenderService _emailSender
