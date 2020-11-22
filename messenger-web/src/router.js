@@ -11,6 +11,8 @@ import FriendRequests from "@/components/Friends/FriendRequests";
 import FriendsList from "@/components/Friends/FriendsList";
 import Profile from "@/components/User/Profile"
 import EditProfile from "@/components/User/EditProfile"
+import ResetPassword from "@/components/User/ResetPassword"
+import ForgotPassword from "@/components/User/ForgotPassword"
 
 const routes = [
     {
@@ -82,6 +84,16 @@ const routes = [
         name: 'register',
         component: Register
     },
+    {
+        path: '/reset_password/:token',
+        name: 'resetPassword',
+        component: ResetPassword
+    },
+    {
+        path: '/forgot_password',
+        name: 'forgotPassword',
+        component: ForgotPassword
+    }
 ]
 
 const router = new VueRouter({
