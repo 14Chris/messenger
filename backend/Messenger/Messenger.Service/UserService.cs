@@ -391,45 +391,50 @@ namespace Messenger.Service.Implementation
 
                 var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
             }
+            // If token expired
             catch (TokenExpiredException)
             {
                 await _tokenRepository.DeleteAsync(tokenResult);
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
             }
+            // If token signature verification failed
             catch (SignatureVerificationException)
             {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
             }
 
-            await _tokenRepository.DeleteAsync(tokenResult);
-
-
-            User user = _userRepository.List().Where(x => x.Id == tokenResult.Id).SingleOrDefault();
+            // Get user from token
+            User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
 
             if(user == null)
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
 
             string newPasswordHash = SecurityHelper.HashPassword(newPassword);
 
-            if (user.Password.Equals(newPasswordHash))
-            {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
-            }
+            //if (user.Password.Equals(newPasswordHash))
+            //{
+            //    return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
+            //}
 
+            // If new password is too weak
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
             {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
             }
 
+            // Set user new password
             user.Password = newPasswordHash;
 
-
+            // Update user
             User userUpdated = await _userRepository.UpdateAsync(user);
 
             if (userUpdated == null)
             {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
             }
+
+            // Delete token
+            await _tokenRepository.DeleteAsync(tokenResult);
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
