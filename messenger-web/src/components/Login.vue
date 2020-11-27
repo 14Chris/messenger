@@ -11,6 +11,8 @@
       <b-button native-type="submit">Login</b-button>
      
     </form>
+     <router-link to="/forgot_password"><a>Forgot your password ?</a></router-link>
+    
     <p>No account ?  Create one :</p>
        <b-button tag="router-link"
                 to="/register"
@@ -18,7 +20,7 @@
                 Register
             </b-button>
   </div>
-</template>
+</template>a
 
 <script>
 import { required } from "vuelidate/lib/validators";

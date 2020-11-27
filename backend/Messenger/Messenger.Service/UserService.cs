@@ -1,4 +1,10 @@
-﻿using Messenger.Database;
+﻿using JWT;
+using JWT.Algorithms;
+using JWT.Builder;
+using JWT.Exceptions;
+using JWT.Serializers;
+using Messenger.Database;
+using Messenger.EmailSending.Models;
 using Messenger.Facade.Helpers;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
@@ -18,8 +24,11 @@ namespace Messenger.Service.Implementation
 {
     public class UserService : BaseService, IUserService
     {
-        public UserService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings) : base(serviceProvider, jwtSettings)
+        protected readonly AppSettings _appSettings;
+
+        public UserService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings, IOptions<AppSettings> appSettings) : base(serviceProvider, jwtSettings)
         {
+            this._appSettings = appSettings.Value;
         }
 
         /// <summary>
@@ -278,9 +287,48 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public Task<ReturnApiObject> ForgotPassword(string email)
+        public async Task<ReturnApiObject> ForgotPassword(string email)
         {
-            throw new NotImplementedException();
+            User user = _userRepository.List().Where(x => x.Email == email).SingleOrDefault();
+
+            if(user == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            // Generate JWT token to authenticate user reset password request
+            var tokenValue = new JwtBuilder()
+                  .WithAlgorithm(new HMACSHA256Algorithm())
+                  .WithSecret(_jwtSettings.Key)
+                  .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(24).ToUnixTimeSeconds())
+                  .AddClaim("claim2", "claim2-value")
+                  .Encode();
+
+
+            //Create and save reset password token
+            Token token = new Token()
+            {
+                Type = TokenType.ForgotPassword,
+                UserId = user.Id,
+                Value = tokenValue,
+                Date = DateTime.Now
+            };
+
+            Token tokenResult = await _tokenRepository.CreateAsync(token);
+
+            if(tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            //Create email model
+            ResetPasswordEmailModel emailModel = new ResetPasswordEmailModel()
+            {
+                link = _appSettings.WebAppUrl+"/reset_password/"+ tokenResult.Value,
+                userName = user.FirstName + " " + user.LastName,
+                userEmail = user.Email
+            };
+
+            //Send reset password email
+            _emailSender.SendResetPasswordEmail(emailModel);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
         /// <summary>
@@ -288,14 +336,107 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
+        public async Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
         {
-            throw new NotImplementedException();
+            Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token).SingleOrDefault();
+
+            if(tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+
+            //Token verification (expiration, key, ...)
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                IDateTimeProvider provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, new HMACSHA256Algorithm());
+
+                var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
+            }
+            catch (TokenExpiredException)
+            {
+                await _tokenRepository.DeleteAsync(tokenResult);
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+            catch (SignatureVerificationException)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
-        public Task<ReturnApiObject> ResetPassword(string token, string newPassword)
+        /// <summary>
+        /// Reset the user password by using email token
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
-            throw new NotImplementedException();
+            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token).SingleOrDefault();
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+
+            //Token verification (expiration, key, ...)
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                IDateTimeProvider provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, new HMACSHA256Algorithm());
+
+                var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
+            }
+            // If token expired
+            catch (TokenExpiredException)
+            {
+                await _tokenRepository.DeleteAsync(tokenResult);
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+            // If token signature verification failed
+            catch (SignatureVerificationException)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            // Get user from token
+            User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
+
+            if(user == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            string newPasswordHash = SecurityHelper.HashPassword(newPassword);
+
+            //if (user.Password.Equals(newPasswordHash))
+            //{
+            //    return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
+            //}
+
+            // If new password is too weak
+            if (!SecurityHelper.PasswordMatchRegex(newPassword))
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
+            }
+
+            // Set user new password
+            user.Password = newPasswordHash;
+
+            // Update user
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if (userUpdated == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            // Delete token
+            await _tokenRepository.DeleteAsync(tokenResult);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
         /// <summary>

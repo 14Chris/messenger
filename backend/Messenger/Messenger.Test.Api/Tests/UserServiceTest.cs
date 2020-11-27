@@ -8,7 +8,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Messenger.Test.Api.User
+namespace Messenger.Test.Api
 {
     [TestClass]
     public class UserServiceTest : BaseTest

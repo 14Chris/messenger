@@ -1,5 +1,6 @@
 ﻿using Messenger.Api.Controllers;
 using Messenger.Repository.Implementation;
+using Messenger.Repository.Interface;
 using Messenger.Service.Implementation;
 using Messenger.Service.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ namespace Messenger.Api
             services.AddTransient<IMessageRepository, MessageRepository>();
             services.AddTransient<IUserConversationRepository, UserConversationRepository>();
             services.AddTransient<IUserRelationRepository, UserRelationRepository>();
+            services.AddTransient<ITokenRepository, TokenRepository>();
         }
     }
 }

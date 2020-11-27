@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace Messenger.Test.Api.User
+namespace Messenger.Test.Api
 {
     [TestClass]
     public class FriendServiceTest : BaseTest

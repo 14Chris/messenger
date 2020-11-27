@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Messenger.Database
@@ -16,6 +17,10 @@ namespace Messenger.Database
         [Required]
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        [Required]
+        [JsonProperty("date")]
+        public DateTime Date { get; set; }
 
         [Required]
         [JsonProperty("user_id")]
