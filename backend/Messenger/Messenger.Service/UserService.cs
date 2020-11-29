@@ -50,10 +50,46 @@ namespace Messenger.Service.Implementation
             //Hash password to store in database
             string hashedPassword = SecurityHelper.HashPassword(user.Password);
             user.Password = hashedPassword;
+            user.State = UserState.WaitingActivation;
 
+            //Create user
             User result = await _userRepository.CreateAsync(user);
 
-            if(result == null){
+            // Generate JWT token to authenticate user account activation request
+            var tokenValue = new JwtBuilder()
+                  .WithAlgorithm(new HMACSHA256Algorithm())
+                  .WithSecret(_jwtSettings.Key)
+                  .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(72).ToUnixTimeSeconds())
+                  .AddClaim("claim2", "claim2-value")
+                  .Encode();
+
+
+            //Create and save account activation token
+            Token token = new Token()
+            {
+                Type = TokenType.AccountActivation,
+                UserId = user.Id,
+                Value = tokenValue,
+                Date = DateTime.Now
+            };
+
+            Token tokenResult = await _tokenRepository.CreateAsync(token);
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            //Create email model
+            ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel()
+            {
+                link = _appSettings.WebAppUrl + "/activate_account/" + tokenResult.Value,
+                userName = user.FirstName + " " + user.LastName,
+                userEmail = user.Email
+            };
+
+            //Send activate account email
+            _emailSender.SendActivateAccountEmail(emailModel);
+
+            if (result == null){
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
             }
 
@@ -116,10 +152,10 @@ namespace Messenger.Service.Implementation
             {
                 return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error, "BAD_CREDENTIALS", null);
             }
-            //else if (user.State == State.Unactive)
-            //{
-            //    return new ReturnApiObject(System.Net.HttpStatusCode.Unauthorized, ResponseType.Error, "NOT_ACTIVATED", null, null);
-            //}
+            else if (user.State == UserState.WaitingActivation)
+            {
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error, "NOT_ACTIVATED", null);
+            }
             else
             {
                 //Generate a token to authenticate the user in the system

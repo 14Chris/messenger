@@ -29,6 +29,9 @@ namespace Messenger.Database
         [JsonProperty("profile_picture")]
         public byte[] ProfilePicture { get; set; }
 
+        [JsonProperty("state")]
+        public UserState State { get; set; }
+
         public List<Message> MessagesSended { get; set; }
 
         public List<UserConversation> Conversations { get; set; }
