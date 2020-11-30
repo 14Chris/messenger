@@ -374,7 +374,7 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public async Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
         {
-            Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token).SingleOrDefault();
+            Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if(tokenResult == null)
                 return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
@@ -411,7 +411,7 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public async Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
-            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token).SingleOrDefault();
+            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if (tokenResult == null)
                 return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
@@ -446,11 +446,6 @@ namespace Messenger.Service.Implementation
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
 
             string newPasswordHash = SecurityHelper.HashPassword(newPassword);
-
-            //if (user.Password.Equals(newPasswordHash))
-            //{
-            //    return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
-            //}
 
             // If new password is too weak
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
@@ -545,6 +540,53 @@ namespace Messenger.Service.Implementation
 
             if(userUpdated == null)
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        public async Task<ReturnApiObject> ActivateAccount(string token)
+        {
+            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.AccountActivation).SingleOrDefault();
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+
+            //Token verification (expiration, key, ...)
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                IDateTimeProvider provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, new HMACSHA256Algorithm());
+
+                var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
+            }
+            // If token expired
+            catch (TokenExpiredException)
+            {
+                await _tokenRepository.DeleteAsync(tokenResult);
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+            // If token signature verification failed
+            catch (SignatureVerificationException)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            // Get user from token
+            User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
+
+            if(user == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            // Change user state to activate account
+            user.State = UserState.Activated;
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if (userUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }

@@ -102,15 +102,20 @@ namespace Messenger.Api.Controllers
 
         }
 
-        //// GET to activate account
-        //[HttpGet("account_activation/{token}")]
-        //[AllowAnonymous]
-        //public ActionResult ActivateAccount(string token)
-        //{
-        //    bool b = _userService.ActivateAccount(token);
-
-        //    return Ok();
-        //}
+        // GET: activate user account
+        [HttpGet("account_activation/{token}")]
+        [AllowAnonymous]
+        public async Task<ReturnApiObject> ActivateAccount(string token)
+        {
+            try
+            {
+                return await _userService.ActivateAccount(token);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
 
         // POST: to register token for forgot password
         [HttpPost("forgot_password")]

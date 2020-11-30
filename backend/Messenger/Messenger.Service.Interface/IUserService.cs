@@ -32,5 +32,6 @@ namespace Messenger.Service.Interface
         public Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64);
 
         public Task<ReturnApiObject> DeleteUserProfilePicture(int id);
+        public Task<ReturnApiObject> ActivateAccount(string token);
     }
 }
