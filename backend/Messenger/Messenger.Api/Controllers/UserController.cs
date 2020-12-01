@@ -1,5 +1,6 @@
 ﻿using Messenger.Api.ApiModels;
 using Messenger.Database;
+using Messenger.EmailSending.Models;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -100,6 +101,21 @@ namespace Messenger.Api.Controllers
                 return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
             }
 
+        }
+
+        // GET: send account activation email
+        [HttpGet("account_activation/send/{email}")]
+        [AllowAnonymous]
+        public async Task<ReturnApiObject> SendAccountActivationEmail(string email)
+        {
+            try
+            {
+                return await _userService.ResendAccountActivationEmail(email);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
         }
 
         // GET: activate user account

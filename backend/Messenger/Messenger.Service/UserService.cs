@@ -55,6 +55,11 @@ namespace Messenger.Service.Implementation
             //Create user
             User result = await _userRepository.CreateAsync(user);
 
+            if (result == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
+            }
+
             // Generate JWT token to authenticate user account activation request
             var tokenValue = new JwtBuilder()
                   .WithAlgorithm(new HMACSHA256Algorithm())
@@ -86,12 +91,7 @@ namespace Messenger.Service.Implementation
                 userEmail = user.Email
             };
 
-            //Send activate account email
             _emailSender.SendActivateAccountEmail(emailModel);
-
-            if (result == null){
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
-            }
 
             return new ReturnApiObject(HttpStatusCode.Created, ResponseType.Success, "", result);
         }
@@ -544,6 +544,11 @@ namespace Messenger.Service.Implementation
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
+        /// <summary>
+        /// Check the token validity and activate the user account
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<ReturnApiObject> ActivateAccount(string token)
         {
             Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.AccountActivation).SingleOrDefault();
@@ -589,6 +594,53 @@ namespace Messenger.Service.Implementation
                 return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        public async Task<ReturnApiObject> ResendAccountActivationEmail(string email)
+        {
+            //Get user
+            User user = _userRepository.List().Where(x=>x.Email == email).SingleOrDefault();
+
+            if (user == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
+            }
+
+            // Generate JWT token to authenticate user account activation request
+            var tokenValue = new JwtBuilder()
+                  .WithAlgorithm(new HMACSHA256Algorithm())
+                  .WithSecret(_jwtSettings.Key)
+                  .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(72).ToUnixTimeSeconds())
+                  .AddClaim("claim2", "claim2-value")
+                  .Encode();
+
+
+            //Create and save account activation token
+            Token token = new Token()
+            {
+                Type = TokenType.AccountActivation,
+                UserId = user.Id,
+                Value = tokenValue,
+                Date = DateTime.Now
+            };
+
+            Token tokenResult = await _tokenRepository.CreateAsync(token);
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            //Create email model
+            ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel()
+            {
+                link = _appSettings.WebAppUrl + "/activate_account/" + tokenResult.Value,
+                userName = user.FirstName + " " + user.LastName,
+                userEmail = user.Email
+            };
+
+
+            bool result =  await _emailSender.SendActivateAccountEmail(emailModel);
+
+            return (result ? new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success) : new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error));
         }
     }
 
