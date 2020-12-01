@@ -1,15 +1,15 @@
 <template>
   <div>
       <div v-if="isActivate == null">
-                <div class="loader-wrapper">
-            <div class="loader is-loading"></div>
-        </div>
+            <div class="loader-wrapper">
+                <div class="loader is-loading"></div>
+            </div>
       </div>
       <div v-else-if="isActivate == false">
           An error occured while activating your account. Retry again.
       </div>
       <div v-else>
-          Contrgatulations, your account havs been activated !
+          Congratulations, your account has been activated !
       </div>
   </div>
 </template>
@@ -21,8 +21,8 @@ var api = new ApiService();
 export default {
     data(){
         return {
-            isActivate:null,
-            token:""
+            isActivate: null,
+            token: ""
         }
     },
     mounted(){
