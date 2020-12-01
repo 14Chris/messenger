@@ -23,7 +23,7 @@
         <Search></Search>
       </div>
       <div class="navbar-item">
-        <router-link id="new-conversation-button" to="/friends">
+        <router-link id="new-conversation-button" :to="{ name: 'friends'}">
           <button class="button navbar-icon">
             <span class="icon">
               <i class="fas fa-users"></i>
@@ -32,11 +32,13 @@
         </router-link>
       </div>
       <div class="navbar-item">
+        <router-link :to="{ name: 'settings'}">
         <button class="button navbar-icon">
           <span class="icon">
             <i class="fas fa-cog"></i>
           </span>
         </button>
+        </router-link>
       </div>
 
       <div class="navbar-item">
