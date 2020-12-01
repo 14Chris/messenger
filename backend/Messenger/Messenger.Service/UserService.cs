@@ -596,6 +596,11 @@ namespace Messenger.Service.Implementation
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
         }
 
+        /// <summary>
+        /// Send another email to activate an user account linked to the email address
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public async Task<ReturnApiObject> ResendAccountActivationEmail(string email)
         {
             //Get user
