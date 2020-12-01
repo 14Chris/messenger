@@ -97,7 +97,7 @@ export default {
                 duration: 5000,
                 closable: true,
               });
-              this.$router.push("/");
+              this.$router.push("/login");
             } else {
               this.$buefy.notification.open({
                 message: "An error happened while creating your account",

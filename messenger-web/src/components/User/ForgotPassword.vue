@@ -8,8 +8,8 @@
         <div class="control">
           <input
             class="input"
-            type="password"
-            placeholder="New password"
+            type="text"
+            placeholder="Email"
             v-model="email"
           />
         </div>
@@ -20,8 +20,8 @@
         <div class="control">
           <input
             class="input is-danger"
-            type="password"
-            placeholder="New password"
+            type="text"
+            placeholder="Email"
             v-model="email"
           />
         </div>

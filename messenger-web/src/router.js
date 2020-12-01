@@ -13,6 +13,7 @@ import Profile from "@/components/User/Profile"
 import EditProfile from "@/components/User/EditProfile"
 import ResetPassword from "@/components/User/ResetPassword"
 import ForgotPassword from "@/components/User/ForgotPassword"
+import ActivateAccount from "@/components/User/ActivateAccount"
 
 const routes = [
     {
@@ -93,6 +94,11 @@ const routes = [
         path: '/forgot_password',
         name: 'forgotPassword',
         component: ForgotPassword
+    },
+    {
+        path: '/activate_account/:token',
+        name: 'activateAccount',
+        component: ActivateAccount
     }
 ]
 

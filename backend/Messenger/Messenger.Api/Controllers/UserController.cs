@@ -1,5 +1,6 @@
 ﻿using Messenger.Api.ApiModels;
 using Messenger.Database;
+using Messenger.EmailSending.Models;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -102,15 +103,35 @@ namespace Messenger.Api.Controllers
 
         }
 
-        //// GET to activate account
-        //[HttpGet("account_activation/{token}")]
-        //[AllowAnonymous]
-        //public ActionResult ActivateAccount(string token)
-        //{
-        //    bool b = _userService.ActivateAccount(token);
+        // GET: send account activation email
+        [HttpGet("account_activation/send/{email}")]
+        [AllowAnonymous]
+        public async Task<ReturnApiObject> SendAccountActivationEmail(string email)
+        {
+            try
+            {
+                return await _userService.ResendAccountActivationEmail(email);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
 
-        //    return Ok();
-        //}
+        // GET: activate user account
+        [HttpGet("account_activation/{token}")]
+        [AllowAnonymous]
+        public async Task<ReturnApiObject> ActivateAccount(string token)
+        {
+            try
+            {
+                return await _userService.ActivateAccount(token);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
 
         // POST: to register token for forgot password
         [HttpPost("forgot_password")]

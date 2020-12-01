@@ -50,12 +50,48 @@ namespace Messenger.Service.Implementation
             //Hash password to store in database
             string hashedPassword = SecurityHelper.HashPassword(user.Password);
             user.Password = hashedPassword;
+            user.State = UserState.WaitingActivation;
 
+            //Create user
             User result = await _userRepository.CreateAsync(user);
 
-            if(result == null){
+            if (result == null)
+            {
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
             }
+
+            // Generate JWT token to authenticate user account activation request
+            var tokenValue = new JwtBuilder()
+                  .WithAlgorithm(new HMACSHA256Algorithm())
+                  .WithSecret(_jwtSettings.Key)
+                  .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(72).ToUnixTimeSeconds())
+                  .AddClaim("claim2", "claim2-value")
+                  .Encode();
+
+
+            //Create and save account activation token
+            Token token = new Token()
+            {
+                Type = TokenType.AccountActivation,
+                UserId = user.Id,
+                Value = tokenValue,
+                Date = DateTime.Now
+            };
+
+            Token tokenResult = await _tokenRepository.CreateAsync(token);
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            //Create email model
+            ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel()
+            {
+                link = _appSettings.WebAppUrl + "/activate_account/" + tokenResult.Value,
+                userName = user.FirstName + " " + user.LastName,
+                userEmail = user.Email
+            };
+
+            _emailSender.SendActivateAccountEmail(emailModel);
 
             return new ReturnApiObject(HttpStatusCode.Created, ResponseType.Success, "", result);
         }
@@ -116,10 +152,10 @@ namespace Messenger.Service.Implementation
             {
                 return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error, "BAD_CREDENTIALS", null);
             }
-            //else if (user.State == State.Unactive)
-            //{
-            //    return new ReturnApiObject(System.Net.HttpStatusCode.Unauthorized, ResponseType.Error, "NOT_ACTIVATED", null, null);
-            //}
+            else if (user.State == UserState.WaitingActivation)
+            {
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error, "NOT_ACTIVATED", null);
+            }
             else
             {
                 //Generate a token to authenticate the user in the system
@@ -338,7 +374,7 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public async Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
         {
-            Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token).SingleOrDefault();
+            Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if(tokenResult == null)
                 return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
@@ -375,7 +411,7 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public async Task<ReturnApiObject> ResetPassword(string token, string newPassword)
         {
-            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token).SingleOrDefault();
+            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if (tokenResult == null)
                 return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
@@ -410,11 +446,6 @@ namespace Messenger.Service.Implementation
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
 
             string newPasswordHash = SecurityHelper.HashPassword(newPassword);
-
-            //if (user.Password.Equals(newPasswordHash))
-            //{
-            //    return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
-            //}
 
             // If new password is too weak
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
@@ -511,6 +542,110 @@ namespace Messenger.Service.Implementation
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        /// <summary>
+        /// Check the token validity and activate the user account
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> ActivateAccount(string token)
+        {
+            Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.AccountActivation).SingleOrDefault();
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+
+            //Token verification (expiration, key, ...)
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                IDateTimeProvider provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, new HMACSHA256Algorithm());
+
+                var json = decoder.Decode(token, _jwtSettings.Key, verify: true);
+            }
+            // If token expired
+            catch (TokenExpiredException)
+            {
+                await _tokenRepository.DeleteAsync(tokenResult);
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+            // If token signature verification failed
+            catch (SignatureVerificationException)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+            }
+
+            // Get user from token
+            User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
+
+            if(user == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            // Change user state to activate account
+            user.State = UserState.Activated;
+
+            User userUpdated = await _userRepository.UpdateAsync(user);
+
+            if (userUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        /// <summary>
+        /// Send another email to activate an user account linked to the email address
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> ResendAccountActivationEmail(string email)
+        {
+            //Get user
+            User user = _userRepository.List().Where(x=>x.Email == email).SingleOrDefault();
+
+            if (user == null)
+            {
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
+            }
+
+            // Generate JWT token to authenticate user account activation request
+            var tokenValue = new JwtBuilder()
+                  .WithAlgorithm(new HMACSHA256Algorithm())
+                  .WithSecret(_jwtSettings.Key)
+                  .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(72).ToUnixTimeSeconds())
+                  .AddClaim("claim2", "claim2-value")
+                  .Encode();
+
+
+            //Create and save account activation token
+            Token token = new Token()
+            {
+                Type = TokenType.AccountActivation,
+                UserId = user.Id,
+                Value = tokenValue,
+                Date = DateTime.Now
+            };
+
+            Token tokenResult = await _tokenRepository.CreateAsync(token);
+
+            if (tokenResult == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            //Create email model
+            ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel()
+            {
+                link = _appSettings.WebAppUrl + "/activate_account/" + tokenResult.Value,
+                userName = user.FirstName + " " + user.LastName,
+                userEmail = user.Email
+            };
+
+
+            bool result =  await _emailSender.SendActivateAccountEmail(emailModel);
+
+            return (result ? new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success) : new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error));
         }
     }
 

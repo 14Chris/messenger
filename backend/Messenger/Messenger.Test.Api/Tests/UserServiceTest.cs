@@ -159,7 +159,6 @@ namespace Messenger.Test.Api
 
         }
 
-
         [TestMethod]
         public async Task TestAddUserProfilePicture()
         {
@@ -279,6 +278,7 @@ namespace Messenger.Test.Api
             Assert.IsTrue(resultPasswordChange.Message == "NEW_PASSWORD_TOO_WEAK");
 
         }
+
     }
 }
 

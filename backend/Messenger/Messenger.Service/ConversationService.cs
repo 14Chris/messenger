@@ -174,7 +174,7 @@ namespace Messenger.Service.Implementation
                 .ToList();
 
             ConversationModel conversation = conversations
-                .Where(x => x.Conversations.Select(a => a.UserId).SequenceEqual(users))
+                .Where(x => x.Conversations.Select(a => a.UserId).OrderBy(x => x).SequenceEqual(users.OrderBy(x=>x)))
                 .Select(x=>new ConversationModel()
                 {
                     Id = x.Id,

@@ -2,6 +2,7 @@
 using Messenger.Database;
 using System.Threading.Tasks;
 using Messenger.Facade.Models;
+using Messenger.EmailSending.Models;
 
 namespace Messenger.Service.Interface
 {
@@ -32,5 +33,7 @@ namespace Messenger.Service.Interface
         public Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64);
 
         public Task<ReturnApiObject> DeleteUserProfilePicture(int id);
+        public Task<ReturnApiObject> ActivateAccount(string token);
+        public Task<ReturnApiObject> ResendAccountActivationEmail(string email);
     }
 }
