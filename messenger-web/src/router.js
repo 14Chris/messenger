@@ -14,6 +14,7 @@ import EditProfile from "@/components/User/EditProfile"
 import ResetPassword from "@/components/User/ResetPassword"
 import ForgotPassword from "@/components/User/ForgotPassword"
 import ActivateAccount from "@/components/User/ActivateAccount"
+import Settings from "@/components/Settings/Settings"
 
 const routes = [
     {
@@ -62,13 +63,18 @@ const routes = [
                 ]
             },
             {
+                path: 'settings',
+                name: 'settings',
+                component: Settings,
+            },
+            {
                 path: 'profile/edit',
                 name: 'EditProfile',
                 component: EditProfile,
             },
             {
                 path: 'profile/:id',
-                name: 'ProfilePage',
+                name: 'profilePage',
                 component: Profile,
             },
             
