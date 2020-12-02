@@ -1,31 +1,38 @@
 <template>
   <div v-if="isLoading" class="full-page">
-    {{ $route.params.id }}
+    Loading...
   </div>
   <div v-else class="full-page">
-    <div v-if="conversation" class="conversation">
-      <div class="conv-header">
-      <h4 class="title is-4 conversation-name">{{conversation.name}}</h4>
-      </div>
-      <div class="conv-messages">
-        <MessageList :messages="conversation.messages"></MessageList>
-      </div>
-      <div class="conv-send-message">
-        <div class="field is-horizontal">
-          <div class="field-label is-normal">
-            <label></label>
-          </div>
-          <div class="field-body">
-            <input class="input" v-model="message" type="text" placeholder="Enter your message">
-            <button id="send-message-button" class="button navbar-icon" @click="SendNewMessage">
-              <span class="icon">
-                <i class="fas fa-reply"></i>
-              </span>
-            </button>
+    <div v-if="conversation" class="columns conv-columns">
+      <div class="conversation column is-two-thirds">
+        <div class="conv-header">
+        <h4 class="title is-4 conversation-name">{{conversation.name}}</h4>
+        </div>
+        <div class="conv-messages">
+          <MessageList :messages="conversation.messages"></MessageList>
+        </div>
+        <div class="conv-send-message">
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label></label>
+            </div>
+            <div class="field-body">
+              <input class="input" v-model="message" type="text" placeholder="Enter your message">
+              <button id="send-message-button" class="button navbar-icon" @click="SendNewMessage">
+                <span class="icon">
+                  <i class="fas fa-reply"></i>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
-        </div>
-
+      </div>
+      <div class="column is-narrow column-no-top-marging">
+        <hr class="conv-part-separator">
+      </div>
+      <div class="column">
+        <ConversationDetail></ConversationDetail>
+      </div>
     </div>
     <div v-else>
       <p>A problem occured when retrieving conversation</p>
@@ -36,13 +43,14 @@
 <script>
 import ApiService from "@/service/api";
 import MessageList from "@/components/Messages/MessageList";
+import ConversationDetail from "@/components/Conversation/ConversationDetail"
 
 import eventBus from "../../eventBus.js";
 
 const api = new ApiService();
 export default {
   name: "Conversation",
-  components: {MessageList},
+  components: {MessageList, ConversationDetail},
   data() {
     return {
       conversation: null,
@@ -109,7 +117,7 @@ export default {
 <style>
 .conversation{
   height:100%;
-  display:flex;
+  display:flex !important;
   flex-direction: column;
 }
 
@@ -119,7 +127,7 @@ export default {
 
 .conv-messages{
   flex:1;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .conv-send-message{
@@ -129,5 +137,17 @@ export default {
 
 #send-message-button{
   margin-left: 10px;
+}
+
+.conv-columns{
+  height:100% !important;
+  margin: 0 !important; 
+}
+
+.conv-part-separator{
+  margin: 0 0.5em;
+  background-color: #f2f2f2;
+  width: 2px;
+  height: 100%;
 }
 </style>
