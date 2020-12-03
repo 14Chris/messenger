@@ -1,20 +1,31 @@
 <template>
 <div class="message-item">
   <div class="message-container" v-bind:class="[$store.state.user.id != message.sender_id ? 'position-left' : 'position-right']">
+    <div class="message-box">
     <div class="message-text" v-bind:class="[$store.state.user.id != message.sender_id ? 'other' : 'sender']">
-      {{message.text}}
+          {{message.text}}
+        </div>
+        <div class="message-date">
+            {{message.date}}
+        </div>
     </div>
-    <div class="message-date">
-        {{message.date}}
-    </div>
+    <template v-if="lastUserMessage">
+    <Avatar class="message-avatar" :userId="message.sender_id"></Avatar>
+  </template>
+    
   </div>
+  
   </div>
 </template>
 
 <script>
+import Avatar from "@/components/User/Avatar/Avatar"
 export default {
   name: "MessageItem",
-  props:["message"]
+  props:["message", "lastUserMessage"],
+  components:{
+    Avatar
+  }
 }
 </script>
 
@@ -28,6 +39,8 @@ export default {
   .message-container{
     width: fit-content;
     max-width: 80%;
+    display: flex;
+    flex-direction: row;
   }
 
   .message-text{
@@ -41,10 +54,12 @@ export default {
   
   .position-left{
     float: left;
+    margin-left:50px;
   }
 
   .position-right{
     float: right;
+    margin-right:50px;
   }
 
   .other{
@@ -62,6 +77,11 @@ export default {
     font-size: 10px;
     color:lightgrey;
     width: fit-content;
+    float: right;
+  }
+
+  .message-avatar{
+    height: 50px;
     float: right;
   }
 

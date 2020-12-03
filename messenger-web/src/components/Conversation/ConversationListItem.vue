@@ -1,5 +1,6 @@
 <template>
   <div class="box conv-list-item" @click="OpenConversation">
+    <!-- <Avatar :userId="conversationItem"></Avatar> -->
     <h1>{{ conversationItem.name }}</h1>
     <div>
       {{ conversationItem.last_message }}
@@ -9,6 +10,7 @@
 </template>
 
 <script>
+// import Avatar from "@/components/User/Avatar/Avatar"
 export default {
   name: "FriendListItem",
   props: ["conversationItem"],

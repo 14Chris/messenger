@@ -37,8 +37,8 @@ export default {
 <style scoped>
 .avatar {
   vertical-align: middle;
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
 }
 
