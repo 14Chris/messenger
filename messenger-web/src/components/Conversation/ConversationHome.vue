@@ -3,7 +3,7 @@
     <div class="column column-home is-one-fifth">
       <ConversationsList></ConversationsList>
     </div>
-    <div class="column column-home container column-no-top-marging">
+    <div class="column column-home column-no-top-marging">
       <router-view></router-view>
     </div>
   </div>

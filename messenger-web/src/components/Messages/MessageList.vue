@@ -34,6 +34,7 @@ export default {
   #messages-list{
     display: flex;
     flex-direction: column;
-    /*overflow-y: hidden;*/
+
   }
+  
 </style>

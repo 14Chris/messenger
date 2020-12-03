@@ -24,5 +24,6 @@ export default {
 .conv-list-item {
   margin-bottom: 10px;
   cursor: pointer;
+  overflow-y: hidden;
 }
 </style>

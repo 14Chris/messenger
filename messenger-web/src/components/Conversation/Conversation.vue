@@ -17,6 +17,7 @@
               <label></label>
             </div>
             <div class="field-body">
+              <!-- <textarea class="textarea has-fixed-size" placeholder="Fixed size textarea"></textarea> -->
               <input class="input" v-model="message" type="text" placeholder="Enter your message">
               <button id="send-message-button" class="button navbar-icon" @click="SendNewMessage">
                 <span class="icon">
@@ -96,11 +97,11 @@ export default {
         type:"send_message",
         data: {
           conversation_id: this.conversation.id,
-
           text: this.message
         }
       }
       this.$store.state.chatWebsocket.send(JSON.stringify(model))
+      this.message = ""
     },
     MessageReceived(data){
       var object = JSON.parse(data)
