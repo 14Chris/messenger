@@ -52,7 +52,7 @@ export default {
 <style scoped>
   #messages-list{
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
   
 </style>
