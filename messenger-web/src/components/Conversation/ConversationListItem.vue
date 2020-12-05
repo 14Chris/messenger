@@ -1,6 +1,6 @@
 <template>
   <div class="conv-list-item" @click="OpenConversation">
-    <div class="current-conv-indicator"></div>
+    <div v-if="convId == conversationItem.id" class="current-conv-indicator"></div>
     <div class="conv-data">
       <Avatar class="conv-avatar" userId="1"></Avatar>
       <div>
@@ -21,6 +21,19 @@ export default {
   components: {
     Avatar,
   },
+  data(){
+    return {
+      convId: -1
+    }
+  },
+  mounted(){
+    this.UpdateConvId()
+  },
+  watch: {
+    $route() {
+        this.UpdateConvId()
+    }
+  },
   computed: {
     MessageDate() {
       var date = this.conversationItem.last_message_date;
@@ -31,6 +44,11 @@ export default {
     OpenConversation() {
       this.$router.push("/conv/" + this.conversationItem.id);
     },
+    UpdateConvId(){
+      if(this.$route.name=="conversation"){
+        this.convId = this.$route.params.id
+      } 
+    }
   },
 };
 </script>

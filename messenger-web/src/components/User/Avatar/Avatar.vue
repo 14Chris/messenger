@@ -26,7 +26,6 @@ export default {
   methods: {
     CheckUrlValidity() {
       api.headData("users/" + this.userId + "/picture").then((response) => {
-        console.log(response);
         this.imageExists = response.ok;
       });
     },
