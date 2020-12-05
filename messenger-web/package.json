@@ -12,6 +12,7 @@
     "babel-loader": "^7.1.5",
     "buefy": "^0.9.3",
     "core-js": "^3.6.5",
+    "moment": "^2.29.1",
     "vue": "^2.6.11",
     "vue-router": "^3.4.3",
     "vuelidate": "^0.7.5",

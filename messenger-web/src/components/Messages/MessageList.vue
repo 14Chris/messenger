@@ -38,9 +38,6 @@ export default {
       return new Date(dateA.date) - new Date(dateB.date);
     },
      LastUserMessage(messageSenderId, index){
-      console.log(messageSenderId)
-      console.log(index)
-
       if(index == this.SortedMessagesByDate.length - 1){
         return true
       }
