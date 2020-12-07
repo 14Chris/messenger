@@ -9,60 +9,60 @@
         <div class="conv-messages">
           <MessageList :messages="conversation.messages"></MessageList>
         </div>
+        <hr class="part-separator"/>
+
         <div class="conv-send-message">
           <div class="field is-horizontal">
             <div class="field-body">
+
               <!-- Plus button -->
-              <button class="button">
+              <button class="send-message-action">
                 <span class="icon">
-                  <i class="fas fa-plus-circle"></i>
+                  <img src="@/assets/icons/plus-grey.svg" />
                 </span>
               </button>
 
               <!-- GIF button -->
-              <button class="button">
+              <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/GIF-file-icon.png" />
+                  <img src="@/assets/icons/gif-file-grey.svg" />
                 </span>
               </button>
 
               <!-- Sticker button -->
-              <button class="button">
+              <button class="send-message-action">
                 <span class="icon">
-                  <i class="far fa-sticky-note"></i>
+                  <img src="@/assets/icons/sticky-note-grey.svg" />
                 </span>
               </button>
 
               <!-- File button -->
-              <button class="button">
+              <button class="send-message-action">
                 <span class="icon">
-                  <i class="fas fa-paperclip"></i>
+                  <img src="@/assets/icons/paperclip-grey.svg" />
                 </span>
               </button>
 
               <!-- Text input -->
               <input
-                class="input"
+                class="send-message-input"
                 v-model="message"
                 type="text"
                 placeholder="Enter your message"
+                v-on:keyup.enter="SendNewMessage"
               />
 
               <!-- Smiley button -->
-              <button class="button">
+              <button class="send-message-action">
                 <span class="icon">
-                  <i class="fas fa-smile"></i>
+                  <img src="@/assets/icons/smile-grey.svg" />
                 </span>
               </button>
 
-              <!-- Send button -->
-              <button
-                id="send-message-button"
-                class="button navbar-icon"
-                @click="SendNewMessage"
-              >
+               <!-- Thumbs up button -->
+              <button class="send-message-action">
                 <span class="icon">
-                  <i class="fas fa-reply"></i>
+                  <img src="@/assets/icons/thumbs-up-grey.svg" />
                 </span>
               </button>
             </div>
@@ -134,15 +134,17 @@ export default {
         });
     },
     SendNewMessage() {
-      var model = {
-        type: "send_message",
-        data: {
-          conversation_id: this.conversation.id,
-          text: this.message,
-        },
-      };
-      this.$store.state.chatWebsocket.send(JSON.stringify(model));
-      this.message = "";
+      if (this.message.length > 0) {
+        var model = {
+          type: "send_message",
+          data: {
+            conversation_id: this.conversation.id,
+            text: this.message,
+          },
+        };
+        this.$store.state.chatWebsocket.send(JSON.stringify(model));
+        this.message = "";
+      }
     },
     MessageReceived(data) {
       var object = JSON.parse(data);
@@ -192,4 +194,34 @@ export default {
   width: 2px;
   height: 100%;
 }
+
+.send-message-action {
+  margin-right: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.send-message-input {
+  margin-right: 20px;
+  flex:1;
+  border-radius: 7px;
+  background-color: #f2f2f2 ;
+  border: 0;
+  height: 40px;
+  text-indent:15px;
+}
+
+
+.send-message-input:focus{
+  outline:none;
+}
+
+
+/* ::placeholder {
+  color:grey;
+  padding-left: 15px;
+} */
+
 </style>

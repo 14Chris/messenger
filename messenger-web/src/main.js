@@ -7,6 +7,8 @@ import Vuelidate from 'vuelidate'
 import Buefy from 'buefy'
 // import 'buefy/dist/buefy.css'
 
+
+
 Vue.config.productionTip = false
 
 import Axios from 'axios'
@@ -22,7 +24,6 @@ Vue.use(VueRouter)
 
 //Ui library
 Vue.use(Buefy)
-
 
 
 new Vue({
