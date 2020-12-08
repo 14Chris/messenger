@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoading" class="full-page">Loading...</div>
+  <div v-if="loading" class="full-page">Loading...</div>
   <div v-else class="full-page">
     <div v-if="conversation" class="columns conv-columns">
       <div class="conversation column is-two-thirds">
@@ -71,7 +71,7 @@
         <hr class="conv-part-separator"/>
       </div>
       <div class="column">
-        <ConversationDetail></ConversationDetail>
+        <ConversationDetail :conversationId="conversation.id"></ConversationDetail>
       </div>
     </div>
     <div v-else>
@@ -94,7 +94,7 @@ export default {
   data() {
     return {
       conversation: null,
-      isLoading: false,
+      loading: false,
       message: "",
     };
   },
@@ -108,7 +108,7 @@ export default {
   },
   methods: {
     GetConversationById(id) {
-      this.isLoading = true;
+      this.loading = true;
       api
           .getData("conversation/" + id)
           .then((response) => {
@@ -118,7 +118,7 @@ export default {
                   this.conversation = data.Result;
                   this.$nextTick(function () {
                     //Scroll list of message to the latest (bottom)
-                    var divMessages =  this.$refs.convMessagesList
+                    var divMessages = this.$refs.convMessagesList
                     divMessages.scrollTop = divMessages.scrollHeight - divMessages.clientHeight
                   })
                 } else {
@@ -131,12 +131,7 @@ export default {
             console.log(err);
           })
           .finally(() => {
-            this.isLoading = false;
-            // var element = document.getElementById("conv-messages-list");
-            // console.log("scroll div messages",element)
-            // element.scrollTop = element.scrollHeight
-
-
+            this.loading = false;
           });
     },
     SendNewMessage() {

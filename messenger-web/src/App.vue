@@ -58,4 +58,9 @@ button:focus {
   outline: none;
 }
 
+.icon{
+  height: 20px;
+  width: 20px;
+}
+
 </style>
