@@ -1,5 +1,5 @@
 <template>
-  <div class="columns conv-home">
+  <div class="columns conv-home is-mobile">
     <div class="column column-home is-one-fifth">
       <ConversationsList></ConversationsList>
     </div>

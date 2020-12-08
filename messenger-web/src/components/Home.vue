@@ -36,8 +36,7 @@ export default {
 }
 
 .part-separator{
-  margin: 0.5em 0 0 0;
-
+  margin: 0;
   background-color: #f2f2f2;
 }
 

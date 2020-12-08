@@ -10,7 +10,6 @@
           <MessageList :messages="conversation.messages"></MessageList>
         </div>
         <hr class="part-separator"/>
-
         <div class="conv-send-message">
           <div class="field is-horizontal">
             <div class="field-body">
@@ -18,51 +17,51 @@
               <!-- Plus button -->
               <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/icons/plus-grey.svg" />
+                  <img src="@/assets/icons/plus-grey.svg"/>
                 </span>
               </button>
 
               <!-- GIF button -->
               <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/icons/gif-file-grey.svg" />
+                  <img src="@/assets/icons/gif-file-grey.svg"/>
                 </span>
               </button>
 
               <!-- Sticker button -->
               <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/icons/sticky-note-grey.svg" />
+                  <img src="@/assets/icons/sticky-note-grey.svg"/>
                 </span>
               </button>
 
               <!-- File button -->
               <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/icons/paperclip-grey.svg" />
+                  <img src="@/assets/icons/paperclip-grey.svg"/>
                 </span>
               </button>
 
               <!-- Text input -->
               <input
-                class="send-message-input"
-                v-model="message"
-                type="text"
-                placeholder="Enter your message"
-                v-on:keyup.enter="SendNewMessage"
+                  class="send-message-input"
+                  v-model="message"
+                  type="text"
+                  placeholder="Enter your message"
+                  v-on:keyup.enter="SendNewMessage"
               />
 
               <!-- Smiley button -->
               <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/icons/smile-grey.svg" />
+                  <img src="@/assets/icons/smile-grey.svg"/>
                 </span>
               </button>
 
-               <!-- Thumbs up button -->
+              <!-- Thumbs up button -->
               <button class="send-message-action">
                 <span class="icon">
-                  <img src="@/assets/icons/thumbs-up-grey.svg" />
+                  <img src="@/assets/icons/thumbs-up-grey.svg"/>
                 </span>
               </button>
             </div>
@@ -70,7 +69,7 @@
         </div>
       </div>
       <div class="column is-narrow column-no-top-marging">
-        <hr class="conv-part-separator" />
+        <hr class="conv-part-separator"/>
       </div>
       <div class="column">
         <ConversationDetail></ConversationDetail>
@@ -92,7 +91,7 @@ import eventBus from "../../eventBus.js";
 const api = new ApiService();
 export default {
   name: "Conversation",
-  components: { MessageList, ConversationDetail },
+  components: {MessageList, ConversationDetail},
   data() {
     return {
       conversation: null,
@@ -113,25 +112,25 @@ export default {
       console.log(id);
       this.isLoading = true;
       api
-        .getData("conversation/" + id)
-        .then((response) => {
-          console.log(response);
-          if (response.ok == true) {
-            response.json().then((data) => {
-              if (data.ResponseType == 1) {
-                this.conversation = data.Result;
-              } else {
-                this.conversation = null;
-              }
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+          .getData("conversation/" + id)
+          .then((response) => {
+            console.log(response);
+            if (response.ok == true) {
+              response.json().then((data) => {
+                if (data.ResponseType == 1) {
+                  this.conversation = data.Result;
+                } else {
+                  this.conversation = null;
+                }
+              });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
     },
     SendNewMessage() {
       if (this.message.length > 0) {
@@ -175,7 +174,7 @@ export default {
 }
 
 .conv-send-message {
-  height: 50px;
+  height: 56px;
   margin-top: 10px;
 }
 
@@ -196,7 +195,7 @@ export default {
 }
 
 .send-message-action {
-  margin-right: 20px;
+  margin-right: 15px;
   padding: 0;
   border: none;
   background: none;
@@ -204,24 +203,38 @@ export default {
 }
 
 .send-message-input {
-  margin-right: 20px;
-  flex:1;
+  margin-right: 15px;
+  flex: 1;
   border-radius: 7px;
-  background-color: #f2f2f2 ;
+  background-color: #f2f2f2;
   border: 0;
   height: 40px;
-  text-indent:15px;
+  text-indent: 15px;
 }
 
-
-.send-message-input:focus{
-  outline:none;
+.send-message-input:focus {
+  outline: none;
 }
 
+/*@media (max-width: 640px) {*/
+/*  .send-message-action {*/
+/*    margin-right: 20px;*/
+/*    padding: 0;*/
+/*    border: none;*/
+/*    background: none;*/
+/*    cursor: pointer;*/
+/*    height: 1em;*/
+/*  }*/
 
-/* ::placeholder {
-  color:grey;
-  padding-left: 15px;
-} */
+/*  .send-message-input {*/
+/*    margin-right: 20px;*/
+/*    flex: 1;*/
+/*    border-radius: 7px;*/
+/*    background-color: #f2f2f2;*/
+/*    border: 0;*/
+/*    height: 1em;*/
+/*    text-indent: 15px;*/
+/*  }*/
+/*}*/
 
 </style>

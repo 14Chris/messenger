@@ -54,4 +54,9 @@ body {
 #app {
   height: 100% !important;
 }
+
+button:focus {
+  outline: none;
+}
+
 </style>
