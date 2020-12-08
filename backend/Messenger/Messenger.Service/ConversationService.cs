@@ -111,7 +111,7 @@ namespace Messenger.Service.Implementation
             {
                 Id = conversation.Id,
                 Name = userConversation.Name,
-                Messages = _messageRepository.List().Where(x=>x.ConversationId == id).OrderByDescending(x=>x.Date).Select(x=>new MessageModel()
+                Messages = _messageRepository.List().Where(x=>x.ConversationId == id).OrderByDescending(x=>x.Date).Take(20).Select(x=>new MessageModel()
                 {
                     Id = x.Id,
                     SenderId = x.SenderId,

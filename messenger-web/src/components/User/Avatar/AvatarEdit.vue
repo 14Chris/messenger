@@ -22,7 +22,7 @@
           <span class="file-icon">
             <i class="fas fa-upload"></i>
           </span>
-          <span class="file-label"> Change picture </span>
+          <span class="file-label">Change picture</span>
         </span>
       </label>
     </div>
@@ -72,10 +72,14 @@ export default {
   },
   methods: {
     CheckUrlValidity() {
-      api.headData("users/" + this.userId + "/picture").then((response) => {
+      api.headData("users/" + this.userId + "/picture")
+          .then((response) => {
         console.log(response);
         this.imageExists = response.ok;
-      });
+      })
+          .catch(()=>{
+
+          });
     },
     ChangeImage() {
       var imageValue = this.newImage.split("base64,")[1];
@@ -90,16 +94,15 @@ export default {
             this.CheckUrlValidity();
             this.newImage = null;
           }
-        });
+        })
+      .catch(()=>{
+
+      });
     },
     CancelImageChange() {
       this.newImage = null;
     },
     DeleteImage() {},
-    FileUploaded(evt) {
-      console.log(evt);
-      console.log(this.newImage);
-    },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;

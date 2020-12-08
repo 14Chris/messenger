@@ -6,14 +6,13 @@
         <div class="conv-header">
           <h4 class="title is-4 conversation-name">{{ conversation.name }}</h4>
         </div>
-        <div class="conv-messages">
+        <div id="conv-messages-list" ref="convMessagesList" class="conv-messages">
           <MessageList :messages="conversation.messages"></MessageList>
         </div>
         <hr class="part-separator"/>
         <div class="conv-send-message">
           <div class="field is-horizontal">
             <div class="field-body">
-
               <!-- Plus button -->
               <button class="send-message-action">
                 <span class="icon">
@@ -105,20 +104,23 @@ export default {
     });
   },
   mounted() {
-    this.GetConversationById(this.$route.params.id);
+    this.GetConversationById(this.$route.params.id)
   },
   methods: {
     GetConversationById(id) {
-      console.log(id);
       this.isLoading = true;
       api
           .getData("conversation/" + id)
           .then((response) => {
-            console.log(response);
             if (response.ok == true) {
               response.json().then((data) => {
                 if (data.ResponseType == 1) {
                   this.conversation = data.Result;
+                  this.$nextTick(function () {
+                    //Scroll list of message to the latest (bottom)
+                    var divMessages =  this.$refs.convMessagesList
+                    divMessages.scrollTop = divMessages.scrollHeight - divMessages.clientHeight
+                  })
                 } else {
                   this.conversation = null;
                 }
@@ -130,6 +132,11 @@ export default {
           })
           .finally(() => {
             this.isLoading = false;
+            // var element = document.getElementById("conv-messages-list");
+            // console.log("scroll div messages",element)
+            // element.scrollTop = element.scrollHeight
+
+
           });
     },
     SendNewMessage() {
@@ -149,7 +156,6 @@ export default {
       var object = JSON.parse(data);
 
       if (object.message.conversation_id == this.conversation.id) {
-        console.log("new message received", object.message);
         this.conversation.messages.push(object.message);
       }
     },
@@ -215,26 +221,5 @@ export default {
 .send-message-input:focus {
   outline: none;
 }
-
-/*@media (max-width: 640px) {*/
-/*  .send-message-action {*/
-/*    margin-right: 20px;*/
-/*    padding: 0;*/
-/*    border: none;*/
-/*    background: none;*/
-/*    cursor: pointer;*/
-/*    height: 1em;*/
-/*  }*/
-
-/*  .send-message-input {*/
-/*    margin-right: 20px;*/
-/*    flex: 1;*/
-/*    border-radius: 7px;*/
-/*    background-color: #f2f2f2;*/
-/*    border: 0;*/
-/*    height: 1em;*/
-/*    text-indent: 15px;*/
-/*  }*/
-/*}*/
 
 </style>

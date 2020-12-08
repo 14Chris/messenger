@@ -19,7 +19,6 @@ export default {
             response.json().then((resp) => {
               if (resp.ResponseType == 1) {
                 const user = resp.Result;
-                console.log(user);
                 this.$store.dispatch("setUserSession", user);
               } else {
                 this.$store.dispatch("logout").then(() => {

@@ -50,10 +50,9 @@
           </button>
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
+          <div class="dropdown-content" v-if="connectedUser">
             <router-link to="/profile/edit">
-              <a class="dropdown-item"
-              >{{ connectedUser.first_name }}
+              <a class="dropdown-item">{{ connectedUser.first_name }}
                 {{ connectedUser.last_name }}</a
               >
             </router-link>
@@ -108,7 +107,6 @@ export default {
       api
           .headData("users/" + this.connectedUser.id + "/picture")
           .then((response) => {
-            console.log(response);
             this.imageExists = response.ok;
           });
     },

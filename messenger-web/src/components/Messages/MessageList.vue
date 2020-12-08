@@ -30,8 +30,7 @@ export default {
     }
   },
   mounted(){
-    var element = document.getElementById("messages-list");
-    element.scrollTop = element.scrollHeight
+
   },
   methods:{
     SortMessageByDate(dateA, dateB) {
