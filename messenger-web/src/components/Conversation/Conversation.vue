@@ -98,6 +98,11 @@ export default {
       message: "",
     };
   },
+  watch:{
+    $route (){
+      this.GetConversationById(this.$route.params.id)
+    }
+  },
   created() {
     eventBus.$on("message-received", (data) => {
       this.MessageReceived(data);

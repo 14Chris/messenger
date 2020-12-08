@@ -2,10 +2,10 @@
   <div class="conv-list-item" @click="OpenConversation">
     <div v-if="convId == conversationItem.id" class="current-conv-indicator"></div>
     <div class="conv-data">
-      <Avatar class="conv-avatar" userId="1"></Avatar>
+      <Avatar class="conv-avatar" :userId="conversationItem.friends_ids[0].id"></Avatar>
       <div>
         <h1>{{ conversationItem.name }}</h1>
-        <div class="last-meesage-text">{{ conversationItem.last_message }}</div>
+        <div class="last-meesage-text"><span v-if="conversationItem.last_message_sender.id == $store.state.user.id">You : </span>{{ conversationItem.last_message }}</div>
         <div class="last-message-date">{{ MessageDate }}</div>
       </div>
     </div>
