@@ -2,13 +2,14 @@
   <div class="conv-list-item" @click="OpenConversation">
     <div v-if="convId == conversationItem.id" class="current-conv-indicator"></div>
     <div class="conv-data">
-      <Avatar class="conv-avatar" :userId="conversationItem.friends_ids[0].id"></Avatar>
-      <div>
+      <Avatar v-if="conversationItem.friends_ids.length == 1" class="conv-avatar" :userId="conversationItem.friends_ids[0]"></Avatar>
+      <Avatar v-else-if="conversationItem.friends_ids.length > 1" class="conv-avatar" :userId="conversationItem.friends_ids[0]"></Avatar>
+      <div class="conv-text">
         <h1>{{ conversationItem.name }}</h1>
-        <div class="last-meesage-text">
+        <div class="last-message-text">
           <span v-if="conversationItem.last_message_sender.id == $store.state.user.id">You : </span>
           <!--  If group conversation -->
-          <span v-else-if="conversationItem.friends_ids > 1">{{ conversationItem.last_message_sender.first_name}} {{ conversationItem.last_message_sender.last_name }} </span>
+          <span v-else-if="conversationItem.friends_ids.length > 1">{{ conversationItem.last_message_sender.first_name}} {{ conversationItem.last_message_sender.last_name }} : </span>
 
           <span>{{ conversationItem.last_message }}</span></div>
         <div class="last-message-date">{{ MessageDate }}</div>
@@ -73,8 +74,9 @@ export default {
   width: 3px;
 }
 
-.last-meesage-text {
+.last-message-text {
   font-size: 0.8em;
+  color: rgb(179, 179, 179);
 }
 
 .last-message-date {
@@ -86,8 +88,13 @@ export default {
   display: flex;
 }
 
+.conv-text{
+  flex:1;
+}
+
 .conv-avatar {
-  height:fit-content;
+  height:40px !important;
+  width:40px !important;
   margin: auto 0;
   margin-right:15px !important;
 }

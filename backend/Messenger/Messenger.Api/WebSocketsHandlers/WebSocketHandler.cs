@@ -174,7 +174,7 @@ namespace Messenger.Api.WebSocketsHandlers
                 }
 
                 //Get users Ids from conversation
-                List<int> usersConvId = usersConv.Select(x => x.Id).ToList();
+                List<int> usersConvId = usersConv.Select(x => x.UserId).ToList();
 
                 List<WebSocket> userSockets = _sockets.Where(x => usersConvId.Contains(x.Key)).Select(x => x.Value).ToList();
 

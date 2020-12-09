@@ -141,7 +141,7 @@ namespace Messenger.Service.Implementation
                         Name = x.Name,
                         LastMessage = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Text : "",
                         LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime,
-                        FriendsIds = x.Conversation.Conversations.Where(x=>x.UserId != id).Select(a=>x.UserId).ToList(),
+                        FriendsIds = x.Conversation.Conversations.Where(x=>x.UserId != id).Select(a=>a.UserId).ToList(),
                         LastMessageSender = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? new UserBasicModel()
                         {
                             Id = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Id,

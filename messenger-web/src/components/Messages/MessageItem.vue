@@ -72,7 +72,7 @@ export default {
 .message-text {
   padding: 20px;
   border-radius: 30px;
-  margin-bottom: none;
+  margin-bottom: 0;
   font-family: Helvetica, Arial, sans-serif;
   word-wrap: break-word;
 }
@@ -117,6 +117,8 @@ export default {
   margin: auto 0;
   position:absolute;
   bottom: 0;
+  width:40px !important;
+  height:40px !important;
   
 }
 
