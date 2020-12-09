@@ -28,7 +28,7 @@
         </button>
       </div>
     </div>
-    <ul id="menu" @blur="ConversationOptionsLostFocus">
+    <ul id="menu" v-on-clickaway="ConversationOptionsLostFocus">
       <li class="menu-item">Archive</li>
     </ul>
   </div>
@@ -38,10 +38,12 @@
 <script>
 import Avatar from "@/components/User/Avatar/Avatar";
 import moment from "moment";
+import { mixin as clickaway } from 'vue-clickaway';
 
 export default {
   name: "FriendListItem",
   props: ["conversationItem"],
+  mixins: [ clickaway ],
   components: {
     Avatar,
   },
