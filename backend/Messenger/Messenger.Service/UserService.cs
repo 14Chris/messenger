@@ -103,7 +103,15 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public ReturnApiObject GetUser(int id)
         {
-            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+            UserSessionModel user = _userRepository.List().Where(x => x.Id == id)
+                .Select(x=>new UserSessionModel
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    State = (int)x.State
+                })
+                .SingleOrDefault();
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", user);
         }

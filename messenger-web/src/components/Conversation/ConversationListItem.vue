@@ -5,7 +5,12 @@
       <Avatar class="conv-avatar" :userId="conversationItem.friends_ids[0].id"></Avatar>
       <div>
         <h1>{{ conversationItem.name }}</h1>
-        <div class="last-meesage-text"><span v-if="conversationItem.last_message_sender.id == $store.state.user.id">You : </span>{{ conversationItem.last_message }}</div>
+        <div class="last-meesage-text">
+          <span v-if="conversationItem.last_message_sender.id == $store.state.user.id">You : </span>
+          <!--  If group conversation -->
+          <span v-else-if="conversationItem.friends_ids > 1">{{ conversationItem.last_message_sender.first_name}} {{ conversationItem.last_message_sender.last_name }} </span>
+
+          <span>{{ conversationItem.last_message }}</span></div>
         <div class="last-message-date">{{ MessageDate }}</div>
       </div>
     </div>

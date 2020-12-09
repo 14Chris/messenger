@@ -140,6 +140,7 @@ export default {
           });
     },
     SendNewMessage() {
+      console.log("send instant message")
       if (this.message.length > 0) {
         var model = {
           type: "send_message",
@@ -148,6 +149,8 @@ export default {
             text: this.message,
           },
         };
+
+        console.log("message", model)
         this.$store.state.chatWebsocket.send(JSON.stringify(model));
         this.message = "";
       }
