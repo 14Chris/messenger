@@ -28,17 +28,19 @@
         </button>
       </div>
     </div>
-    <ul id="menu" v-on-clickaway="ConversationOptionsLostFocus">
-      <li class="menu-item">Archive</li>
+    <ul :id="'menu' + conversationItem.id" class="menu" v-on-clickaway="ConversationOptionsLostFocus">
+      <li class="menu-item" @click="ArchiveConversation">Archive</li>
     </ul>
   </div>
-
 </template>
 
 <script>
 import Avatar from "@/components/User/Avatar/Avatar";
 import moment from "moment";
 import { mixin as clickaway } from 'vue-clickaway';
+import ApiService from "@/service/api";
+
+const api = new ApiService();
 
 export default {
   name: "FriendListItem",
@@ -78,25 +80,39 @@ export default {
       }
     },
     ConversationOptionsClick(e){
-      const menu = document.getElementById('menu')
-        menu.style.top = `${e.clientY}px`
-        menu.style.left = `${e.clientX}px`
+      console.log(e.currentTarget.getBoundingClientRect())
+      var buttonCoordinates = e.currentTarget.getBoundingClientRect()
+
+      const menu = document.getElementById('menu'+this.conversationItem.id)
+      console.log(menu)
+        menu.style.top = `${buttonCoordinates.top + 25}px`
+        menu.style.left = `${buttonCoordinates.left}px`
 
         if(menu.classList.contains("show")){
           menu.classList.remove('show')
-          menu.style.display = 'none'
         }
         else{
           menu.classList.add('show')
-          menu.style.display = 'block'
         }
 
     },
-    ConversationOptionsLostFocus(e){
-      console.log('blur', e.target.placeholder)
-      console.log("Lost focus")
-      const menu = document.getElementById('menu')
+    ConversationOptionsLostFocus(){
+      const menu = document.getElementById('menu'+this.conversationItem.id)
       menu.classList.remove('show')
+    },
+    ArchiveConversation(){
+      api
+          .update("conversation/" + this.conversationItem.id+"/archive", null)
+          .then((response) => {
+            if (response.ok == true) {
+              response.json().then((data) => {
+                console.log(data)
+              });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
     }
   },
 };
@@ -165,7 +181,7 @@ export default {
 }
 
 /* Conversation options context menu */
-#menu {
+.menu {
   display: none;
   background-color: white;
   padding: 10px 0px;
@@ -177,12 +193,14 @@ export default {
   opacity: 0;
   transform: scale(0);
   transition: transform 0.2s, opacity 0.2s;
+  width: 120px;
 }
 
-#menu.show {
+.menu.show {
   opacity: 1;
   transform: scale(1);
   transform-origin: top left;
+  display: block !important;
 }
 
 .menu-item {
