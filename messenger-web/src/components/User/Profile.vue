@@ -7,7 +7,7 @@
     <div v-else>
       <div v-if="userProfile != null">
         <h3 class="title is-3">{{ userProfile.first_name }} {{ userProfile.last_name }}</h3>
-        <Avatar :userId="userProfile.id"></Avatar>
+        <Avatar class="profile-avatar" :userId="userProfile.id"></Avatar>
         <div class="box">
           <h4 class="title is-4">Informations</h4>
           <div class="field">
@@ -82,5 +82,11 @@ export default {
 
 .box {
   margin-top: 25px;
+}
+
+.profile-avatar{
+  height: 200px;
+  width: 200px;
+  margin: 0 auto;
 }
 </style>
