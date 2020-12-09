@@ -115,6 +115,30 @@ namespace Messenger.Api.Controllers
             }
         }
 
+        // PUT: Archive user conversation
+        [HttpPut("{convId}/archive")]
+        [Authorize]
+        public async Task<ReturnApiObject> PutConversationArchive(int convId)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return await _conversationService.ArchiveConversation(convId, id);
+            }
+            catch (Exception)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
 
 
     }

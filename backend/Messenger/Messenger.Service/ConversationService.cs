@@ -221,5 +221,17 @@ namespace Messenger.Service.Implementation
 
             return model;
         }
+
+        /// <summary>
+        /// Archive a conversation 
+        /// (make the conversation not visible until he send or receive a new message)
+        /// </summary>
+        /// <param name="conversatioId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public Task<ReturnApiObject> ArchiveConversation(int conversationId, int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

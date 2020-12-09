@@ -28,16 +28,19 @@
         </button>
       </div>
     </div>
-    <ul :id="'menu' + conversationItem.id" class="menu" v-on-clickaway="ConversationOptionsLostFocus">
+
+    <ul :id="'menu' + conversationItem.id" class="menu" v-click-outside="ConversationOptionsLostFocus">
       <li class="menu-item" @click="ArchiveConversation">Archive</li>
     </ul>
+
   </div>
 </template>
 
 <script>
 import Avatar from "@/components/User/Avatar/Avatar";
 import moment from "moment";
-import { mixin as clickaway } from 'vue-clickaway';
+import vClickOutside from 'v-click-outside'
+
 import ApiService from "@/service/api";
 
 const api = new ApiService();
@@ -45,7 +48,9 @@ const api = new ApiService();
 export default {
   name: "FriendListItem",
   props: ["conversationItem"],
-  mixins: [ clickaway ],
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: {
     Avatar,
   },
@@ -80,11 +85,9 @@ export default {
       }
     },
     ConversationOptionsClick(e){
-      console.log(e.currentTarget.getBoundingClientRect())
       var buttonCoordinates = e.currentTarget.getBoundingClientRect()
 
       const menu = document.getElementById('menu'+this.conversationItem.id)
-      console.log(menu)
         menu.style.top = `${buttonCoordinates.top + 25}px`
         menu.style.left = `${buttonCoordinates.left}px`
 
@@ -97,6 +100,7 @@ export default {
 
     },
     ConversationOptionsLostFocus(){
+      console.log("outside")
       const menu = document.getElementById('menu'+this.conversationItem.id)
       menu.classList.remove('show')
     },
