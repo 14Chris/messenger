@@ -63,4 +63,12 @@ button:focus {
   width: 20px;
 }
 
+.icon-button {
+  margin-right: 15px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
 </style>

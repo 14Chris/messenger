@@ -2,16 +2,13 @@
 using Messenger.Database;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
-using Messenger.Service.Interface;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;

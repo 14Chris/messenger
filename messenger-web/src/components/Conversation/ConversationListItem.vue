@@ -2,42 +2,62 @@
   <div class="conv-list-item" @click="OpenConversation">
     <div v-if="convId == conversationItem.id" class="current-conv-indicator"></div>
     <div class="conv-data">
-      <Avatar v-if="conversationItem.friends_ids.length == 1" class="conv-avatar" :userId="conversationItem.friends_ids[0]"></Avatar>
-      <Avatar v-else-if="conversationItem.friends_ids.length > 1" class="conv-avatar" :userId="conversationItem.friends_ids[0]"></Avatar>
+      <Avatar v-if="conversationItem.friends_ids.length == 1" class="conv-avatar"
+              :userId="conversationItem.friends_ids[0]"></Avatar>
+      <Avatar v-else-if="conversationItem.friends_ids.length > 1" class="conv-avatar"
+              :userId="conversationItem.friends_ids[0]"></Avatar>
       <div class="conv-text">
         <h1>{{ conversationItem.name }}</h1>
         <div class="last-message-text">
+          <!--  If solo conversation  -->
           <span v-if="conversationItem.last_message_sender.id == $store.state.user.id">You : </span>
           <!--  If group conversation -->
-          <span v-else-if="conversationItem.friends_ids.length > 1">{{ conversationItem.last_message_sender.first_name}} {{ conversationItem.last_message_sender.last_name }} : </span>
+          <span
+              v-else-if="conversationItem.friends_ids.length > 1">{{ conversationItem.last_message_sender.first_name }} {{
+              conversationItem.last_message_sender.last_name
+            }} : </span>
 
           <span>{{ conversationItem.last_message }}</span></div>
         <div class="last-message-date">{{ MessageDate }}</div>
       </div>
+      <div class="conv-option">
+        <button class="icon-button conv-option-button" @click.prevent.stop="ConversationOptionsClick">
+                <span class="icon">
+                  <img src="@/assets/icons/ellipsis.svg"/>
+                </span>
+        </button>
+      </div>
     </div>
+    <ul id="menu" @blur="ConversationOptionsLostFocus">
+      <li class="menu-item">Archive</li>
+    </ul>
   </div>
+
 </template>
 
 <script>
 import Avatar from "@/components/User/Avatar/Avatar";
 import moment from "moment";
+
 export default {
   name: "FriendListItem",
   props: ["conversationItem"],
   components: {
     Avatar,
   },
-  data(){
+  data() {
     return {
       convId: -1
     }
   },
-  mounted(){
+  mounted() {
     this.UpdateConvId()
+
+
   },
   watch: {
     $route() {
-        this.UpdateConvId()
+      this.UpdateConvId()
     }
   },
   computed: {
@@ -50,10 +70,31 @@ export default {
     OpenConversation() {
       this.$router.push("/conv/" + this.conversationItem.id);
     },
-    UpdateConvId(){
-      if(this.$route.name=="conversation"){
+    UpdateConvId() {
+      if (this.$route.name == "conversation") {
         this.convId = this.$route.params.id
-      } 
+      }
+    },
+    ConversationOptionsClick(e){
+      const menu = document.getElementById('menu')
+        menu.style.top = `${e.clientY}px`
+        menu.style.left = `${e.clientX}px`
+
+        if(menu.classList.contains("show")){
+          menu.classList.remove('show')
+          menu.style.display = 'none'
+        }
+        else{
+          menu.classList.add('show')
+          menu.style.display = 'block'
+        }
+
+    },
+    ConversationOptionsLostFocus(e){
+      console.log('blur', e.target.placeholder)
+      console.log("Lost focus")
+      const menu = document.getElementById('menu')
+      menu.classList.remove('show')
     }
   },
 };
@@ -66,6 +107,7 @@ export default {
   overflow-y: hidden;
   display: flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .current-conv-indicator {
@@ -86,16 +128,73 @@ export default {
 
 .conv-data {
   display: flex;
-}
-
-.conv-text{
   flex:1;
 }
 
-.conv-avatar {
-  height:40px !important;
-  width:40px !important;
-  margin: auto 0;
-  margin-right:15px !important;
+.conv-text {
+  flex: 1;
 }
+
+.conv-avatar {
+  height: 40px !important;
+  width: 40px !important;
+  margin: auto 0;
+  margin-right: 15px !important;
+}
+
+/*Conversation option button*/
+.conv-option-button {
+  display: none;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.conv-option {
+  width: 40px;
+  position: relative;
+}
+
+.conv-data:hover .conv-option-button, .conv-data:hover .conv-option-button {
+  display: block;
+}
+
+/* Conversation options context menu */
+#menu {
+  display: none;
+  background-color: white;
+  padding: 10px 0px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 30px lightgrey;
+  position: absolute;
+  transform-origin: center;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+#menu.show {
+  opacity: 1;
+  transform: scale(1);
+  transform-origin: top left;
+}
+
+.menu-item {
+  display: block;
+  padding: 10px 15px;
+  transition: 0.1s;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.menu-item:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+
 </style>

@@ -14,28 +14,28 @@
           <div class="field is-horizontal">
             <div class="field-body">
               <!-- Plus button -->
-              <button class="send-message-action">
+              <button class="icon-button">
                 <span class="icon">
                   <img src="@/assets/icons/plus-grey.svg"/>
                 </span>
               </button>
 
               <!-- GIF button -->
-              <button class="send-message-action">
+              <button class="icon-button">
                 <span class="icon">
                   <img src="@/assets/icons/gif-file-grey.svg"/>
                 </span>
               </button>
 
               <!-- Sticker button -->
-              <button class="send-message-action">
+              <button class="icon-button">
                 <span class="icon">
                   <img src="@/assets/icons/sticky-note-grey.svg"/>
                 </span>
               </button>
 
               <!-- File button -->
-              <button class="send-message-action">
+              <button class="icon-button">
                 <span class="icon">
                   <img src="@/assets/icons/paperclip-grey.svg"/>
                 </span>
@@ -51,14 +51,14 @@
               />
 
               <!-- Smiley button -->
-              <button class="send-message-action">
+              <button class="icon-button">
                 <span class="icon">
                   <img src="@/assets/icons/smile-grey.svg"/>
                 </span>
               </button>
 
               <!-- Thumbs up button -->
-              <button class="send-message-action">
+              <button class="icon-button">
                 <span class="icon">
                   <img src="@/assets/icons/thumbs-up-grey.svg"/>
                 </span>
@@ -187,10 +187,6 @@ export default {
   margin-top: 10px;
 }
 
-#send-message-button {
-  margin-left: 10px;
-}
-
 .conv-columns {
   height: 100% !important;
   margin: 0 !important;
@@ -201,14 +197,6 @@ export default {
   background-color: #f2f2f2;
   width: 2px;
   height: 100%;
-}
-
-.send-message-action {
-  margin-right: 15px;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
 }
 
 .send-message-input {
