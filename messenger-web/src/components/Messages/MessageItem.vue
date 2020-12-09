@@ -74,7 +74,7 @@ export default {
   border-radius: 30px;
   margin-bottom: 0;
   font-family: Helvetica, Arial, sans-serif;
-  word-wrap: break-word;
+  word-wrap: anywhere !important;
 }
 
 .position-left {

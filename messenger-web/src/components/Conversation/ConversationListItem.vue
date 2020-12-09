@@ -29,18 +29,15 @@
       </div>
     </div>
 
-    <ul :id="'menu' + conversationItem.id" class="menu" v-click-outside="ConversationOptionsLostFocus">
+    <ul :id="'menu' + conversationItem.id" class="menu" @clickout="ConversationOptionsLostFocus">
       <li class="menu-item" @click="ArchiveConversation">Archive</li>
     </ul>
-
   </div>
 </template>
 
 <script>
 import Avatar from "@/components/User/Avatar/Avatar";
 import moment from "moment";
-import vClickOutside from 'v-click-outside'
-
 import ApiService from "@/service/api";
 
 const api = new ApiService();
@@ -48,9 +45,6 @@ const api = new ApiService();
 export default {
   name: "FriendListItem",
   props: ["conversationItem"],
-  directives: {
-    clickOutside: vClickOutside.directive
-  },
   components: {
     Avatar,
   },
@@ -100,7 +94,6 @@ export default {
 
     },
     ConversationOptionsLostFocus(){
-      console.log("outside")
       const menu = document.getElementById('menu'+this.conversationItem.id)
       menu.classList.remove('show')
     },
@@ -141,6 +134,7 @@ export default {
 .last-message-text {
   font-size: 0.8em;
   color: rgb(179, 179, 179);
+  word-break: break-all;
 }
 
 .last-message-date {
