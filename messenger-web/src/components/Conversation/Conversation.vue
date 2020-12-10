@@ -183,7 +183,7 @@ export default {
 }
 
 .conv-send-message {
-  height: 56px;
+  height: 40px;
   margin-top: 10px;
 }
 
