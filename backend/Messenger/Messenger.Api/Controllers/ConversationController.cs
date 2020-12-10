@@ -65,6 +65,30 @@ namespace Messenger.Api.Controllers
             }
         }
 
+        // GET: Get conversations detail by his id
+        [HttpGet("{convId}/detail")]
+        [Authorize]
+        public ReturnApiObject GetConversationDetailById(int convId)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _conversationService.GetConversationDetailById(convId, id);
+            }
+            catch (Exception ex)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
         // POST: Add new conversation
         [HttpPost]
         [Authorize]
@@ -138,8 +162,5 @@ namespace Messenger.Api.Controllers
                 return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
             }
         }
-
-
-
     }
 }

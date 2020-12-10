@@ -211,7 +211,7 @@ namespace Messenger.Service.Implementation
             DateTime dateTime = new DateTime();
 
 
-            ConversationListItem model = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x => new ConversationListItem
+            ConversationListItem conversationListItem = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x => new ConversationListItem
             {
                 Id = x.Conversation.Id,
                 Name = x.Name,
@@ -219,7 +219,7 @@ namespace Messenger.Service.Implementation
                 LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime
             }).SingleOrDefault();
 
-            return model;
+            return conversationListItem;
         }
 
         /// <summary>
@@ -229,9 +229,50 @@ namespace Messenger.Service.Implementation
         /// <param name="conversatioId"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public Task<ReturnApiObject> ArchiveConversation(int conversationId, int userId)
+        public async Task<ReturnApiObject> ArchiveConversation(int conversationId, int userId)
         {
-            throw new NotImplementedException();
+            UserConversation userConv = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == conversationId).SingleOrDefault();
+
+            if(userConv == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            userConv.Visibility = ConversationVisibility.Archived;
+
+            UserConversation userConvUpdated = await _userConversationRepository.UpdateAsync(userConv);
+
+            if (userConvUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        /// <summary>
+        /// Get the conversation details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetConversationDetailById(int id, int userId)
+        {
+            ConversationDetailModel conversationDetail = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x=> new ConversationDetailModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Friends = x.Conversation.Conversations.Where(a => a.UserId != userId).Select(a => new UserBasicModel()
+                {
+                    Id = a.User.Id,
+                    FirstName = a.User.FirstName,
+                    LastName = a.User.LastName,
+                    Email = a.User.Email,
+                }).ToList()
+            })
+            .SingleOrDefault();
+
+            if(conversationDetail == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversationDetail);
+
         }
     }
 }

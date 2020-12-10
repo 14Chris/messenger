@@ -510,6 +510,9 @@ namespace Messenger.Service.Implementation
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
 
+            if (user == null)
+                return null;
+
             return user.ProfilePicture;
         }
 

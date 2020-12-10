@@ -7,15 +7,21 @@
       <div v-else>
         <div v-if="conversationDetail != null">
           <div>
-            <Avatar class="conversation-detail-avatars" userId="1"></Avatar>
+            <Avatar v-if="conversationDetail.friends.length <= 1" class="conversation-detail-avatars" userId="1"></Avatar>
+            <AvatarGroup v-else class="conversation-detail-avatars" :friendsIds="conversationDetail.friends.map(f=>f.id)"></AvatarGroup>
           </div>
           <div class="conversation-detail-name">
             {{conversationDetail.name}}
           </div>
           <div class="conversation-details-actions">
-            <button>Call</button>
-            <button>Video chat</button>
+            <button v-if="conversationDetail.friends.length <= 1">Call {{conversationDetail.friends[0].first_name}}</button>
+            <button v-else >Call Group</button>
+            <button>Video Chat</button>
           </div>
+          <div v-if="conversationDetail.friends.length > 1" class="conversation-group-friends">
+            Friends
+          </div>
+          <hr>
           <div>
             <div class="conversation-search">
               Search in conversation
@@ -48,9 +54,10 @@ import ApiService from "@/service/api";
 const api = new ApiService();
 
 import Avatar from "@/components/User/Avatar/Avatar";
+import AvatarGroup from "@/components/User/Avatar/AvatarGroup";
 export default {
   props:["conversationId"],
-  components:{Avatar},
+  components:{Avatar, AvatarGroup},
   data(){
     return {
       conversationDetail:null,
@@ -58,12 +65,8 @@ export default {
     }
   },
   mounted() {
-    // this.GetConversationDetail(this.conversationId)
-    this.conversationDetail = {
-      name:"Corentin Fievet"
-    }
-
-    this.loading = false
+    console.log(this.conversationId)
+    this.GetConversationDetail(this.conversationId)
   },
   methods:{
     GetConversationDetail(id){

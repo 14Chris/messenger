@@ -158,16 +158,15 @@ namespace Messenger.Api.WebSocketsHandlers
                 //Get all user conversations 
                 List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(((Message)result.Result).ConversationId);
 
-                //Iterate to change conversation visibility because a new message is added
+                //Iterate to change conversation visibility when archived because a new message is added
                 foreach(UserConversation userConv in usersConv)
                 {
-                    if(userConv.Visibility == ConversationVisibility.NotVisible)
+                    if(userConv.Visibility == ConversationVisibility.Archived)
                     {
                         userConv.Visibility = ConversationVisibility.Visible;
 
                         UserConversation resultConvUpdate = await serviceProvider._userConversationService.UpdateUserConversation(userConv);
                     }
-                    
                 }
 
                 //Get users Ids from conversation
