@@ -10,7 +10,6 @@
   "dependencies": {
     "axios": "^0.20.0",
     "babel-loader": "^7.1.5",
-    "buefy": "^0.9.3",
     "clickout-event": "^1.0.2",
     "core-js": "^3.6.5",
     "moment": "^2.29.1",

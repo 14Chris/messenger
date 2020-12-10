@@ -41,7 +41,7 @@ export default {
 
 
 <style lang="scss">
-@import "./buefy-config.scss";
+
 </style>
 
 <style>
