@@ -29,8 +29,8 @@
       </div>
     </div>
 
-    <ul :id="'menu' + conversationItem.id" class="menu" @clickout="ConversationOptionsLostFocus">
-      <li class="menu-item" @click="ArchiveConversation">Archive</li>
+    <ul :id="'menu' + conversationItem.id" class="menu" @clickout.prevent="ConversationOptionsLostFocus">
+      <li class="menu-item" @click.prevent.stop="ArchiveConversation">Archive</li>
     </ul>
   </div>
 </template>
@@ -44,7 +44,7 @@ const api = new ApiService();
 
 export default {
   name: "FriendListItem",
-  props: ["conversationItem"],
+  props: ["conversationItem", "ConversationArchived"],
   components: {
     Avatar,
   },
@@ -55,8 +55,6 @@ export default {
   },
   mounted() {
     this.UpdateConvId()
-
-
   },
   watch: {
     $route() {
@@ -99,11 +97,22 @@ export default {
     },
     ArchiveConversation(){
       api
-          .update("conversation/" + this.conversationItem.id+"/archive", null)
+          .update("conversation/"
+              +
+              this.conversationItem.id
+
+              +"/archive", null)
           .then((response) => {
             if (response.ok == true) {
               response.json().then((data) => {
-                console.log(data)
+                if(data.ResponseType == 1){
+                  this.ConversationArchived()
+                  console.log("url id",this.convId)
+                  console.log("item id",this.conversationItem.id)
+                  if(this.convId == this.conversationItem.id){
+                    this.$router.push("/conv");
+                  }
+                }
               });
             }
           })

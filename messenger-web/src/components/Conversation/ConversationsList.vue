@@ -4,7 +4,7 @@
       <h3 class="title is-3">Conversations</h3>
     </div>
     <div class="conversation-list">
-      <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c"></ConversationListItem>
+      <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c" :conversation-archived="ConversationArchived"></ConversationListItem>
     </div>
     <div class="conversation-list-bottom">
       <router-link class="button" id="new-conversation-button" to="/conv/new" tag="button">
@@ -76,8 +76,10 @@ export default {
       if (!finded) {
         this.conversations.unshift(object.conversation)
       }
+    },
+    ConversationArchived(){
+      this.GetUserConversations()
     }
-
   }
 }
 </script>
