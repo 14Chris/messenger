@@ -5,11 +5,15 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "css-build": "node-sass --omit-source-map-url src/styles/mystyles.scss src/styles/mystyles.css",
+    "css-watch": "npm run css-build -- --watch",
+    "start": "npm run css-watch"
   },
   "dependencies": {
     "axios": "^0.20.0",
     "babel-loader": "^7.1.5",
+    "bulma": "^0.9.1",
     "clickout-event": "^1.0.2",
     "core-js": "^3.6.5",
     "moment": "^2.29.1",

@@ -1,7 +1,7 @@
 <template>
   <div>
     <img v-if="imageExists" :src="userPictureUrl" alt="Avatar" class="avatar" />
-    <div v-else class="avatar avatar-empty"></div>
+    <img v-else src="@/assets/icons/default-user-avatar.svg" alt="DefaultAvatar" class="avatar" />
   </div>
 </template>
 
