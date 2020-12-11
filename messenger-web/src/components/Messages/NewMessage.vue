@@ -42,6 +42,7 @@
 import ApiService from "../../service/api";
 import MessageList from "@/components/Messages/MessageList";
 import autocomplete from "@/components/Messages/FriendAutocomplete";
+import eventBus from "@/eventBus";
 
 const api = new ApiService();
 
@@ -56,6 +57,11 @@ export default {
       message: "",
       conversation: null
     }
+  },
+  mounted(){
+    eventBus.$on("friendselected", (data) => {
+      this.friendsSelected(data)
+    });
   },
   methods: {
     addNewConversation() {

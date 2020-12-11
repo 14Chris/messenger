@@ -1,45 +1,57 @@
 <template>
   <div class="autocomplete-field">
-    <input autocomplete="on" @keyup="Typing" v-model="searchTerm" class="input" type="text" @focus="InputFocusIn" @blur="InputFocusOut">
-    <div v-show="resultHide == false" id="autocomplete-results">
-      <div v-for="result in searchResult" :key="result.id" class="search-result">
-        //<div v-on:click="OptionSelected">
-          //{{item.first_name}} {{item.last_name}}
-        //</div>
-        <AutocompleteItem :clicked="OptionSelected" :item="result"></AutocompleteItem>
+    <input autocomplete="on" @keyup="Typing" v-model="search" class="input" type="text" @focus="InputFocusIn">
+    <div v-show="isOpen == true" id="autocomplete-results">
+      <div  class="search-result">
+        <ul>
+          <li
+              v-for="(result,i) in searchResult" :key="i"
+              @click="OptionSelected(result)">
+            {{result.first_name}} {{result.last_name}}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import AutocompleteItem from "@/components/Messages/AutocompleteItem";
+
+import eventBus from "@/eventBus";
 
 export default {
   name: "autocomplete",
   data(){
     return{
-      searchTerm:"",
-      resultHide: true
+      search:"",
+      isOpen: false
     }
   },
   components:{
-    AutocompleteItem
   },
-  props:["typing", "searchResult", "isLoading", "select"],
+  props:["typing", "searchResult", "isLoading"],
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  destroyed() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
   methods:{
     OptionSelected(option){
-      this.searchTerm = ""
-      this.select(option)
+      this.search = ""
+      eventBus.$emit('friendselected', option)
     },
     Typing(){
-      this.typing(this.searchTerm)
+      this.typing(this.search)
     },
     InputFocusIn(){
-      this.resultHide = false
+      this.isOpen = true
     },
-    InputFocusOut(){
-      this.resultHide = true
+    handleClickOutside(evt) {
+      if (!this.$el.contains(evt.target)) {
+        this.isOpen = false;
+        this.arrowCounter = -1;
+      }
     }
   }
 }
