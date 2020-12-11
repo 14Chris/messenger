@@ -21,19 +21,7 @@
       <MessageList v-if="conversation != null" :messages="conversation.messages"></MessageList>
     </div>
     <div class="conv-send-message">
-      <div class="field is-horizontal">
-        <div class="field-label is-normal">
-          <label></label>
-        </div>
-        <div class="field-body">
-          <input class="input" v-model="message" type="text" placeholder="Enter your message">
-          <button id="new-conversation-button" class="button navbar-icon" @click="addNewConversation">
-              <span class="icon">
-                <i class="fas fa-reply"></i>
-              </span>
-          </button>
-        </div>
-      </div>
+      <SendMessageBar :message-submit="AddNewConversation"></SendMessageBar>
     </div>
   </div>
 </template>
@@ -43,18 +31,18 @@ import ApiService from "../../service/api";
 import MessageList from "@/components/Messages/MessageList";
 import autocomplete from "@/components/Messages/FriendAutocomplete";
 import eventBus from "@/eventBus";
+import SendMessageBar from "@/components/Messages/SendMessageBar";
 
 const api = new ApiService();
 
 export default {
   name: "NewMessage",
-  components: {MessageList, autocomplete},
+  components: {SendMessageBar, MessageList, autocomplete},
   data() {
     return {
       friendsSearch: [],
       selected: [],
       isFetching: false,
-      message: "",
       conversation: null
     }
   },
@@ -64,9 +52,9 @@ export default {
     });
   },
   methods: {
-    addNewConversation() {
-      var model = {
-        texte: this.message,
+    AddNewConversation(message) {
+       var model = {
+        texte: message.text,
         friends: this.selected.map(f => f.id)
       }
 
