@@ -3,6 +3,9 @@
     <input autocomplete="on" @keyup="Typing" v-model="searchTerm" class="input" type="text" @focus="InputFocusIn" @blur="InputFocusOut">
     <div v-show="resultHide == false" id="autocomplete-results">
       <div v-for="result in searchResult" :key="result.id" class="search-result">
+        //<div v-on:click="OptionSelected">
+          //{{item.first_name}} {{item.last_name}}
+        //</div>
         <AutocompleteItem :clicked="OptionSelected" :item="result"></AutocompleteItem>
       </div>
     </div>
