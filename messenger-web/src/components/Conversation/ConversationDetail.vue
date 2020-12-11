@@ -11,7 +11,7 @@
                        :friendsIds="conversationDetail.friends.map(f=>f.id)"></AvatarGroup>
           <div class="conversation-detail-name">
             <div v-if="conversationDetail.friends.length <= 1">
-              <router-link :to="{ name: 'profilePage', params: { id: conversationDetail.friends[0].id }}">
+              <router-link class="conversation-detail-name-link" :to="{ name: 'profilePage', params: { id: conversationDetail.friends[0].id }}">
                 {{ conversationDetail.name }}
               </router-link>
             </div>
@@ -40,6 +40,11 @@
             <div>
               Friends
             </div>
+            <div v-for="friend in conversationDetail.friends" :key="friend.id">
+              <router-link class="conversation-detail-name-link" :to="{ name: 'profilePage', params: { id: friend.id }}">
+              {{friend.first_name}} {{friend.last_name}}
+              </router-link>
+            </div>
             <hr>
           </div>
           <div>
@@ -52,6 +57,9 @@
             <!--  Change conversation color -->
             <div class="conversation-details-options conversation-change-color">
               Change color
+              <div class="conversation-change-color-selector action-img-right">
+
+              </div>
             </div>
             <hr>
             <!--  Change conversation default smiley -->
@@ -61,11 +69,11 @@
             <hr>
           </div>
           <!--  Conversation shared photos -->
-          <div class="conversation-details-options conversation-shared-photos">
+          <div class="conversation-detail-photos">
             <img class="action-img action-img-left" src="@/assets/icons/image-grey.svg"/>
             Shared photos
-            <div class="conversation-detail-photos">
-
+            <div class="conversation-detail-photos-list">
+<!--              No shared photos-->
             </div>
           </div>
         </div>
@@ -141,6 +149,15 @@ export default {
   margin: 0 auto 25px;
   width: fit-content;
   font-size: 1.2em;
+
+}
+
+.conversation-detail-name-link{
+  color: #1f191a;
+}
+
+.conversation-detail-name-link:hover{
+  text-decoration: underline;
 }
 
 .conversation-details-actions {
@@ -180,5 +197,32 @@ export default {
 .action-img-left {
   float: left;
   margin-right: 15px;
+}
+
+.conversation-change-color{
+  display: flex;
+  position:relative;
+}
+
+.conversation-change-color-selector {
+  position: absolute;
+  background-color: #349cfc;
+  width: 15px;
+  height: 15px;
+  right:5px;
+  top:50%;
+  bottom:50%;
+  border-radius: 50%;
+  border: 3px solid white;
+  margin: auto 0 !important;
+}
+
+.conversation-detail-photos{
+  flex:1;
+  font-size: 15px;
+}
+
+.conversation-detail-photos-list{
+  flex:1;
 }
 </style>

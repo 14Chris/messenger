@@ -18,9 +18,6 @@ export default {
   components:{
     Avatar
   },
-  mounted(){
-    console.log(this.friendsIds)
-  }
 }
 </script>
 
