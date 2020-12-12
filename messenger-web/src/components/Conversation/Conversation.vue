@@ -7,7 +7,7 @@
           <h4 class="title is-4 conversation-name">{{ conversation.name }}</h4>
         </div>
         <div id="conv-messages-list" ref="convMessagesList" class="conv-messages">
-          <MessageList :messages="conversation.messages"></MessageList>
+          <MessageList :key="conversation.id" :convId="conversation.id" :convMessages="conversation.messages"></MessageList>
         </div>
         <hr class="part-separator"/>
         <div class="conv-send-message">
@@ -18,7 +18,7 @@
         <hr class="conv-part-separator"/>
       </div>
       <div class="column">
-        <ConversationDetail :conversationId="conversation.id"></ConversationDetail>
+        <ConversationDetail :key="conversation.id" :conversationId="conversation.id"></ConversationDetail>
       </div>
     </div>
     <div v-else>

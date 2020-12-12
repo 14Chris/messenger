@@ -1,6 +1,6 @@
 <template>
   <div id="messages-list">
-      <MessageItem  
+      <MessageItem
         v-for="(m, index) of SortedMessagesByDate" 
         :key="m.id" 
         :message="m" 
@@ -14,23 +14,43 @@ import MessageItem from "@/components/Messages/MessageItem";
 export default {
   name: "MessageList",
   components: {MessageItem},
-  props:["messages"],
+  props:{
+    convMessages:{
+      required:true
+    },
+    convId:{
+      type:Number,
+      required: true
+    }
+  },
+  watch(){
+    // convMessages:function(){
+    //
+    // }
+  },
+  mounted(){
+    this.messages = this.convMessages
+  },
   computed:{
     SortedMessagesByDate(){
       var messageTempArray = this.messages
-      messageTempArray.sort(this.SortMessageByDate);
+      if(messageTempArray != null){
+        messageTempArray.sort(this.SortMessageByDate);
 
-      return messageTempArray
+        return messageTempArray
+      }
+      else{
+        return []
+      }
+
     },
    
   },
   data(){
     return {
-      
+      loading:false,
+      messages:null
     }
-  },
-  mounted(){
-
   },
   methods:{
     SortMessageByDate(dateA, dateB) {
