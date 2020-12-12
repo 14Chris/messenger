@@ -11,60 +11,7 @@
         </div>
         <hr class="part-separator"/>
         <div class="conv-send-message">
-          <div class="field is-horizontal">
-            <div class="field-body">
-              <!-- Plus button -->
-              <button class="icon-button">
-                <span class="icon">
-                  <img src="@/assets/icons/plus-grey.svg"/>
-                </span>
-              </button>
-
-              <!-- GIF button -->
-              <button class="icon-button">
-                <span class="icon">
-                  <img src="@/assets/icons/gif-file-grey.svg"/>
-                </span>
-              </button>
-
-              <!-- Sticker button -->
-              <button class="icon-button">
-                <span class="icon">
-                  <img src="@/assets/icons/sticky-note-grey.svg"/>
-                </span>
-              </button>
-
-              <!-- File button -->
-              <button class="icon-button">
-                <span class="icon">
-                  <img src="@/assets/icons/paperclip-grey.svg"/>
-                </span>
-              </button>
-
-              <!-- Text input -->
-              <input
-                  class="send-message-input"
-                  v-model="message"
-                  type="text"
-                  placeholder="Enter your message"
-                  v-on:keyup.enter="SendNewMessage"
-              />
-
-              <!-- Smiley button -->
-              <button class="icon-button">
-                <span class="icon">
-                  <img src="@/assets/icons/smile-grey.svg"/>
-                </span>
-              </button>
-
-              <!-- Thumbs up button -->
-              <button class="icon-button">
-                <span class="icon">
-                  <img src="@/assets/icons/thumbs-up-grey.svg"/>
-                </span>
-              </button>
-            </div>
-          </div>
+          <SendMessageBar :message-submit="SendNewMessage"></SendMessageBar>
         </div>
       </div>
       <div class="column is-narrow column-no-top-marging">
@@ -86,16 +33,16 @@ import MessageList from "@/components/Messages/MessageList";
 import ConversationDetail from "@/components/Conversation/ConversationDetail";
 
 import eventBus from "../../eventBus.js";
+import SendMessageBar from "@/components/Messages/SendMessageBar";
 
 const api = new ApiService();
 export default {
   name: "Conversation",
-  components: {MessageList, ConversationDetail},
+  components: {MessageList, ConversationDetail, SendMessageBar},
   data() {
     return {
       conversation: null,
       loading: false,
-      message: "",
     };
   },
   watch:{
@@ -139,19 +86,16 @@ export default {
             this.loading = false;
           });
     },
-    SendNewMessage() {
-      if (this.message.length > 0) {
+    SendNewMessage(message) {
         var model = {
           type: "send_message",
           data: {
             conversation_id: this.conversation.id,
-            text: this.message,
+            text: message.text,
           },
         };
 
         this.$store.state.chatWebsocket.send(JSON.stringify(model));
-        this.message = "";
-      }
     },
     MessageReceived(data) {
       var object = JSON.parse(data);
