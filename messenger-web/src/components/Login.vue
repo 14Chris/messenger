@@ -2,41 +2,67 @@
   <div class="container">
     <form class="login" @submit.prevent="login">
       <h1>Sign in</h1>
-      <b-field label="Email">
-        <b-input
-          v-model="model.email"
-          type="email"
-          placeholder="Email"
-        ></b-input>
-      </b-field>
-      <b-field label="Password">
-        <b-input
-          v-model="model.password"
-          type="password"
-          placeholder="Password"
-          password-reveal
-        ></b-input>
-      </b-field>
-      <b-button native-type="submit">Login</b-button>
+
+
+      <div class="field">
+        <label class="label">Email</label>
+        <div class="control">
+          <input class="input" v-model="model.email"
+                 type="email"
+                 placeholder="Email">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+          <input class="input" v-model="model.password"
+                 type="password"
+                 placeholder="Password">
+        </div>
+      </div>
+      <button type="submit">Login</button>
     </form>
     <router-link to="/forgot_password"
       ><a>Forgot your password ?</a></router-link
     >
 
     <p>No account ? Create one :</p>
-    <b-button tag="router-link" to="/register" type="is-info">
-      Register
-    </b-button>
+    <router-link to="/register">
+      <button type="submit">Register</button>
+    </router-link>
   </div>
-</template>a
+</template>
 
 <script>
 import { required } from "vuelidate/lib/validators";
 import ApiService from "../service/api";
+import Notification from "@/shared_components/Notification/Notification";
 
 var api = new ApiService();
+
+import Vue from 'vue'
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
+
+
 export default {
   name: "Login",
+  components: {},
   data() {
     return {
       model: {
@@ -74,24 +100,22 @@ export default {
                   "Your account has not been activated yet. Please check your emails and clicked on the link to activate it.";
                 break;
               default:
-                errorMessage = "Error while loging in";
+                errorMessage = "Error while signing in to the app";
             }
 
-            this.$buefy.notification.open({
+            openNotification({
               message: errorMessage,
-              type: "is-danger",
-              duration: 5000,
-              closable: true,
-            });
-          }
+              type: 'danger',
+              duration: 5000
+            })
+           }
         })
         .catch(() => {
-          this.$buefy.notification.open({
-            message: "Error while signing in to the app",
-            type: "is-danger",
-            duration: 5000,
-            closable: true,
-          });
+          openNotification({
+            message:  "Error while signing in to the app",
+            type: 'danger',
+            duration: 5000
+          })
         });
     },
   },
