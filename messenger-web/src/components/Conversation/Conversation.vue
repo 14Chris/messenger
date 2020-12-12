@@ -6,8 +6,8 @@
         <div class="conv-header">
           <h4 class="title is-4 conversation-name">{{ conversation.name }}</h4>
         </div>
-        <div id="conv-messages-list" ref="convMessagesList" class="conv-messages">
-          <MessageList :key="conversation.id" :convId="conversation.id" :convMessages="conversation.messages"></MessageList>
+        <div class="conv-messages">
+            <MessageList :key="conversation.id" :convId="conversation.id" :convMessages="conversation.messages"></MessageList>
         </div>
         <hr class="part-separator"/>
         <div class="conv-send-message">
@@ -68,11 +68,7 @@ export default {
               response.json().then((data) => {
                 if (data.ResponseType == 1) {
                   this.conversation = data.Result;
-                  this.$nextTick(function () {
-                    //Scroll list of message to the latest (bottom)
-                    var divMessages = this.$refs.convMessagesList
-                    divMessages.scrollTop = divMessages.scrollHeight - divMessages.clientHeight
-                  })
+
                 } else {
                   this.conversation = null;
                 }
