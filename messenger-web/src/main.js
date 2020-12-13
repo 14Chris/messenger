@@ -4,8 +4,6 @@ import router from './router'
 import App from './App.vue'
 import store from './store'
 import Vuelidate from 'vuelidate'
-import Buefy from 'buefy'
-// import 'buefy/dist/buefy.css'
 
 Vue.config.productionTip = false
 
@@ -19,11 +17,6 @@ if (token) {
 
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
-
-//Ui library
-Vue.use(Buefy)
-
-
 
 new Vue({
   router,

@@ -19,7 +19,6 @@ export default {
             response.json().then((resp) => {
               if (resp.ResponseType == 1) {
                 const user = resp.Result;
-                console.log(user);
                 this.$store.dispatch("setUserSession", user);
               } else {
                 this.$store.dispatch("logout").then(() => {
@@ -41,11 +40,9 @@ export default {
 </script>
 
 
-<style lang="scss">
-@import "./buefy-config.scss";
-</style>
-
 <style>
+@import "styles/mystyles.css";
+
 html,
 body {
   height: 100% !important;
@@ -54,4 +51,22 @@ body {
 #app {
   height: 100% !important;
 }
+
+button:focus {
+  outline: none;
+}
+
+.icon{
+  height: 20px;
+  width: 20px;
+}
+
+.icon-button {
+  margin-right: 15px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
 </style>

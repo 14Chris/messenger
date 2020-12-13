@@ -3,36 +3,16 @@
     <div class="field is-horizontal conv-header">
       <div class="field-label is-normal">
         <label>To : </label>
-        <b-tag v-for="f in selected" :key="f.id"
-               type="is-primary"
-               closable
-               aria-close-label="Close tag"
-               @close="deleteFriendFromSelected(f.id)">
+        <span class="tag is-primary is-medium" v-for="f in selected" :key="f.id">
           {{ f.first_name }} {{ f.last_name }}
-        </b-tag>
+        <button class="delete is-small" @click="deleteFriendFromSelected(f.id)"></button>
+      </span>
       </div>
       <div class="field-body">
         <div class="field">
           <p class="control">
-            <b-autocomplete
-                :data="friendsSearch"
-                placeholder="Write person name"
-                field="title"
-                :loading="isFetching"
-                @typing="getFriendsBySearch"
-                @select="friendsSelected">
-
-              <template slot-scope="props">
-                <div class="media">
-                  <div class="media-left">
-
-                  </div>
-                  <div class="media-content">
-                    {{ props.option.first_name }} {{ props.option.last_name }}
-                  </div>
-                </div>
-              </template>
-            </b-autocomplete>
+            <autocomplete :typing="getFriendsBySearch" :search-result="friendsSearch"
+                          :select="friendsSelected"></autocomplete>
           </p>
         </div>
       </div>
@@ -41,19 +21,7 @@
       <MessageList v-if="conversation != null" :messages="conversation.messages"></MessageList>
     </div>
     <div class="conv-send-message">
-      <div class="field is-horizontal">
-        <div class="field-label is-normal">
-          <label></label>
-        </div>
-        <div class="field-body">
-          <input class="input" v-model="message" type="text" placeholder="Enter your message">
-          <button id="new-conversation-button" class="button navbar-icon" @click="addNewConversation">
-              <span class="icon">
-                <i class="fas fa-reply"></i>
-              </span>
-          </button>
-        </div>
-      </div>
+      <SendMessageBar :message-submit="SendMessage"></SendMessageBar>
     </div>
   </div>
 </template>
@@ -61,25 +29,42 @@
 <script>
 import ApiService from "../../service/api";
 import MessageList from "@/components/Messages/MessageList";
+import autocomplete from "@/components/Messages/FriendAutocomplete";
+import eventBus from "@/eventBus";
+import SendMessageBar from "@/components/Messages/SendMessageBar";
 
 const api = new ApiService();
 
 export default {
   name: "NewMessage",
-  components: {MessageList},
+  components: {SendMessageBar, MessageList, autocomplete},
   data() {
     return {
       friendsSearch: [],
       selected: [],
       isFetching: false,
-      message: "",
       conversation: null
     }
   },
+  mounted(){
+    eventBus.$on("friendselected", (data) => {
+      this.friendsSelected(data)
+    });
+  },
   methods: {
-    addNewConversation() {
+    //Send message
+    SendMessage(message){
+      if(this.conversation != null){
+        this.SendNewMessage(message)
+      }
+      else{
+        this.AddNewConversation(message)
+      }
+    },
+    //Create conversation if not exists
+    AddNewConversation(message) {
       var model = {
-        texte: this.message,
+        texte: message.text,
         friends: this.selected.map(f => f.id)
       }
 
@@ -89,6 +74,7 @@ export default {
               response.json()
                   .then(data => {
                     if (data.ResponseType == 1) {
+                      console.log(data.Result)
                       this.$router.push("/");
                     }
                   })
@@ -98,15 +84,27 @@ export default {
             console.log(err)
           })
     },
+    //Send new message if conversation not exists
+    SendNewMessage(message) {
+      var model = {
+        type: "send_message",
+        data: {
+          conversation_id: this.conversation.id,
+          text: message.text,
+        },
+      };
+
+      this.$store.state.chatWebsocket.send(JSON.stringify(model));
+
+      this.$router.push({ name: 'conversation', params: { id: this.conversation.id } })
+    },
     friendsSelected(option) {
+      this.friendsSearch = []
       var selectedFriends = [...this.selected]
       selectedFriends.push(option)
-
       var users = selectedFriends.map(f => f.id)
-
       api.create("conversation/exists/", JSON.stringify(users))
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
               response.json()
                   .then(data => {
@@ -134,7 +132,6 @@ export default {
       this.isFetching = true
       api.getData("friends/search/" + search)
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
               response.json()
                   .then(data => {
@@ -158,7 +155,6 @@ export default {
 
       api.create("conversation/exists/", JSON.stringify(this.selected.map(x => x.id)))
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
               response.json()
                   .then(data => {
@@ -181,5 +177,13 @@ export default {
 <style scoped>s
 .div-to {
   display: flex;
+}
+
+.conv-header {
+  margin-top: 10px !important;
+}
+
+.conv-send-message {
+  margin-bottom: 10px !important;
 }
 </style>

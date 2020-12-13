@@ -111,7 +111,7 @@ namespace Messenger.Service.Implementation
             {
                 Id = conversation.Id,
                 Name = userConversation.Name,
-                Messages = _messageRepository.List().Where(x=>x.ConversationId == id).OrderByDescending(x=>x.Date).Select(x=>new MessageModel()
+                Messages = _messageRepository.List().Where(x=>x.ConversationId == id).OrderByDescending(x=>x.Date).Take(20).Select(x=>new MessageModel()
                 {
                     Id = x.Id,
                     SenderId = x.SenderId,
@@ -140,7 +140,16 @@ namespace Messenger.Service.Implementation
                         Id = x.Conversation.Id,
                         Name = x.Name,
                         LastMessage = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Text : "",
-                        LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime
+                        LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime,
+                        FriendsIds = x.Conversation.Conversations.Where(x=>x.UserId != id).Select(a=>a.UserId).ToList(),
+                        LastMessageSender = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? new UserBasicModel()
+                        {
+                            Id = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Id,
+                            FirstName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.FirstName,
+                            LastName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.LastName,
+                            Email = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Email,
+                        } 
+                        : null,
                     }
                 ).ToList();
 
@@ -202,15 +211,77 @@ namespace Messenger.Service.Implementation
             DateTime dateTime = new DateTime();
 
 
-            ConversationListItem model = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x => new ConversationListItem
+            ConversationListItem conversationListItem = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x => new ConversationListItem
             {
                 Id = x.Conversation.Id,
                 Name = x.Name,
                 LastMessage = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Text : "",
-                LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime
+                LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime,
+                FriendsIds = x.Conversation.Conversations.Where(x => x.UserId != userId).Select(a => a.UserId).ToList(),
+                LastMessageSender = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? new UserBasicModel()
+                {
+                    Id = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Id,
+                    FirstName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.FirstName,
+                    LastName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.LastName,
+                    Email = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Email,
+                }
+                        : null,
             }).SingleOrDefault();
 
-            return model;
+            return conversationListItem;
+        }
+
+        /// <summary>
+        /// Archive a conversation 
+        /// (make the conversation not visible until he send or receive a new message)
+        /// </summary>
+        /// <param name="conversatioId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<ReturnApiObject> ArchiveConversation(int conversationId, int userId)
+        {
+            UserConversation userConv = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == conversationId).SingleOrDefault();
+
+            if(userConv == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            userConv.Visibility = ConversationVisibility.Archived;
+
+            UserConversation userConvUpdated = await _userConversationRepository.UpdateAsync(userConv);
+
+            if (userConvUpdated == null)
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+        }
+
+        /// <summary>
+        /// Get the conversation details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetConversationDetailById(int id, int userId)
+        {
+            ConversationDetailModel conversationDetail = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x=> new ConversationDetailModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Friends = x.Conversation.Conversations.Where(a => a.UserId != userId).Select(a => new UserBasicModel()
+                {
+                    Id = a.User.Id,
+                    FirstName = a.User.FirstName,
+                    LastName = a.User.LastName,
+                    Email = a.User.Email,
+                }).ToList()
+            })
+            .SingleOrDefault();
+
+            if(conversationDetail == null)
+                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversationDetail);
+
         }
     }
 }

@@ -12,6 +12,8 @@ namespace Messenger.Service.Interface
       
         public ReturnApiObject GetUser(int id);
 
+        public ReturnApiObject GetUserSession(int id);
+
         public Task<ReturnApiObject> UpdateUserInformations(UserBasicModel user);
 
         public ReturnApiObject EmailAlreadyExists(string email);

@@ -2,16 +2,13 @@
 using Messenger.Database;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
-using Messenger.Service.Interface;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
@@ -148,44 +145,42 @@ namespace Messenger.Api.WebSocketsHandlers
             {
                 Message message = (Message)result.Result;
 
-                ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(message.ConversationId, idUser);
-
-                dynamic objResult =
-                new {
-                    conversation = conv,
-                    message = message
-                };
-
-                string jsonResult = JsonConvert.SerializeObject(objResult);
-
                 //Get all user conversations 
                 List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(((Message)result.Result).ConversationId);
 
-                //Iterate to change conversation visibility because a new message is added
+                //Iterate to change conversation visibility when archived because a new message is added
                 foreach(UserConversation userConv in usersConv)
                 {
-                    if(userConv.Visibility == ConversationVisibility.NotVisible)
+                    if(userConv.Visibility == ConversationVisibility.Archived)
                     {
                         userConv.Visibility = ConversationVisibility.Visible;
 
                         UserConversation resultConvUpdate = await serviceProvider._userConversationService.UpdateUserConversation(userConv);
                     }
-                    
                 }
 
                 //Get users Ids from conversation
-                List<int> usersConvId = usersConv.Select(x => x.Id).ToList();
+                List<int> usersConvIds = usersConv.Select(x => x.UserId).ToList();
 
-                List<WebSocket> userSockets = _sockets.Where(x => usersConvId.Contains(x.Key)).Select(x => x.Value).ToList();
-
-                foreach (var socket in userSockets)
+                foreach (int userId in usersConvIds)
                 {
-                    if (socket.State != WebSocketState.Open)
-                    {
-                        continue;
-                    }
+                    WebSocket userSocket = _sockets.Where(x => userId == x.Key).Select(x => x.Value).SingleOrDefault();
 
-                    await SendStringAsync(socket, jsonResult, ct);
+                    if (userSocket == null || userSocket.State != WebSocketState.Open)
+                        continue;
+
+                    ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(message.ConversationId, userId);
+
+                    dynamic objResult =
+                    new
+                    {
+                        conversation = conv,
+                        message = message
+                    };
+
+                    string jsonResult = JsonConvert.SerializeObject(objResult);
+
+                     await SendStringAsync(userSocket, jsonResult, ct);
                 }
 
             }

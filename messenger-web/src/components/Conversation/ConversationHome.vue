@@ -1,9 +1,9 @@
 <template>
-  <div class="columns conv-home">
+  <div class="columns conv-home is-mobile">
     <div class="column column-home is-one-fifth">
       <ConversationsList></ConversationsList>
     </div>
-    <div class="column column-home container">
+    <div class="column column-home column-no-top-marging">
       <router-view></router-view>
     </div>
   </div>

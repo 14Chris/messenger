@@ -1,7 +1,7 @@
 <template>
   <div>
     <img v-if="imageExists" :src="userPictureUrl" alt="Avatar" class="avatar" />
-    <div v-else class="avatar avatar-empty"></div>
+    <img v-else src="@/assets/icons/default-user-avatar.svg" alt="DefaultAvatar" class="avatar" />
   </div>
 </template>
 
@@ -26,7 +26,6 @@ export default {
   methods: {
     CheckUrlValidity() {
       api.headData("users/" + this.userId + "/picture").then((response) => {
-        console.log(response);
         this.imageExists = response.ok;
       });
     },
@@ -37,8 +36,8 @@ export default {
 <style scoped>
 .avatar {
   vertical-align: middle;
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
 }
 

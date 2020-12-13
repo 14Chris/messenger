@@ -54,7 +54,7 @@ namespace Messenger.Api.Controllers
                 if (!ok)
                     return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
 
-                return _userService.GetUser(id);
+                return _userService.GetUserSession(id);
             }
             catch (Exception)
             {

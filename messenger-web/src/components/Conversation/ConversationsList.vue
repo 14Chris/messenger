@@ -4,16 +4,14 @@
       <h3 class="title is-3">Conversations</h3>
     </div>
     <div class="conversation-list">
-      <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c"></ConversationListItem>
+      <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c" :conversation-archived="ConversationArchived"></ConversationListItem>
     </div>
     <div class="conversation-list-bottom">
-      <router-link id="new-conversation-button" to="/conv/new">
-      <button class="button navbar-icon">
-              <span class="icon">
-                <i class="fas fa-plus"></i>
-              </span>
-      </button>
-        </router-link>
+      <router-link class="button" id="new-conversation-button" to="/conv/new" tag="button">
+                <span class="icon">
+                  <img src="@/assets/icons/plus-white.svg"/>
+                </span>
+      </router-link>
     </div>
 
   </div>
@@ -28,12 +26,12 @@ import eventBus from "@/eventBus";
 const api = new ApiService();
 export default {
   name: "FriendsList",
-  components:{
+  components: {
     ConversationListItem
   },
-  data(){
+  data() {
     return {
-      conversations:[]
+      conversations: []
     }
   },
   created() {
@@ -44,11 +42,10 @@ export default {
   mounted() {
     this.GetUserConversations()
   },
-  methods:{
-    GetUserConversations(){
+  methods: {
+    GetUserConversations() {
       api.getData("conversation/user")
-          .then(response=> {
-            console.log(response)
+          .then(response => {
             if (response.ok == true) {
               response.json()
                   .then(data => {
@@ -60,65 +57,66 @@ export default {
                   })
             }
           })
-          .catch(err => {
-            console.log(err)
+          .catch(() => {
+            console.log()
           })
     },
-    MessageReceived(data){
-      var object = JSON.parse(data)
+    MessageReceived(data) {
+      let object = JSON.parse(data)
       let finded = false
-      this.conversations = this.conversations.map(function(item) {
-        if(item.id == object.conversation.id){
+      this.conversations = this.conversations.map(function (item) {
+        if (item.id == object.conversation.id) {
           finded = true
-         return object.conversation
-        }
-        else{
+          return object.conversation
+        } else {
           return item
         }
       });
 
-      if(!finded){
+      if (!finded) {
         this.conversations.unshift(object.conversation)
       }
+    },
+    ConversationArchived(){
+      this.GetUserConversations()
     }
-
-}
+  }
 }
 </script>
 
 <style scoped lang="scss">
-.conversations{
-  height:100%;
+.conversations {
+  height: 100%;
   margin-left: 20px;
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
 }
 
-  .conversation-list-header{
-    
-    margin-bottom: 20px;
-  }
-  .conversation-list{
-    flex:1;
-  }
+.conversation-list-header {
+  margin-bottom: 20px;
+}
 
-  .conversation-list-bottom{
-    height : 60px;
-  }
+.conversation-list {
+  flex: 1;
+}
 
+.conversation-list-bottom {
+  height: 60px;
+  position: relative;
+}
 
-  #new-conversation-button{
-    margin: 0 auto !important;
+#new-conversation-button {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 
-    button{
-      width: 60px;
-      height: 60px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
 
-      background-color: #349CFC;
-      i{
-        color: white;
-      }
-    }
-
-  }
+  background-color: #349CFC;
+}
 </style>

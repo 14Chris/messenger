@@ -1,31 +1,25 @@
 <template>
-  <div v-if="isLoading" class="full-page">
-    {{ $route.params.id }}
-  </div>
+  <div v-if="loading" class="full-page">Loading...</div>
   <div v-else class="full-page">
-    <div v-if="conversation" class="conversation">
-      <div class="conv-header">
-      <h4 class="title is-4 conversation-name">{{conversation.name}}</h4>
-      </div>
-      <div class="conv-messages">
-        <MessageList :messages="conversation.messages"></MessageList>
-      </div>
-      <div class="conv-send-message">
-        <div class="field is-horizontal">
-          <div class="field-label is-normal">
-            <label></label>
-          </div>
-          <div class="field-body">
-            <input class="input" v-model="message" type="text" placeholder="Enter your message">
-            <button id="send-message-button" class="button navbar-icon" @click="SendNewMessage">
-              <span class="icon">
-                <i class="fas fa-reply"></i>
-              </span>
-            </button>
-          </div>
+    <div v-if="conversation" class="columns conv-columns">
+      <div class="conversation column is-two-thirds">
+        <div class="conv-header">
+          <h4 class="title is-4 conversation-name">{{ conversation.name }}</h4>
         </div>
+        <div class="conv-messages">
+            <MessageList :key="conversation.id" :convId="conversation.id" :convMessages="conversation.messages"></MessageList>
         </div>
-
+        <hr class="part-separator"/>
+        <div class="conv-send-message">
+          <SendMessageBar :message-submit="SendNewMessage"></SendMessageBar>
+        </div>
+      </div>
+      <div class="column is-narrow column-no-top-marging">
+        <hr class="conv-part-separator"/>
+      </div>
+      <div class="column">
+        <ConversationDetail :key="conversation.id" :conversationId="conversation.id"></ConversationDetail>
+      </div>
     </div>
     <div v-else>
       <p>A problem occured when retrieving conversation</p>
@@ -36,23 +30,29 @@
 <script>
 import ApiService from "@/service/api";
 import MessageList from "@/components/Messages/MessageList";
+import ConversationDetail from "@/components/Conversation/ConversationDetail";
 
 import eventBus from "../../eventBus.js";
+import SendMessageBar from "@/components/Messages/SendMessageBar";
 
 const api = new ApiService();
 export default {
   name: "Conversation",
-  components: {MessageList},
+  components: {MessageList, ConversationDetail, SendMessageBar},
   data() {
     return {
       conversation: null,
-      isLoading: false,
-      message:""
+      loading: false,
+    };
+  },
+  watch:{
+    $route (){
+      this.GetConversationById(this.$route.params.id)
     }
   },
   created() {
-    eventBus.$on("message-received", data => {
-      this.MessageReceived(data)
+    eventBus.$on("message-received", (data) => {
+      this.MessageReceived(data);
     });
   },
   mounted() {
@@ -60,74 +60,95 @@ export default {
   },
   methods: {
     GetConversationById(id) {
-      console.log(id)
-      this.isLoading = true
-      api.getData("conversation/" + id)
-          .then(response => {
-            console.log(response)
+      this.loading = true;
+      api
+          .getData("conversation/" + id)
+          .then((response) => {
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                    if (data.ResponseType == 1) {
-                      this.conversation = data.Result
-                    } else {
-                      this.conversation = null
-                    }
-                  })
+              response.json().then((data) => {
+                if (data.ResponseType == 1) {
+                  this.conversation = data.Result;
+
+                } else {
+                  this.conversation = null;
+                }
+              });
             }
           })
-          .catch(err => {
-            console.log(err)
+          .catch((err) => {
+            console.log(err);
           })
-          .finally(()=>{
-            this.isLoading = false
-          })
+          .finally(() => {
+            this.loading = false;
+          });
     },
-    SendNewMessage(){
-      var model = {
-        type:"send_message",
-        data: {
-          conversation_id: this.conversation.id,
+    SendNewMessage(message) {
+        var model = {
+          type: "send_message",
+          data: {
+            conversation_id: this.conversation.id,
+            text: message.text,
+          },
+        };
 
-          text: this.message
-        }
-      }
-      this.$store.state.chatWebsocket.send(JSON.stringify(model))
+        this.$store.state.chatWebsocket.send(JSON.stringify(model));
     },
-    MessageReceived(data){
-      var object = JSON.parse(data)
+    MessageReceived(data) {
+      var object = JSON.parse(data);
 
-      if(object.message.conversation_id == this.conversation.id){
-        console.log('new message received', object.message)
-        this.conversation.messages.push(object.message)
+      if (object.message.conversation_id == this.conversation.id) {
+        this.conversation.messages.push(object.message);
       }
     },
-  }
-}
+  },
+};
 </script>
 
 <style>
-.conversation{
-  height:100%;
-  display:flex;
+.conversation {
+  height: 100%;
+  display: flex !important;
   flex-direction: column;
 }
 
-.conv-header{
-  height:50px;
+.conv-header {
+  height: 50px;
 }
 
-.conv-messages{
-  flex:1;
-  overflow-y: scroll;
+.conv-messages {
+  flex: 1;
+  overflow-y: auto;
 }
 
-.conv-send-message{
-  height:50px;
-  margin-top:10px;
+.conv-send-message {
+  height: 40px;
+  margin-top: 10px;
 }
 
-#send-message-button{
-  margin-left: 10px;
+.conv-columns {
+  height: 100% !important;
+  margin: 0 !important;
 }
+
+.conv-part-separator {
+  margin: 0 0.5em;
+  background-color: #f2f2f2;
+  width: 2px;
+  height: 100%;
+}
+
+.send-message-input {
+  margin-right: 15px;
+  flex: 1;
+  border-radius: 7px;
+  background-color: #f2f2f2;
+  border: 0;
+  height: 40px;
+  text-indent: 15px;
+}
+
+.send-message-input:focus {
+  outline: none;
+}
+
 </style>

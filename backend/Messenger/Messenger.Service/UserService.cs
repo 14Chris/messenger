@@ -103,7 +103,28 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public ReturnApiObject GetUser(int id)
         {
-            User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+            User user = _userRepository.List().Where(x => x.Id == id)
+                .SingleOrDefault();
+
+            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", user);
+        }
+
+        /// <summary>
+        /// Get user by his id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ReturnApiObject GetUserSession(int id)
+        {
+            UserSessionModel user = _userRepository.List().Where(x => x.Id == id)
+                .Select(x => new UserSessionModel
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    State = (int)x.State
+                })
+                .SingleOrDefault();
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", user);
         }
@@ -501,6 +522,9 @@ namespace Messenger.Service.Implementation
         public byte[] GetUserProfilePicture(int id)
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
+
+            if (user == null)
+                return null;
 
             return user.ProfilePicture;
         }
