@@ -3,55 +3,93 @@
     <h4>Register</h4>
     <form @submit.prevent="register">
       <!-- First name -->
-      <b-field label="First name" v-if="!$v.model.first_name.$invalid">
-        <b-input type="text" v-model="model.first_name" autofocus></b-input>
-      </b-field>
+      <div class="field" v-if="!$v.model.first_name.$invalid">
+        <label class="label">First Name</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="First Name" v-model="model.first_name">
+        </div>
+      </div>
 
-      <b-field v-else label="First name" type="is-danger" message="First name is required">
-        <b-input type="text" v-model="model.first_name" autofocus></b-input>
-      </b-field>
+      <div class="field" v-else>
+        <label class="label">First Name</label>
+        <div class="control">
+          <input class="input is-danger" type="text" placeholder="First Name" v-model="model.first_name">
+        </div>
+        <p class="help is-danger">First name is required</p>
+      </div>
 
       <!-- Last name -->
-      <b-field label="Last name" v-if="!$v.model.last_name.$invalid">
-        <b-input type="text" v-model="model.last_name"></b-input>
-      </b-field>
+      <div class="field" v-if="!$v.model.last_name.$invalid">
+        <label class="label">Last Name</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="Last Name" v-model="model.last_name">
+        </div>
+      </div>
 
-      <b-field v-else label="Last name" type="is-danger" message="Last name is required">
-        <b-input type="text" v-model="model.last_name"></b-input>
-      </b-field>
+      <div class="field" v-else>
+        <label class="label">Last Name</label>
+        <div class="control">
+          <input class="input is-danger" type="text" placeholder="Last Name" v-model="model.last_name">
+        </div>
+        <p class="help is-danger">Last name is required</p>
+      </div>
 
       <!-- Email -->
-      <b-field label="Email" v-if="!$v.model.email.$invalid">
-        <b-input type="email" v-model="model.email"></b-input>
-      </b-field>
+      <div class="field" v-if="!$v.model.email.$invalid">
+        <label class="label">Email</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="Email" v-model="model.email">
+        </div>
+      </div>
 
-      <b-field v-else label="Email" type="is-danger" :message="GetEmailErrors()">
-        <b-input type="email" v-model="model.email"></b-input>
-      </b-field>
+      <div class="field" v-else>
+        <label class="label">Email</label>
+        <div class="control">
+          <input class="input is-danger" type="text" placeholder="Email" v-model="model.email">
+        </div>
+        <p class="help is-danger">{{ GetEmailErrors() }}</p>
+      </div>
 
       <!-- Password -->
-       <b-field label="Passworrd" v-if="!$v.model.password.$invalid">
-        <b-input type="password" v-model="model.password" password-reveal></b-input>
-      </b-field>
+      <div class="field" v-if="!$v.model.password.$invalid">
+        <label class="label">Password</label>
+        <div class="control">
+          <input class="input" type="password" placeholder="Password" v-model="model.password">
+        </div>
+      </div>
 
-      <b-field v-else label="Password" type="is-danger" :message="GetPasswordErrors()">
-        <b-input type="password" v-model="model.password" password-reveal></b-input>
-      </b-field>
+      <div class="field" v-else>
+        <label class="label">Password</label>
+        <div class="control">
+          <input class="input is-danger" type="password" placeholder="Password" v-model="model.password">
+        </div>
+        <p class="help is-danger">{{ GetPasswordErrors() }}</p>
+      </div>
 
       <!-- Password confirmation -->
-       <b-field label="Confirm Password" v-if="!$v.model.password_confirmation.$invalid">
-        <b-input type="password" v-model="model.password_confirmation" password-reveal></b-input>
-      </b-field>
+      <div class="field" v-if="!$v.model.password_confirmation.$invalid">
+        <label class="label">Confirm Password</label>
+        <div class="control">
+          <input class="input" type="password" placeholder="Confirm Password" v-model="model.password_confirmation">
+        </div>
+      </div>
 
-      <b-field v-else label="Password" type="is-danger" :message="GetConfirmPasswordErrors()">
-        <b-input type="password" v-model="model.password_confirmation" password-reveal></b-input>
-      </b-field>
+      <div class="field" v-else>
+        <label class="label">Confirm Password</label>
+        <div class="control">
+          <input class="input is-danger" type="password" placeholder="Confirm Password" v-model="model.password_confirmation">
+        </div>
+        <p class="help is-danger">{{ GetConfirmPasswordErrors() }}</p>
+      </div>
 
       <div>
-        <b-button native-type="submit">Register</b-button>
+        <button type="submit">Register</button>
       </div>
       <p>Already have an account ? Log in :</p>
-      <b-button tag="router-link" to="/login" type="is-info">Sign in</b-button>
+      <router-link to="/login">
+        <button type="button">Sign in</button>
+      </router-link>
+
     </form>
   </div>
 </template>
@@ -60,7 +98,27 @@
 import { required, minLength, sameAs, email } from "vuelidate/lib/validators";
 import ApiService from "../service/api";
 
-var api = new ApiService();
+import Notification from "@/shared_components/Notification/Notification";
+
+const api = new ApiService();
+
+import Vue from 'vue'
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
 
 export default {
   name: "Register",
@@ -83,37 +141,35 @@ export default {
         email: this.model.email,
         password: this.model.password,
       };
+
       this.$v.$touch();
-      if (this.$v.$invalid) {
-        console.log("error register");
-      } else {
+
+      if (!this.$v.$invalid) {
+
         api
           .create("users", JSON.stringify(data))
           .then((response) => response.json()).then(data=>{
             if (data.HttpStatus == 201) {
-              this.$buefy.notification.open({
-                message: "Your account has been created. You can now log in",
-                type: "is-success",
-                duration: 5000,
-                closable: true,
-              });
+              openNotification({
+                message: "Your account has been created. Please check your emails to validate your before sign in.",
+                type: 'success',
+                duration: 5000
+              })
               this.$router.push("/login");
             } else {
-              this.$buefy.notification.open({
+              openNotification({
                 message: "An error happened while creating your account",
-                type: "is-danger",
-                duration: 5000,
-                closable: true,
-              });
+                type: 'danger',
+                duration: 5000
+              })
             }
           })
           .catch(() => {
-            this.$buefy.notification.open({
+            openNotification({
               message: "An error happened while creating your account",
-              type: "is-danger",
-              duration: 5000,
-              closable: true,
-            });
+              type: 'danger',
+              duration: 5000
+            })
           });
       }
     },

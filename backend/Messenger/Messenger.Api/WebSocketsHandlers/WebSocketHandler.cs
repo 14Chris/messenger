@@ -145,16 +145,6 @@ namespace Messenger.Api.WebSocketsHandlers
             {
                 Message message = (Message)result.Result;
 
-                ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(message.ConversationId, idUser);
-
-                dynamic objResult =
-                new {
-                    conversation = conv,
-                    message = message
-                };
-
-                string jsonResult = JsonConvert.SerializeObject(objResult);
-
                 //Get all user conversations 
                 List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(((Message)result.Result).ConversationId);
 
@@ -170,18 +160,27 @@ namespace Messenger.Api.WebSocketsHandlers
                 }
 
                 //Get users Ids from conversation
-                List<int> usersConvId = usersConv.Select(x => x.UserId).ToList();
+                List<int> usersConvIds = usersConv.Select(x => x.UserId).ToList();
 
-                List<WebSocket> userSockets = _sockets.Where(x => usersConvId.Contains(x.Key)).Select(x => x.Value).ToList();
-
-                foreach (var socket in userSockets)
+                foreach (int userId in usersConvIds)
                 {
-                    if (socket.State != WebSocketState.Open)
-                    {
-                        continue;
-                    }
+                    WebSocket userSocket = _sockets.Where(x => userId == x.Key).Select(x => x.Value).SingleOrDefault();
 
-                    await SendStringAsync(socket, jsonResult, ct);
+                    if (userSocket == null || userSocket.State != WebSocketState.Open)
+                        continue;
+
+                    ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(message.ConversationId, userId);
+
+                    dynamic objResult =
+                    new
+                    {
+                        conversation = conv,
+                        message = message
+                    };
+
+                    string jsonResult = JsonConvert.SerializeObject(objResult);
+
+                     await SendStringAsync(userSocket, jsonResult, ct);
                 }
 
             }

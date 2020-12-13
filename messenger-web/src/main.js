@@ -18,8 +18,6 @@ if (token) {
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
 
-
-
 new Vue({
   router,
   store,

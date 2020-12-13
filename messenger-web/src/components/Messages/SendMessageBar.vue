@@ -75,8 +75,8 @@ export default {
             text: this.message,
         };
 
-        console.log(model)
         this.MessageSubmit(model)
+        this.message = ""
       }
     },
   }

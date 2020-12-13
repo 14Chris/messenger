@@ -23,7 +23,7 @@
             $store.state.user.id != message.sender_id ? 'other' : 'sender',
           ]"
         >
-          {{ message.text }}
+          {{ message.text }} {{message.id}}
         </div>
         <div class="message-date" v-if="lastUserMessage">
           {{ MessageDate }}
@@ -45,6 +45,9 @@ export default {
   props: ["message", "lastUserMessage"],
   components: {
     Avatar,
+  },
+  mounted(){
+    // console.log(this.message)
   },
   computed:{
     MessageDate(){

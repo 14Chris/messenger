@@ -65,6 +65,30 @@ namespace Messenger.Api.Controllers
             }
         }
 
+        // GET: Get conversations by his id
+        [HttpGet("{convId}/messages/{lastMessageId}/more")]
+        [Authorize]
+        public ReturnApiObject GetConversationMoreMessages(int convId, int lastMessageId)
+        {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+
+            try
+            {
+                return _messageService.LoadMoreMessagesFromConversation(id, convId, lastMessageId);
+            }
+            catch (Exception ex)
+            {
+                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+            }
+        }
+
         // GET: Get conversations detail by his id
         [HttpGet("{convId}/detail")]
         [Authorize]

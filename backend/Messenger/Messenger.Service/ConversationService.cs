@@ -216,7 +216,16 @@ namespace Messenger.Service.Implementation
                 Id = x.Conversation.Id,
                 Name = x.Name,
                 LastMessage = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Text : "",
-                LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime
+                LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime,
+                FriendsIds = x.Conversation.Conversations.Where(x => x.UserId != userId).Select(a => a.UserId).ToList(),
+                LastMessageSender = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? new UserBasicModel()
+                {
+                    Id = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Id,
+                    FirstName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.FirstName,
+                    LastName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.LastName,
+                    Email = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Email,
+                }
+                        : null,
             }).SingleOrDefault();
 
             return conversationListItem;

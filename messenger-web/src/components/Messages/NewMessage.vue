@@ -21,7 +21,7 @@
       <MessageList v-if="conversation != null" :messages="conversation.messages"></MessageList>
     </div>
     <div class="conv-send-message">
-      <SendMessageBar :message-submit="AddNewConversation"></SendMessageBar>
+      <SendMessageBar :message-submit="SendMessage"></SendMessageBar>
     </div>
   </div>
 </template>
@@ -52,8 +52,18 @@ export default {
     });
   },
   methods: {
+    //Send message
+    SendMessage(message){
+      if(this.conversation != null){
+        this.SendNewMessage(message)
+      }
+      else{
+        this.AddNewConversation(message)
+      }
+    },
+    //Create conversation if not exists
     AddNewConversation(message) {
-       var model = {
+      var model = {
         texte: message.text,
         friends: this.selected.map(f => f.id)
       }
@@ -64,6 +74,7 @@ export default {
               response.json()
                   .then(data => {
                     if (data.ResponseType == 1) {
+                      console.log(data.Result)
                       this.$router.push("/");
                     }
                   })
@@ -72,6 +83,20 @@ export default {
           .catch(err => {
             console.log(err)
           })
+    },
+    //Send new message if conversation not exists
+    SendNewMessage(message) {
+      var model = {
+        type: "send_message",
+        data: {
+          conversation_id: this.conversation.id,
+          text: message.text,
+        },
+      };
+
+      this.$store.state.chatWebsocket.send(JSON.stringify(model));
+
+      this.$router.push({ name: 'conversation', params: { id: this.conversation.id } })
     },
     friendsSelected(option) {
       this.friendsSearch = []
