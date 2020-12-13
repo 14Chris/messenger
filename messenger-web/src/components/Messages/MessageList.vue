@@ -81,18 +81,22 @@ export default {
             if (response.ok == true) {
               response.json().then((data) => {
                 if (data.ResponseType == 1) {
-                  //var firstMessage = document.getElementsByClassName("message-item-element")[30]
-
                   let divMessages = this.$refs.convMessagesList
 
+                  //Get the previous height of message list
                   var previousHeight = document.getElementById("messages-list").offsetHeight
+
+                  //Add all the loaded messages in top of messages array
                   data.Result.forEach(element=>{
                     this.messages.unshift(element)
                   })
 
+                  //When DOM is updated
                   this.$nextTick(() => {
+                    //Get the new height of message list
                     let newHeight = document.getElementById("messages-list").offsetHeight
 
+                    //Set the scroll position to previous one
                     divMessages.scrollTop = newHeight - previousHeight
                   });
 
