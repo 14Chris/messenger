@@ -1,6 +1,6 @@
 <template>
   <div id="conv-messages-list" ref="convMessagesList" >
-    <div id="messages-list">
+    <div id="messages-list" ref="messagesList">
       <MessageItem
           class="message-item-element"
           v-for="(m, index) of SortedMessagesByDate"
@@ -81,18 +81,21 @@ export default {
             if (response.ok == true) {
               response.json().then((data) => {
                 if (data.ResponseType == 1) {
-                  var firstMessage = document.getElementsByClassName("message-item-element")[0]
-                  console.log(firstMessage)
-                  console.log(firstMessage.offsetTop)
+                  //var firstMessage = document.getElementsByClassName("message-item-element")[30]
 
+                  let divMessages = this.$refs.convMessagesList
+
+                  var previousHeight = document.getElementById("messages-list").offsetHeight
                   data.Result.forEach(element=>{
                     this.messages.unshift(element)
                   })
-                  firstMessage = document.getElementsByClassName("message-item-element")[0]
-                  console.log(firstMessage.offsetTop)
 
-                  let divMessages = this.$refs.convMessagesList
-                  divMessages.scrollTop = firstMessage.offsetTop
+                  this.$nextTick(() => {
+                    let newHeight = document.getElementById("messages-list").offsetHeight
+
+                    divMessages.scrollTop = newHeight - previousHeight
+                  });
+
                 }
               });
             }
