@@ -10,6 +10,7 @@ namespace Messenger.Api.Controllers
 {
     [Route("friends")]
     [ApiController]
+    [Authorize(Policy = "ApiKeyPolicy")]
     public class FriendController : BaseController
     {
         public FriendController(IServiceProvider serviceProvider) : base(serviceProvider)

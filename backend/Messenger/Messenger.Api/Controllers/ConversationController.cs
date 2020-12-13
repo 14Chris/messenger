@@ -11,6 +11,7 @@ namespace Messenger.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Policy = "ApiKeyPolicy")]
     public class ConversationController : BaseController
     {
         public ConversationController(IServiceProvider serviceProvider) : base(serviceProvider)

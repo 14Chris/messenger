@@ -15,6 +15,7 @@ namespace Messenger.Api.Controllers
 {
     [Route("users")]
     [ApiController]
+    [Authorize(Policy = "ApiKeyPolicy")]
     public class UserController : BaseController
     {
         public UserController(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -222,7 +223,7 @@ namespace Messenger.Api.Controllers
 
         // GET: User profile picture
         [HttpGet("{id}/picture")]
-        //[Authorize]
+        //[AllowAnonymous]
         public IActionResult GetUserProfilePicture(int id)
         {
             try
@@ -240,9 +241,9 @@ namespace Messenger.Api.Controllers
             }
         }
 
-        // GET: User profile picture
+        // HEAD: User profile picture
         [HttpHead("{id}/picture")]
-        [Authorize]
+        //[Authorize]
         public IActionResult HeadUserProfilePicture(int id)
         {
             try
