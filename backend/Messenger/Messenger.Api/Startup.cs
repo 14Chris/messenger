@@ -1,8 +1,10 @@
+using Messenger.Api.Authorization;
 using Messenger.Api.WebSocketsHandlers;
 using Messenger.Database;
 using Messenger.EmailSending;
 using Messenger.Facade.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +33,20 @@ namespace Messenger.Api
         {
             services.AddCors();
 
+            services.AddHttpContextAccessor();
+
+            // Authorization middleware to authorize only request from client with a valid API Key
+            string apiKey = Configuration["ApiKey"];
+
+            services.AddTransient<IAuthorizationHandler, ApiKeyRequirementHandler>();
+            services.AddAuthorization(authConfig =>
+            {
+                authConfig.AddPolicy("ApiKeyPolicy",
+                    policyBuilder => policyBuilder
+                        .AddRequirements(new ApiKeyRequirement(new[] { apiKey})));
+            });
+
+            // Configure controllers with newtonsoft json serializer
             services.AddControllers().AddNewtonsoftJson(opt =>
             {
                 opt.SerializerSettings.ContractResolver = new DefaultContractResolver();

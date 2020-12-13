@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Messenger.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Policy = "ApiKeyPolicy")]
     public class LoginController : BaseController
     {
         public LoginController(IServiceProvider serviceProvider) : base(serviceProvider)

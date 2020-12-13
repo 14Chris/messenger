@@ -1,6 +1,6 @@
 export default class ApiService {
     apiUrl = process.env.VUE_APP_API_URL;
-    apiKey = "003026bbc133714df1834b8638bb496e-8f4b3d9a-e931-478d-a994-28a725159ab9"
+    apiKey = process.env.VUE_APP_API_KEY;
 
     getData(route) {
         return fetch(this.createCompleteRoute(route, this.apiUrl), {
