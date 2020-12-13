@@ -31,6 +31,20 @@ namespace Messenger.Api
         {
             services.AddCors();
 
+
+            // Authorization middleware to authorize only request from client with a valid API Key
+
+            string apiKey = Configuration["ApiKey"];
+
+            services.AddTransient<IAuthorizationHandler, ApiKeyRequirementHandler>();
+            services.AddAuthorization(authConfig =>
+            {
+                authConfig.AddPolicy("ApiKeyPolicy",
+                    policyBuilder => policyBuilder
+                        .AddRequirements(new ApiKeyRequirement(new[] { apiKey})));
+            });
+
+            // Configure controllers with newtonsoft json serializer
             services.AddControllers().AddNewtonsoftJson(opt =>
             {
                 opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
