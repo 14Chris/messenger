@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Database", "Messe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger.EmailSending", "Messenger.EmailSending\Messenger.EmailSending.csproj", "{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger.MessageBroker", "Messenger.MessageBroker\Messenger.MessageBroker.csproj", "{72615301-479D-458B-BF15-64D1BEB89B64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72615301-479D-458B-BF15-64D1BEB89B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72615301-479D-458B-BF15-64D1BEB89B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72615301-479D-458B-BF15-64D1BEB89B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72615301-479D-458B-BF15-64D1BEB89B64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
