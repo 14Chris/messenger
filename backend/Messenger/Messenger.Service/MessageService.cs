@@ -1,4 +1,5 @@
-﻿using Messenger.Database;
+﻿using Confluent.Kafka;
+using Messenger.Database;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Messenger.Facade.Settings;
@@ -14,8 +15,8 @@ namespace Messenger.Service.Implementation
 {
     public class MessageService : BaseService, IMessageService
     {
-        public MessageService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings) : base(serviceProvider, jwtSettings)
-        {
+        public MessageService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings, ProducerConfig config) : base(serviceProvider, jwtSettings)
+        { 
         }
 
         /// <summary>

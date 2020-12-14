@@ -223,7 +223,7 @@ namespace Messenger.Api.Controllers
 
         // GET: User profile picture
         [HttpGet("{id}/picture")]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public IActionResult GetUserProfilePicture(int id)
         {
             try
@@ -243,7 +243,7 @@ namespace Messenger.Api.Controllers
 
         // HEAD: User profile picture
         [HttpHead("{id}/picture")]
-        //[Authorize]
+        [AllowAnonymous]
         public IActionResult HeadUserProfilePicture(int id)
         {
             try

@@ -20,6 +20,37 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    networks: 
+      - messenger-kafka
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+    ports:
+      - '9092:9092'
+    expose:
+      # Opens port 9092 on the container
+      - '9092'
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - messenger-kafka
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+    expose:
+      # Opens port 2181 on the container
+      - '2181'
+
+
 # Names our volume
 volumes:
   my-db:
+
+networks: 
+  messenger-kafka:
+    driver: bridge

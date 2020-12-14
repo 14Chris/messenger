@@ -1,10 +1,13 @@
-﻿using Messenger.Database;
+﻿using Confluent.Kafka;
+using Messenger.Database;
+using Messenger.Facade.KafkaConfiguration;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Messenger.Facade.Settings;
 using Messenger.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +19,11 @@ namespace Messenger.Service.Implementation
 {
     public class ConversationService : BaseService, IConversationService
     {
-        public ConversationService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings) : base(serviceProvider, jwtSettings)
+        private readonly ProducerConfig _config;
+
+        public ConversationService(IServiceProvider serviceProvider, IOptions<JwtSettings> jwtSettings, ProducerConfig config) : base(serviceProvider, jwtSettings)
         {
+            this._config = config;
         }
 
         /// <summary>
@@ -83,6 +89,24 @@ namespace Messenger.Service.Implementation
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
             }
 
+            try
+            {
+                // Serialize conversation object
+                string serializedConversation = JsonConvert.SerializeObject(result.Id);
+
+                // Create Kafka producer for topic "conversation_created"
+                var producer = new ProducerWrapper(this._config, "conversation_created");
+
+                // Add message to topic
+                await producer.WriteMessage(serializedConversation);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+
             return new ReturnApiObject(HttpStatusCode.Created, ResponseType.Success, "", conversation);
         }
 
@@ -94,8 +118,8 @@ namespace Messenger.Service.Implementation
         public ReturnApiObject GetConversationById(int id, int userId)
         {
             Conversation conversation = _conversationRepository.List().Where(x => x.Id == id).SingleOrDefault();
-         
-            if(conversation == null)
+
+            if (conversation == null)
             {
                 return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error, "CONVERSATION_NOT_FOUND", null);
             }
@@ -111,7 +135,7 @@ namespace Messenger.Service.Implementation
             {
                 Id = conversation.Id,
                 Name = userConversation.Name,
-                Messages = _messageRepository.List().Where(x=>x.ConversationId == id).OrderByDescending(x=>x.Date).Take(20).Select(x=>new MessageModel()
+                Messages = _messageRepository.List().Where(x => x.ConversationId == id).OrderByDescending(x => x.Date).Take(20).Select(x => new MessageModel()
                 {
                     Id = x.Id,
                     SenderId = x.SenderId,
@@ -132,7 +156,7 @@ namespace Messenger.Service.Implementation
         public ReturnApiObject GetConversationsByUser(int id)
         {
             DateTime dateTime = new DateTime();
-            
+
             List<ConversationListItem> conversations = _userConversationRepository.List().Where(x => x.UserId == id && x.Visibility == ConversationVisibility.Visible)
                 .Select(x =>
                     new ConversationListItem
@@ -141,14 +165,14 @@ namespace Messenger.Service.Implementation
                         Name = x.Name,
                         LastMessage = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Text : "",
                         LastMessageDate = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Date : dateTime,
-                        FriendsIds = x.Conversation.Conversations.Where(x=>x.UserId != id).Select(a=>a.UserId).ToList(),
+                        FriendsIds = x.Conversation.Conversations.Where(x => x.UserId != id).Select(a => a.UserId).ToList(),
                         LastMessageSender = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault() != null ? new UserBasicModel()
                         {
                             Id = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Id,
                             FirstName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.FirstName,
                             LastName = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.LastName,
                             Email = x.Conversation.Messages.OrderByDescending(x => x.Date).FirstOrDefault().Sender.Email,
-                        } 
+                        }
                         : null,
                     }
                 ).ToList();
@@ -164,7 +188,7 @@ namespace Messenger.Service.Implementation
         public ReturnApiObject GetConversationExistsByUsers(int[] users)
         {
             ConversationModel conversation = GetConversationsByUsers(users);
-            
+
             if (conversation == null)
             {
                 return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Success);
@@ -177,17 +201,17 @@ namespace Messenger.Service.Implementation
         private ConversationModel GetConversationsByUsers(int[] users)
         {
             List<Conversation> conversations = _conversationRepository.List()
-                .Include(x=>x.Conversations)
-                .Include(x=>x.Messages)
-                .Where(x => x.Conversations.Select(a=>a.UserId).Contains((users[0])))
+                .Include(x => x.Conversations)
+                .Include(x => x.Messages)
+                .Where(x => x.Conversations.Select(a => a.UserId).Contains((users[0])))
                 .ToList();
 
             ConversationModel conversation = conversations
-                .Where(x => x.Conversations.Select(a => a.UserId).OrderBy(x => x).SequenceEqual(users.OrderBy(x=>x)))
-                .Select(x=>new ConversationModel()
+                .Where(x => x.Conversations.Select(a => a.UserId).OrderBy(x => x).SequenceEqual(users.OrderBy(x => x)))
+                .Select(x => new ConversationModel()
                 {
                     Id = x.Id,
-                    Messages = x.Messages.Select(m=>new MessageModel()
+                    Messages = x.Messages.Select(m => new MessageModel()
                     {
                         Id = m.Id,
                         SenderId = m.SenderId,
@@ -242,7 +266,7 @@ namespace Messenger.Service.Implementation
         {
             UserConversation userConv = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == conversationId).SingleOrDefault();
 
-            if(userConv == null)
+            if (userConv == null)
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
 
             userConv.Visibility = ConversationVisibility.Archived;
@@ -263,7 +287,7 @@ namespace Messenger.Service.Implementation
         /// <returns></returns>
         public ReturnApiObject GetConversationDetailById(int id, int userId)
         {
-            ConversationDetailModel conversationDetail = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x=> new ConversationDetailModel
+            ConversationDetailModel conversationDetail = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x => new ConversationDetailModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -277,7 +301,7 @@ namespace Messenger.Service.Implementation
             })
             .SingleOrDefault();
 
-            if(conversationDetail == null)
+            if (conversationDetail == null)
                 return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversationDetail);

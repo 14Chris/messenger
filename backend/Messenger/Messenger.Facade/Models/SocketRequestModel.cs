@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Messenger.Api.WebSocketsHandlers.Models
+namespace Messenger.Facade.Models
 {
     public class SocketRequestModel
     {

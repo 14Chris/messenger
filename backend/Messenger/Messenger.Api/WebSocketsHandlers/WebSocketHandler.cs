@@ -1,8 +1,12 @@
-﻿using Messenger.Api.WebSocketsHandlers.Models;
+﻿using Confluent.Kafka;
+using Kafka.Public;
+using Kafka.Public.Loggers;
 using Messenger.Database;
+using Messenger.Facade.KafkaConfiguration;
 using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -24,10 +28,21 @@ namespace Messenger.Api.WebSocketsHandlers
         private ConcurrentDictionary<int, WebSocket> _sockets = new ConcurrentDictionary<int, WebSocket>();
 
         private readonly RequestDelegate _next;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ChatWebSocketHandler(RequestDelegate next)
+
+        public ChatWebSocketHandler(RequestDelegate next, ProducerConfig producerConfig, ConsumerConfig consummerConfig, IServiceProvider serviceProvider)
         {
             _next = next;
+            _serviceProvider = serviceProvider;
+            var cluster = new ClusterClient(new Configuration { Seeds = "localhost:9092" }, new ConsoleLogger());
+            cluster.MessageReceived += kafkaRecord => {
+
+                int id = Int32.Parse(Encoding.Default.GetString(kafkaRecord.Value as byte[]));
+                ConversationCreatedHandler(id);
+
+            };
+            cluster.ConsumeFromLatest("conversation_created");
         }
 
         public async Task Invoke(HttpContext context, IServiceProvider _serviceProvider)
@@ -124,6 +139,7 @@ namespace Messenger.Api.WebSocketsHandlers
             }
         }
 
+
         /// <summary>
         /// Handle websocket send new message request
         /// </summary>
@@ -139,7 +155,7 @@ namespace Messenger.Api.WebSocketsHandlers
                 ConversationId = requestData.conversation_id
             };
 
-            ReturnApiObject result = await serviceProvider._messageService.CreateMessage(idUser, newMessage);    
+            ReturnApiObject result = await serviceProvider._messageService.CreateMessage(idUser, newMessage);
 
             if (result != null && result.ResponseType == ResponseType.Success)
             {
@@ -149,9 +165,9 @@ namespace Messenger.Api.WebSocketsHandlers
                 List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(((Message)result.Result).ConversationId);
 
                 //Iterate to change conversation visibility when archived because a new message is added
-                foreach(UserConversation userConv in usersConv)
+                foreach (UserConversation userConv in usersConv)
                 {
-                    if(userConv.Visibility == ConversationVisibility.Archived)
+                    if (userConv.Visibility == ConversationVisibility.Archived)
                     {
                         userConv.Visibility = ConversationVisibility.Visible;
 
@@ -180,12 +196,52 @@ namespace Messenger.Api.WebSocketsHandlers
 
                     string jsonResult = JsonConvert.SerializeObject(objResult);
 
-                     await SendStringAsync(userSocket, jsonResult, ct);
+                    await SendStringAsync(userSocket, jsonResult, ct);
                 }
 
             }
         }
 
+        private async Task ConversationCreatedHandler(int conversationId)
+        {
+            ServiceProvider serviceProvider = new ServiceProvider(_serviceProvider);
 
+            //Get all user conversations 
+            List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(conversationId);
+
+            //Iterate to change conversation visibility when archived because a new message is added
+            foreach (UserConversation userConv in usersConv)
+            {
+                if (userConv.Visibility == ConversationVisibility.Archived)
+                {
+                    userConv.Visibility = ConversationVisibility.Visible;
+
+                    UserConversation resultConvUpdate = await serviceProvider._userConversationService.UpdateUserConversation(userConv);
+                }
+            }
+
+            //Get users Ids from conversation
+            List<int> usersConvIds = usersConv.Select(x => x.UserId).ToList();
+
+            foreach (int userId in usersConvIds)
+            {
+                WebSocket userSocket = _sockets.Where(x => userId == x.Key).Select(x => x.Value).SingleOrDefault();
+
+                if (userSocket == null || userSocket.State != WebSocketState.Open)
+                    continue;
+
+                ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(conversationId, userId);
+
+                dynamic objResult =
+                new
+                {
+                    conversation = conv,
+                };
+
+                string jsonResult = JsonConvert.SerializeObject(objResult);
+
+                await SendStringAsync(userSocket, jsonResult);
+            }
+        }
     }
 }

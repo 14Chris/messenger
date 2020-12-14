@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using Messenger.Api.Authorization;
 using Messenger.Api.WebSocketsHandlers;
 using Messenger.Database;
@@ -103,6 +104,17 @@ namespace Messenger.Api
 
             // Add dependency injection for JWT Settings from appsettings
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
+
+
+            // Add dependency injection for producter and consumer kafka config
+            var producerConfig = new ProducerConfig();
+            var consumerConfig = new ConsumerConfig();
+
+            Configuration.Bind("KafkaSettings:Producer", producerConfig);
+            Configuration.Bind("KafkaSettings:Consumer", consumerConfig);
+
+            services.AddSingleton<ProducerConfig>(producerConfig);
+            services.AddSingleton<ConsumerConfig>(consumerConfig);
 
             // Messenger utility class for depedency injection
             MessengerRegister.Configuration(services);
