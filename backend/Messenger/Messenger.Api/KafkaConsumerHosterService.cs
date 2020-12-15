@@ -17,10 +17,14 @@ namespace Messenger.Api
         public KafkaConsumerHostedService(IServiceScopeFactory serviceScopeFactory, ConsumerConfig consumerConfig)
         {
             this._serviceScopeFactory = serviceScopeFactory;
-
             this.kafkaConsumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
         }
 
+        /// <summary>
+        /// Start the background service thread
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             new Thread(() => StartConsumerLoop(stoppingToken)).Start();
@@ -28,6 +32,10 @@ namespace Messenger.Api
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Loop to handle all incomming kafka messages
+        /// </summary>
+        /// <param name="cancellationToken"></param>
         private void StartConsumerLoop(CancellationToken cancellationToken)
         {
             kafkaConsumer.Subscribe("conversation_created");
@@ -86,6 +94,9 @@ namespace Messenger.Api
             }
         }
 
+        /// <summary>
+        /// When the background service is disposed
+        /// </summary>
         public override void Dispose()
         {
             this.kafkaConsumer.Close(); // Commit offsets and leave the group cleanly.

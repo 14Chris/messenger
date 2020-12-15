@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 namespace Messenger.Api.WebSocketsHandlers
 {
 
+    /// <summary>
+    /// Handler for the websockets request in the application
+    /// </summary>
     public class ChatWebSocketHandler : IWebSocketHandler
     {
         private readonly RequestDelegate _next;
@@ -23,10 +26,18 @@ namespace Messenger.Api.WebSocketsHandlers
             _next = next; 
         }
 
+        /// <summary>
+        /// Invoked when a websocket request is received
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="serviceProvider"></param>
+        /// <param name="webSocketStore"></param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext context, IServiceProvider serviceProvider, WebSocketStore webSocketStore)
         {
             ServiceProvider _serviceProvider = new ServiceProvider(serviceProvider);
 
+            //If it's not a websocket request
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 await _next.Invoke(context);
@@ -35,8 +46,10 @@ namespace Messenger.Api.WebSocketsHandlers
 
             int id = -1;
 
+            //Get the user identity from the token provided
             var claimsIdentity = context.User.Identity as ClaimsIdentity;
 
+            
             bool ok = int.TryParse(claimsIdentity.Name, out id);
             if (!ok)
                 return;
@@ -53,6 +66,7 @@ namespace Messenger.Api.WebSocketsHandlers
                     break;
                 }
 
+                //Read the data provided by websocket
                 var response = await ReceiveStringAsync(currentSocket, ct);
                 if (string.IsNullOrEmpty(response))
                 {
@@ -66,22 +80,31 @@ namespace Messenger.Api.WebSocketsHandlers
 
                 SocketRequestModel json = JsonConvert.DeserializeObject<SocketRequestModel>(response);
 
+                //handle the request depending on the request type
                 switch (json.type)
                 {
+                    //If the request is a new message sending
                     case "send_message":
                         _serviceProvider._communicationService.SendNewMessageNotification(id, json.data);
                         break;
                 }
             }
 
+            //Try to remove the user from the websocket store
             WebSocket dummy = webSocketStore.TryRemoveWebSocket(id);
 
+            //CLose the socket connection
             await currentSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
             currentSocket.Dispose();
         }
 
        
-
+        /// <summary>
+        /// Handle the websocket sended data
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         private async Task<string> ReceiveStringAsync(WebSocket socket, CancellationToken ct = default(CancellationToken))
         {
             var buffer = new ArraySegment<byte>(new byte[8192]);
