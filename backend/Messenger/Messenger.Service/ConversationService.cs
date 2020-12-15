@@ -175,7 +175,9 @@ namespace Messenger.Service.Implementation
                         }
                         : null,
                     }
-                ).ToList();
+                )
+                .OrderByDescending(x=>x.LastMessageDate)
+                .ToList();
 
             return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversations);
         }
