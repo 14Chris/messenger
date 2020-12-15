@@ -38,6 +38,10 @@ export default {
     eventBus.$on("message-received", data => {
       this.MessageReceived(data)
     });
+
+    eventBus.$on("conversation-created", data => {
+      this.MessageReceived(data)
+    });
   },
   mounted() {
     this.GetUserConversations()
@@ -62,7 +66,7 @@ export default {
           })
     },
     MessageReceived(data) {
-      let object = JSON.parse(data)
+      let object = data;
       let finded = false
       this.conversations = this.conversations.map(function (item) {
         if (item.id == object.conversation.id) {
@@ -79,7 +83,25 @@ export default {
     },
     ConversationArchived(){
       this.GetUserConversations()
+    },
+    ConversationCreated(data){
+      let object = JSON.parse(data)
+
+      let finded = false
+      this.conversations = this.conversations.map(function (item) {
+        if (item.id == object.conversation.id) {
+          finded = true
+          return object.conversation
+        } else {
+          return item
+        }
+      });
+
+      if (!finded) {
+        this.conversations.unshift(object.conversation)
+      }
     }
+
   }
 }
 </script>

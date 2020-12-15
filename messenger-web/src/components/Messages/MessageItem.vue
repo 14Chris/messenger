@@ -23,7 +23,7 @@
             $store.state.user.id != message.sender_id ? 'other' : 'sender',
           ]"
         >
-          {{ message.text }} {{message.id}}
+          {{ message.text }}
         </div>
         <div class="message-date" v-if="lastUserMessage">
           {{ MessageDate }}

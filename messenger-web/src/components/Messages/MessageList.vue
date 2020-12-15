@@ -15,6 +15,7 @@
 <script>
 import MessageItem from "@/components/Messages/MessageItem";
 import ApiService from "@/service/api";
+import eventBus from "../../eventBus";
 
 const api = new ApiService();
 export default {
@@ -30,6 +31,10 @@ export default {
     }
   },
   created() {
+    eventBus.$on("message-received", (data) => {
+      this.MessageReceived(data);
+    });
+
     this.$nextTick(function () {
       document.getElementById("conv-messages-list").addEventListener('scroll', this.HandleScroll);
     })
@@ -116,7 +121,15 @@ export default {
       if(divMessages.scrollTop == 0){
         this.LoadMoreMessages()
       }
-    }
+    },
+    MessageReceived(data) {
+      var object = data;
+      console.log(object)
+
+      if (object.message.conversation_id == this.convId) {
+        this.messages.push(object.message);
+      }
+    },
   }
 }
 </script>

@@ -1,6 +1,7 @@
 ﻿using Messenger.Database;
 using Messenger.Facade.Settings;
 using Messenger.Service.Implementation;
+using Messenger.Service.Interface;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Messenger.Service.Interface
+namespace Messenger.Service.Implementation
 {
     public class UserConversationService : BaseService, IUserConversationService
     {

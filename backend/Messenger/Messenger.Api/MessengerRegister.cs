@@ -26,6 +26,7 @@ namespace Messenger.Api
             services.AddTransient<IFriendService, FriendService>();
             services.AddTransient<IMessageService, MessageService>();
             services.AddTransient<IUserConversationService, UserConversationService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
         }
 
         public static void ConfigurationRepositories(IServiceCollection services)

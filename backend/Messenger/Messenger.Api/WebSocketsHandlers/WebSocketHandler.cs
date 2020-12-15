@@ -1,18 +1,9 @@
-﻿using Confluent.Kafka;
-using Kafka.Public;
-using Kafka.Public.Loggers;
-using Messenger.Database;
-using Messenger.Facade.KafkaConfiguration;
+﻿using Messenger.Facade;
 using Messenger.Facade.Models;
-using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
@@ -24,29 +15,18 @@ namespace Messenger.Api.WebSocketsHandlers
 
     public class ChatWebSocketHandler : IWebSocketHandler
     {
-        //Keep connected users
-        private ConcurrentDictionary<int, WebSocket> _sockets = new ConcurrentDictionary<int, WebSocket>();
-
         private readonly RequestDelegate _next;
-        private readonly IServiceProvider _serviceProvider;
 
 
-        public ChatWebSocketHandler(RequestDelegate next, ProducerConfig producerConfig, ConsumerConfig consummerConfig, IServiceProvider serviceProvider)
+        public ChatWebSocketHandler(RequestDelegate next)
         {
-            _next = next;
-            _serviceProvider = serviceProvider;
-            var cluster = new ClusterClient(new Configuration { Seeds = "localhost:9092" }, new ConsoleLogger());
-            cluster.MessageReceived += kafkaRecord => {
-
-                int id = Int32.Parse(Encoding.Default.GetString(kafkaRecord.Value as byte[]));
-                ConversationCreatedHandler(id);
-
-            };
-            cluster.ConsumeFromLatest("conversation_created");
+            _next = next; 
         }
 
-        public async Task Invoke(HttpContext context, IServiceProvider _serviceProvider)
+        public async Task Invoke(HttpContext context, IServiceProvider serviceProvider, WebSocketStore webSocketStore)
         {
+            ServiceProvider _serviceProvider = new ServiceProvider(serviceProvider);
+
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 await _next.Invoke(context);
@@ -64,7 +44,7 @@ namespace Messenger.Api.WebSocketsHandlers
             CancellationToken ct = context.RequestAborted;
             WebSocket currentSocket = await context.WebSockets.AcceptWebSocketAsync("access_token");
 
-            _sockets.TryAdd(id, currentSocket);
+            webSocketStore.TryAddWebSocket(id, currentSocket);
 
             while (true)
             {
@@ -82,33 +62,25 @@ namespace Messenger.Api.WebSocketsHandlers
                     }
 
                     continue;
-                }
-
-                ServiceProvider serviceProvider = new ServiceProvider(_serviceProvider);
+                } 
 
                 SocketRequestModel json = JsonConvert.DeserializeObject<SocketRequestModel>(response);
 
                 switch (json.type)
                 {
                     case "send_message":
-                        SendMessageRequestHandler(id, json.data, serviceProvider);
+                        _serviceProvider._communicationService.SendNewMessageNotification(id, json.data);
                         break;
                 }
             }
 
-            WebSocket dummy;
-            _sockets.TryRemove(id, out dummy);
+            WebSocket dummy = webSocketStore.TryRemoveWebSocket(id);
 
             await currentSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
             currentSocket.Dispose();
         }
 
-        private Task SendStringAsync(WebSocket socket, string data, CancellationToken ct = default(CancellationToken))
-        {
-            var buffer = Encoding.UTF8.GetBytes(data);
-            var segment = new ArraySegment<byte>(buffer);
-            return socket.SendAsync(segment, WebSocketMessageType.Text, true, ct);
-        }
+       
 
         private async Task<string> ReceiveStringAsync(WebSocket socket, CancellationToken ct = default(CancellationToken))
         {
@@ -139,109 +111,5 @@ namespace Messenger.Api.WebSocketsHandlers
             }
         }
 
-
-        /// <summary>
-        /// Handle websocket send new message request
-        /// </summary>
-        /// <param name="idUser"></param>
-        /// <param name="requestData"></param>
-        /// <param name="serviceProvider"></param>
-        /// <param name="ct"></param>
-        private async void SendMessageRequestHandler(int idUser, dynamic requestData, ServiceProvider serviceProvider, CancellationToken ct = default(CancellationToken))
-        {
-            Message newMessage = new Message()
-            {
-                Text = requestData.text,
-                ConversationId = requestData.conversation_id
-            };
-
-            ReturnApiObject result = await serviceProvider._messageService.CreateMessage(idUser, newMessage);
-
-            if (result != null && result.ResponseType == ResponseType.Success)
-            {
-                Message message = (Message)result.Result;
-
-                //Get all user conversations 
-                List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(((Message)result.Result).ConversationId);
-
-                //Iterate to change conversation visibility when archived because a new message is added
-                foreach (UserConversation userConv in usersConv)
-                {
-                    if (userConv.Visibility == ConversationVisibility.Archived)
-                    {
-                        userConv.Visibility = ConversationVisibility.Visible;
-
-                        UserConversation resultConvUpdate = await serviceProvider._userConversationService.UpdateUserConversation(userConv);
-                    }
-                }
-
-                //Get users Ids from conversation
-                List<int> usersConvIds = usersConv.Select(x => x.UserId).ToList();
-
-                foreach (int userId in usersConvIds)
-                {
-                    WebSocket userSocket = _sockets.Where(x => userId == x.Key).Select(x => x.Value).SingleOrDefault();
-
-                    if (userSocket == null || userSocket.State != WebSocketState.Open)
-                        continue;
-
-                    ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(message.ConversationId, userId);
-
-                    dynamic objResult =
-                    new
-                    {
-                        conversation = conv,
-                        message = message
-                    };
-
-                    string jsonResult = JsonConvert.SerializeObject(objResult);
-
-                    await SendStringAsync(userSocket, jsonResult, ct);
-                }
-
-            }
-        }
-
-        private async Task ConversationCreatedHandler(int conversationId)
-        {
-            ServiceProvider serviceProvider = new ServiceProvider(_serviceProvider);
-
-            //Get all user conversations 
-            List<UserConversation> usersConv = serviceProvider._userConversationService.GetConversationUsers(conversationId);
-
-            //Iterate to change conversation visibility when archived because a new message is added
-            foreach (UserConversation userConv in usersConv)
-            {
-                if (userConv.Visibility == ConversationVisibility.Archived)
-                {
-                    userConv.Visibility = ConversationVisibility.Visible;
-
-                    UserConversation resultConvUpdate = await serviceProvider._userConversationService.UpdateUserConversation(userConv);
-                }
-            }
-
-            //Get users Ids from conversation
-            List<int> usersConvIds = usersConv.Select(x => x.UserId).ToList();
-
-            foreach (int userId in usersConvIds)
-            {
-                WebSocket userSocket = _sockets.Where(x => userId == x.Key).Select(x => x.Value).SingleOrDefault();
-
-                if (userSocket == null || userSocket.State != WebSocketState.Open)
-                    continue;
-
-                ConversationListItem conv = serviceProvider._conversationService.GetConversationListItemById(conversationId, userId);
-
-                dynamic objResult =
-                new
-                {
-                    conversation = conv,
-                };
-
-                string jsonResult = JsonConvert.SerializeObject(objResult);
-
-                await SendStringAsync(userSocket, jsonResult);
-            }
-        }
     }
 }

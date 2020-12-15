@@ -3,6 +3,8 @@ using Messenger.Api.Authorization;
 using Messenger.Api.WebSocketsHandlers;
 using Messenger.Database;
 using Messenger.EmailSending;
+using Messenger.Facade;
+using Messenger.Facade.KafkaConfiguration;
 using Messenger.Facade.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -109,12 +111,17 @@ namespace Messenger.Api
             // Add dependency injection for producter and consumer kafka config
             var producerConfig = new ProducerConfig();
             var consumerConfig = new ConsumerConfig();
+            var webSocketStore = new WebSocketStore();
 
             Configuration.Bind("KafkaSettings:Producer", producerConfig);
             Configuration.Bind("KafkaSettings:Consumer", consumerConfig);
 
             services.AddSingleton<ProducerConfig>(producerConfig);
             services.AddSingleton<ConsumerConfig>(consumerConfig);
+            services.AddSingleton<WebSocketStore>(webSocketStore);
+
+            //Kafka consumer hosted service
+            services.AddHostedService<KafkaConsumerHostedService>();
 
             // Messenger utility class for depedency injection
             MessengerRegister.Configuration(services);

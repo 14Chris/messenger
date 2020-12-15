@@ -32,7 +32,7 @@ import ApiService from "@/service/api";
 import MessageList from "@/components/Messages/MessageList";
 import ConversationDetail from "@/components/Conversation/ConversationDetail";
 
-import eventBus from "../../eventBus.js";
+// import eventBus from "../../eventBus.js";
 import SendMessageBar from "@/components/Messages/SendMessageBar";
 
 const api = new ApiService();
@@ -51,9 +51,9 @@ export default {
     }
   },
   created() {
-    eventBus.$on("message-received", (data) => {
-      this.MessageReceived(data);
-    });
+    // eventBus.$on("message-received", (data) => {
+    //   this.MessageReceived(data);
+    // });
   },
   mounted() {
     this.GetConversationById(this.$route.params.id)
@@ -93,13 +93,13 @@ export default {
 
         this.$store.state.chatWebsocket.send(JSON.stringify(model));
     },
-    MessageReceived(data) {
-      var object = JSON.parse(data);
-
-      if (object.message.conversation_id == this.conversation.id) {
-        this.conversation.messages.push(object.message);
-      }
-    },
+    // MessageReceived(data) {
+    //   var object = JSON.parse(data);
+    //
+    //   if (object.message.conversation_id == this.conversation.id) {
+    //     this.conversation.messages.push(object.message);
+    //   }
+    // },
   },
 };
 </script>

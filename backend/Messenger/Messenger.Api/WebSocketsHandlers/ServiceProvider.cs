@@ -40,5 +40,10 @@ namespace Messenger.Api.WebSocketsHandlers
         {
             get { return _serviceProvider.GetRequiredService<IUserConversationService>(); }
         }
+
+        public ICommunicationService _communicationService
+        {
+            get { return _serviceProvider.GetRequiredService<ICommunicationService>(); }
+        }
     }
 }
