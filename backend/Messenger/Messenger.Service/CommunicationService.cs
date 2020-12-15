@@ -38,7 +38,6 @@ namespace Messenger.Service.Implementation
         /// <param name="ct"></param>
         public async Task SendNewMessageNotification(int userId, dynamic requestData, CancellationToken ct = default(CancellationToken))
         {
-
             Message newMessage = new Message()
             {
                 Text = requestData.text,

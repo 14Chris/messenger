@@ -38,24 +38,30 @@ namespace Messenger.Api
                 {
                     var cr = this.kafkaConsumer.Consume(cancellationToken);
 
-                    // Handle message...
-                    //Console.WriteLine($"{cr.Message.Key}: {cr.Message.Value}ms");
-
-                    int id = -1;
-                    bool valueOk = Int32.TryParse(cr.Message.Value, out id);
-
-                    if (valueOk)
+                    switch (cr.Topic)
                     {
-                        using (var scope = _serviceScopeFactory.CreateScope())
-                        {
-                            
-                            scope.ServiceProvider.GetRequiredService<ICommunicationService>().SendConversationCreatedNotification(id);
+                        case "conversation_created":
+                            int id = -1;
 
-                            //Do your stuff
-                        }
-                        
+                            //Convert the message value containing the created conversation id
+                            bool valueOk = Int32.TryParse(cr.Message.Value, out id);
+
+                            //If the value is converted succefully
+                            if (valueOk)
+                            {
+                                //Created a service factory to get a instance of the service
+                                using (var scope = _serviceScopeFactory.CreateScope())
+                                {
+                                    //Send the conversation created to all users
+                                    scope.ServiceProvider.GetRequiredService<ICommunicationService>().SendConversationCreatedNotification(id);
+                                }
+
+                            }
+                            break;
+
+                        case "message_created":
+                            break;
                     }
-
                 }
                 catch (OperationCanceledException)
                 {
