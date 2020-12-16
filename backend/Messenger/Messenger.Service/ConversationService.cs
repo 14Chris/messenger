@@ -33,7 +33,7 @@ namespace Messenger.Service.Implementation
         /// <param name="friends"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> CreateConversation(int idCreator, int[] friends, string message)
+        public async Task<ResponseObject> CreateConversation(int idCreator, int[] friends, string message)
         {
             List<int> usersConv = friends.ToList();
             usersConv.Add(idCreator);
@@ -42,7 +42,7 @@ namespace Messenger.Service.Implementation
 
             if (convExists)
             {
-                return new ReturnApiObject(HttpStatusCode.Conflict, ResponseType.Error, "CONVERSATION_ALREADY_EXISTS", null);
+                return new ResponseObject(ResponseType.Error, "CONVERSATION_ALREADY_EXISTS", null);
             }
 
             Conversation conversation = new Conversation();
@@ -86,7 +86,7 @@ namespace Messenger.Service.Implementation
 
             if (result == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             try
@@ -107,7 +107,7 @@ namespace Messenger.Service.Implementation
             }
 
 
-            return new ReturnApiObject(HttpStatusCode.Created, ResponseType.Success, "", conversation);
+            return new ResponseObject(ResponseType.Success, "", conversation);
         }
 
         /// <summary>
@@ -115,20 +115,20 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ReturnApiObject GetConversationById(int id, int userId)
+        public ResponseObject GetConversationById(int id, int userId)
         {
             Conversation conversation = _conversationRepository.List().Where(x => x.Id == id).SingleOrDefault();
 
             if (conversation == null)
             {
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error, "CONVERSATION_NOT_FOUND", null);
+                return new ResponseObject(ResponseType.Error, "CONVERSATION_NOT_FOUND", null);
             }
 
             UserConversation userConversation = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).SingleOrDefault();
 
             if (conversation == null)
             {
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error, "USER_CONVERSATION_NOT_FOUND", null);
+                return new ResponseObject(ResponseType.Error, "USER_CONVERSATION_NOT_FOUND", null);
             }
 
             ConversationModel model = new ConversationModel()
@@ -145,7 +145,7 @@ namespace Messenger.Service.Implementation
 
             };
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", model);
+            return new ResponseObject(ResponseType.Success, "", model);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ReturnApiObject GetConversationsByUser(int id)
+        public ResponseObject GetConversationsByUser(int id)
         {
             DateTime dateTime = new DateTime();
 
@@ -179,7 +179,7 @@ namespace Messenger.Service.Implementation
                 .OrderByDescending(x=>x.LastMessageDate)
                 .ToList();
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversations);
+            return new ResponseObject(ResponseType.Success, "", conversations);
         }
 
         /// <summary>
@@ -187,16 +187,16 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="users"></param>
         /// <returns></returns>
-        public ReturnApiObject GetConversationExistsByUsers(int[] users)
+        public ResponseObject GetConversationExistsByUsers(int[] users)
         {
             ConversationModel conversation = GetConversationsByUsers(users);
 
             if (conversation == null)
             {
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Success);
+                return new ResponseObject(ResponseType.Success);
             }
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversation);
+            return new ResponseObject(ResponseType.Success, "", conversation);
         }
 
 
@@ -232,7 +232,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ConversationListItem GetConversationListItemById(int id, int userId)
+        public ResponseObject GetConversationListItemById(int id, int userId)
         {
             DateTime dateTime = new DateTime();
 
@@ -254,7 +254,10 @@ namespace Messenger.Service.Implementation
                         : null,
             }).SingleOrDefault();
 
-            return conversationListItem;
+            if (conversationListItem == null)
+                return new ResponseObject(ResponseType.Error);
+
+            return new ResponseObject(ResponseType.Success, "", conversationListItem);
         }
 
         /// <summary>
@@ -264,21 +267,21 @@ namespace Messenger.Service.Implementation
         /// <param name="conversatioId"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ArchiveConversation(int conversationId, int userId)
+        public async Task<ResponseObject> ArchiveConversation(int conversationId, int userId)
         {
             UserConversation userConv = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == conversationId).SingleOrDefault();
 
             if (userConv == null)
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             userConv.Visibility = ConversationVisibility.Archived;
 
             UserConversation userConvUpdated = await _userConversationRepository.UpdateAsync(userConv);
 
             if (userConvUpdated == null)
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
@@ -287,7 +290,7 @@ namespace Messenger.Service.Implementation
         /// <param name="id"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public ReturnApiObject GetConversationDetailById(int id, int userId)
+        public ResponseObject GetConversationDetailById(int id, int userId)
         {
             ConversationDetailModel conversationDetail = _userConversationRepository.List().Where(x => x.UserId == userId && x.ConversationId == id).Select(x => new ConversationDetailModel
             {
@@ -304,9 +307,9 @@ namespace Messenger.Service.Implementation
             .SingleOrDefault();
 
             if (conversationDetail == null)
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", conversationDetail);
+            return new ResponseObject(ResponseType.Success, "", conversationDetail);
 
         }
     }

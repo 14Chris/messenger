@@ -1,4 +1,5 @@
 ﻿using Messenger.Database;
+using Messenger.Facade.Response;
 using Messenger.Facade.Settings;
 using Messenger.Service.Implementation;
 using Messenger.Service.Interface;
@@ -17,25 +18,28 @@ namespace Messenger.Service.Implementation
         {
         }
 
-        public List<int> GetConversationIdUsers(int idConversation)
+        public ResponseObject GetConversationIdUsers(int idConversation)
         {
             List<int> result = _userConversationRepository.List().Where(x => x.ConversationId == idConversation).Select(x => x.UserId).ToList();
 
-            return result;
+            return new ResponseObject(ResponseType.Success, "", result);
         }
 
-        public List<UserConversation> GetConversationUsers(int idConversation)
+        public ResponseObject GetConversationUsers(int idConversation)
         {
             List<UserConversation> result = _userConversationRepository.List().Where(x => x.ConversationId == idConversation).ToList();
 
-            return result;
+            return new ResponseObject(ResponseType.Success, "", result);
         }
 
-        public async Task<UserConversation> UpdateUserConversation(UserConversation conv)
+        public async Task<ResponseObject> UpdateUserConversation(UserConversation conv)
         {
             UserConversation result = await _userConversationRepository.UpdateAsync(conv);
 
-            return result;
+            if(result == null)
+                return new ResponseObject(ResponseType.Error);
+
+            return new ResponseObject(ResponseType.Success, "", result);
         }
     }
 }

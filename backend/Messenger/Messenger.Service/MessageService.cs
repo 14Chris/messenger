@@ -24,7 +24,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> CreateMessage(int userId, Message message)
+        public async Task<ResponseObject> CreateMessage(int userId, Message message)
         {
             message.SenderId = userId;
             message.Date = DateTime.Now;
@@ -33,10 +33,10 @@ namespace Messenger.Service.Implementation
 
             if(result == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
-            return new ReturnApiObject(HttpStatusCode.Created, ResponseType.Success, "", result);
+            return new ResponseObject(ResponseType.Success, "", result);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Messenger.Service.Implementation
         /// <param name="conversationId"></param>
         /// <param name="lastMessageId"></param>
         /// <returns></returns>
-        public ReturnApiObject LoadMoreMessagesFromConversation(int userId, int conversationId, int lastMessageId)
+        public ResponseObject LoadMoreMessagesFromConversation(int userId, int conversationId, int lastMessageId)
         {
             List<MessageModel> messages = _messageRepository.List()
                 .Where(x => x.ConversationId == conversationId && x.Id < lastMessageId)
@@ -61,7 +61,7 @@ namespace Messenger.Service.Implementation
                 })
                 .ToList();
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", messages);
+            return new ResponseObject(ResponseType.Success, "", messages);
         }
     }
 }

@@ -30,13 +30,13 @@ namespace Messenger.Service.Implementation
         }
 
         /// <summary>
-        /// Handle websocket send new message request
+        /// Send websocket notification when a message is created
         /// </summary>
         /// <param name="idUser"></param>
         /// <param name="requestData"></param>
         /// <param name="serviceProvider"></param>
         /// <param name="ct"></param>
-        public async Task SendNewMessageNotification(int userId, dynamic requestData, CancellationToken ct = default(CancellationToken))
+        public async Task<ResponseObject> SendNewMessageNotification(int userId, dynamic requestData, CancellationToken ct = default(CancellationToken))
         {
             Message newMessage = new Message()
             {
@@ -44,14 +44,19 @@ namespace Messenger.Service.Implementation
                 ConversationId = requestData.conversation_id
             };
 
-            ReturnApiObject result = await _serviceProvider.GetRequiredService<IMessageService>().CreateMessage(userId, newMessage);
+            ResponseObject result = await _serviceProvider.GetRequiredService<IMessageService>().CreateMessage(userId, newMessage);
 
             if (result != null && result.ResponseType == ResponseType.Success)
             {
                 Message message = (Message)result.Result;
 
                 //Get all user conversations 
-                List<UserConversation> usersConv = _serviceProvider.GetRequiredService<IUserConversationService>().GetConversationUsers(((Message)result.Result).ConversationId);
+                ResponseObject responseUserConversation = _serviceProvider.GetRequiredService<IUserConversationService>().GetConversationUsers(((Message)result.Result).ConversationId);
+
+                if(responseUserConversation.ResponseType == ResponseType.Error)
+                    return responseUserConversation;
+
+                List<UserConversation> usersConv = responseUserConversation.Result as List<UserConversation>;
 
                 //Iterate to change conversation visibility when archived because a new message is added
                 foreach (UserConversation userConv in usersConv)
@@ -60,7 +65,12 @@ namespace Messenger.Service.Implementation
                     {
                         userConv.Visibility = ConversationVisibility.Visible;
 
-                        UserConversation resultConvUpdate = await _serviceProvider.GetRequiredService<IUserConversationService>().UpdateUserConversation(userConv);
+                        ResponseObject responseUpdatedUserConversation = await _serviceProvider.GetRequiredService<IUserConversationService>().UpdateUserConversation(userConv);
+
+                        if (responseUpdatedUserConversation.ResponseType == ResponseType.Error)
+                            return responseUpdatedUserConversation;
+
+                        UserConversation resultConvUpdate = responseUpdatedUserConversation.Result as UserConversation;
                     }
                 }
 
@@ -74,7 +84,12 @@ namespace Messenger.Service.Implementation
                     if (userSocket == null || userSocket.State != WebSocketState.Open)
                         continue;
 
-                    ConversationListItem conv = _serviceProvider.GetRequiredService<IConversationService>().GetConversationListItemById(message.ConversationId, userId);
+                    ResponseObject responseConvListItem = _serviceProvider.GetRequiredService<IConversationService>().GetConversationListItemById(message.ConversationId, userId);
+
+                    if (responseConvListItem.ResponseType == ResponseType.Error)
+                        return responseConvListItem;
+
+                    ConversationListItem conv = responseConvListItem.Result as ConversationListItem;
 
                     dynamic objResult =
                     new
@@ -92,15 +107,30 @@ namespace Messenger.Service.Implementation
                     await SendStringAsync(userSocket, jsonResult, ct);
                 }
 
+                return new ResponseObject(ResponseType.Success);
+
             }
+
+            return new ResponseObject(ResponseType.Error);
         }
 
-        public async Task SendConversationCreatedNotification(int conversationId, CancellationToken ct = default(CancellationToken))
+        /// <summary>
+        /// Send websocket notification when a conversation is created
+        /// </summary>
+        /// <param name="conversationId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task<ResponseObject> SendConversationCreatedNotification(int conversationId, CancellationToken ct = default(CancellationToken))
         {
             try
             {
                 //Get all user conversations 
-                List<UserConversation> usersConv = _serviceProvider.GetRequiredService<IUserConversationService>().GetConversationUsers(conversationId);
+                ResponseObject responseUserConversation = _serviceProvider.GetRequiredService<IUserConversationService>().GetConversationUsers(conversationId);
+
+                if (responseUserConversation.ResponseType == ResponseType.Error)
+                    return responseUserConversation;
+
+                List<UserConversation> usersConv = responseUserConversation.Result as List<UserConversation>;
 
                 //Iterate to change conversation visibility when archived because a new message is added
                 foreach (UserConversation userConv in usersConv)
@@ -109,7 +139,12 @@ namespace Messenger.Service.Implementation
                     {
                         userConv.Visibility = ConversationVisibility.Visible;
 
-                        UserConversation resultConvUpdate = await _serviceProvider.GetRequiredService<IUserConversationService>().UpdateUserConversation(userConv);
+                        ResponseObject responseUpdatedUserConversation = await _serviceProvider.GetRequiredService<IUserConversationService>().UpdateUserConversation(userConv);
+
+                        if (responseUpdatedUserConversation.ResponseType == ResponseType.Error)
+                            return responseUpdatedUserConversation;
+
+                        UserConversation resultConvUpdate = responseUpdatedUserConversation.Result as UserConversation;
                     }
                 }
 
@@ -123,7 +158,12 @@ namespace Messenger.Service.Implementation
                     if (userSocket == null || userSocket.State != WebSocketState.Open)
                         continue;
 
-                    ConversationListItem conv = _serviceProvider.GetRequiredService<IConversationService>().GetConversationListItemById(conversationId, id);
+                    ResponseObject responseConvListItem = _serviceProvider.GetRequiredService<IConversationService>().GetConversationListItemById(conversationId, id);
+
+                    if (responseConvListItem.ResponseType == ResponseType.Error)
+                        return responseConvListItem;
+
+                    ConversationListItem conv = responseConvListItem.Result as ConversationListItem;
 
                     dynamic objResult =
                     new
@@ -139,10 +179,14 @@ namespace Messenger.Service.Implementation
 
                     await SendStringAsync(userSocket, jsonResult, ct);
                 }
+
+                return new ResponseObject(ResponseType.Success);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+
+                return new ResponseObject(ResponseType.Error);
             }
         }
 

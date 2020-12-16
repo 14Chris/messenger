@@ -8,34 +8,34 @@ namespace Messenger.Service.Interface
 {
     public interface IUserService
     {
-        public Task<ReturnApiObject> CreateUser(User user);
+        public Task<ResponseObject> CreateUser(User user);
       
-        public ReturnApiObject GetUser(int id);
+        public ResponseObject GetUser(int id);
 
-        public ReturnApiObject GetUserSession(int id);
+        public ResponseObject GetUserSession(int id);
 
-        public Task<ReturnApiObject> UpdateUserInformations(UserBasicModel user);
+        public Task<ResponseObject> UpdateUserInformations(UserBasicModel user);
 
-        public ReturnApiObject EmailAlreadyExists(string email);
+        public ResponseObject EmailAlreadyExists(string email);
 
-        public ReturnApiObject Login(string email, string password);
+        public ResponseObject Login(string email, string password);
 
-        public Task<ReturnApiObject> UpdateUserPassword(int userId, string oldPassword, string newPassword);
+        public Task<ResponseObject> UpdateUserPassword(int userId, string oldPassword, string newPassword);
 
-        public Task<ReturnApiObject> ForgotPassword(string email);
+        public Task<ResponseObject> ForgotPassword(string email);
 
-        public Task<ReturnApiObject> ValidateTokenPasswordReset(string token);
+        public Task<ResponseObject> ValidateTokenPasswordReset(string token);
 
-        public Task<ReturnApiObject> ResetPassword(string token, string newPassword);
+        public Task<ResponseObject> ResetPassword(string token, string newPassword);
 
-        public ReturnApiObject GetUserProfile(int id);
+        public ResponseObject GetUserProfile(int id);
 
-        public byte[] GetUserProfilePicture(int id);
+        public ResponseObject GetUserProfilePicture(int id);
 
-        public Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64);
+        public Task<ResponseObject> ChangeUserProfilePicture(int id, string pictureBase64);
 
-        public Task<ReturnApiObject> DeleteUserProfilePicture(int id);
-        public Task<ReturnApiObject> ActivateAccount(string token);
-        public Task<ReturnApiObject> ResendAccountActivationEmail(string email);
+        public Task<ResponseObject> DeleteUserProfilePicture(int id);
+        public Task<ResponseObject> ActivateAccount(string token);
+        public Task<ResponseObject> ResendAccountActivationEmail(string email);
     }
 }

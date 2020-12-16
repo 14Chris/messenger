@@ -6,19 +6,18 @@ namespace Messenger.Service.Interface
 {
     public interface IConversationService
     {
-        public ReturnApiObject GetConversationsByUser(int id);
+        public ResponseObject GetConversationsByUser(int id);
 
+        public Task<ResponseObject> CreateConversation(int idCreator, int[] friends, string message);
 
-        public Task<ReturnApiObject> CreateConversation(int idCreator, int[] friends, string message);
+        public ResponseObject GetConversationExistsByUsers(int[] users);
 
-        public ReturnApiObject GetConversationExistsByUsers(int[] users);
+        public ResponseObject GetConversationById(int id, int userId);
 
-        public ReturnApiObject GetConversationById(int id, int userId);
+        public ResponseObject GetConversationDetailById(int id, int userId);
 
-        public ReturnApiObject GetConversationDetailById(int id, int userId);
+        public ResponseObject GetConversationListItemById(int id, int userId);
 
-        public ConversationListItem GetConversationListItemById(int id, int userId);
-
-        public Task<ReturnApiObject> ArchiveConversation(int conversationId, int userId);
+        public Task<ResponseObject> ArchiveConversation(int conversationId, int userId);
     }
 }

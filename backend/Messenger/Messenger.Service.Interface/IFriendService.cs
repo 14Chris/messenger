@@ -8,13 +8,13 @@ namespace Messenger.Service.Interface
 {
     public interface IFriendService
     {
-        public ReturnApiObject GetFriendsByUser(int userId);
-        public ReturnApiObject GetFriendsRequestByUser(int userId);
+        public ResponseObject GetFriendsByUser(int userId);
+        public ResponseObject GetFriendsRequestByUser(int userId);
 
-        public ReturnApiObject SearchFriendsByUser(int userId, string searchTerm);
-        public Task<ReturnApiObject> AddFriend(int userId, string friendEmail);
-        public Task<ReturnApiObject> AcceptFriendRequest(int userId, int friendId);
-        public Task<ReturnApiObject> DeleteFriendRequest(int userId, int friendId);
-        public Task<ReturnApiObject> DeleteFriend(int userId, int friendId);
+        public ResponseObject SearchFriendsByUser(int userId, string searchTerm);
+        public Task<ResponseObject> AddFriend(int userId, string friendEmail);
+        public Task<ResponseObject> AcceptFriendRequest(int userId, int friendId);
+        public Task<ResponseObject> DeleteFriendRequest(int userId, int friendId);
+        public Task<ResponseObject> DeleteFriend(int userId, int friendId);
     }
 }

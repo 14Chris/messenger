@@ -9,9 +9,9 @@ namespace Messenger.Service.Interface
 {
     public interface IMessageService
     {
-        public Task<ReturnApiObject> CreateMessage(int userId, Message message);
+        public Task<ResponseObject> CreateMessage(int userId, Message message);
 
-        public ReturnApiObject LoadMoreMessagesFromConversation(int userId, int conversationId, int lastMessageId);
+        public ResponseObject LoadMoreMessagesFromConversation(int userId, int conversationId, int lastMessageId);
 
 
     }
