@@ -89,22 +89,7 @@ namespace Messenger.Service.Implementation
                 return new ResponseObject(ResponseType.Error);
             }
 
-            try
-            {
-                // Serialize conversation object
-                string serializedConversation = JsonConvert.SerializeObject(result.Id);
-
-                // Create Kafka producer for topic "conversation_created"
-                var producer = new ProducerWrapper(this._config, "conversation_created");
-
-                // Add message to topic
-                await producer.WriteMessage(serializedConversation);
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            this.ProduceConversationCreatedMessage(result.Id);
 
 
             return new ResponseObject(ResponseType.Success, "", conversation);
@@ -312,5 +297,36 @@ namespace Messenger.Service.Implementation
             return new ResponseObject(ResponseType.Success, "", conversationDetail);
 
         }
+
+
+        #region private
+
+        /// <summary>
+        /// Async function to produce a message on "conversation_created" topic
+        /// to alert when a new conversation with a message is created
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
+        private async Task ProduceConversationCreatedMessage(int convId)
+        {
+            try
+            {
+                // Serialize conversation object
+                string serializedConversation = JsonConvert.SerializeObject(convId);
+
+                // Create Kafka producer for topic "conversation_created"
+                var producer = new ProducerWrapper(this._config, "conversation_created");
+
+                // Add message to topic
+                await producer.WriteMessage(serializedConversation);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        #endregion
     }
 }
