@@ -435,7 +435,7 @@ namespace Messenger.Service.Implementation
             Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if (tokenResult == null)
-                return new ResponseObject(HttpStatusCode.NotFound, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Token verification (expiration, key, ...)
             try
@@ -452,26 +452,26 @@ namespace Messenger.Service.Implementation
             catch (TokenExpiredException)
             {
                 await _tokenRepository.DeleteAsync(tokenResult);
-                return new ResponseObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
             // If token signature verification failed
             catch (SignatureVerificationException)
             {
-                return new ResponseObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             // Get user from token
             User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
 
             if(user == null)
-                return new ResponseObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             string newPasswordHash = SecurityHelper.HashPassword(newPassword);
 
             // If new password is too weak
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
             {
-                return new ResponseObject(HttpStatusCode.BadRequest, ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
+                return new ResponseObject( ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
             }
 
             // Set user new password
@@ -482,13 +482,13 @@ namespace Messenger.Service.Implementation
 
             if (userUpdated == null)
             {
-                return new ResponseObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             // Delete token
             await _tokenRepository.DeleteAsync(tokenResult);
 
-            return new ResponseObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
