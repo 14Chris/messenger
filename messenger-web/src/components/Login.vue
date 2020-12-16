@@ -1,41 +1,43 @@
 <template>
   <div class="container">
-    <form class="login" @submit.prevent="login">
-      <h1>Sign in</h1>
+    <div class="card centered-card">
+      <div class="card-content">
+        <h2 class="title is-2">Sign in</h2>
+        <form class="login" @submit.prevent="login">
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control">
+              <input class="input" v-model="model.email"
+                     type="email"
+                     placeholder="Email">
+            </div>
+          </div>
 
+          <div class="field">
+            <label class="label">Password</label>
+            <div class="control">
+              <input class="input" v-model="model.password"
+                     type="password"
+                     placeholder="Password">
+            </div>
+          </div>
+          <button class="button is-primary" type="submit">Login</button>
+        </form>
+        <router-link to="/forgot_password"
+        ><a>Forgot your password ?</a></router-link
+        >
 
-      <div class="field">
-        <label class="label">Email</label>
-        <div class="control">
-          <input class="input" v-model="model.email"
-                 type="email"
-                 placeholder="Email">
-        </div>
+        <p>No account ? Create one :</p>
+        <router-link to="/register">
+          <button class="button is-primary is-light" type="submit">Register</button>
+        </router-link>
       </div>
-
-      <div class="field">
-        <label class="label">Password</label>
-        <div class="control">
-          <input class="input" v-model="model.password"
-                 type="password"
-                 placeholder="Password">
-        </div>
-      </div>
-      <button class="button is-primary" type="submit">Login</button>
-    </form>
-    <router-link to="/forgot_password"
-      ><a>Forgot your password ?</a></router-link
-    >
-
-    <p>No account ? Create one :</p>
-    <router-link to="/register">
-      <button type="submit">Register</button>
-    </router-link>
+    </div>
   </div>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import {required} from "vuelidate/lib/validators";
 import ApiService from "../service/api";
 import Notification from "@/shared_components/Notification/Notification";
 
@@ -79,44 +81,44 @@ export default {
       };
 
       api
-        .create("login", JSON.stringify(userLogin))
-        .then((response) => response.json())
-        .then((resp) => {
-          if (resp.ResponseType == 1) {
-            const token = resp.Result.token;
-            const user = resp.Result.user;
-            this.$store.dispatch("login", { token, user }).then(() => {
-              this.$router.push("/");
-            });
-          } else {
-            var errorMessage = "";
+          .create("login", JSON.stringify(userLogin))
+          .then((response) => response.json())
+          .then((resp) => {
+            if (resp.ResponseType == 1) {
+              const token = resp.Result.token;
+              const user = resp.Result.user;
+              this.$store.dispatch("login", {token, user}).then(() => {
+                this.$router.push("/");
+              });
+            } else {
+              var errorMessage = "";
 
-            switch (resp.Message) {
-              case "BAD_CREDENTIALS":
-                errorMessage = "Invalid credentials";
-                break;
-              case "NOT_ACTIVATED":
-                errorMessage =
-                  "Your account has not been activated yet. Please check your emails and clicked on the link to activate it.";
-                break;
-              default:
-                errorMessage = "Error while signing in to the app";
+              switch (resp.Message) {
+                case "BAD_CREDENTIALS":
+                  errorMessage = "Invalid credentials";
+                  break;
+                case "NOT_ACTIVATED":
+                  errorMessage =
+                      "Your account has not been activated yet. Please check your emails and clicked on the link to activate it.";
+                  break;
+                default:
+                  errorMessage = "Error while signing in to the app";
+              }
+
+              openNotification({
+                message: errorMessage,
+                type: 'danger',
+                duration: 5000
+              })
             }
-
+          })
+          .catch(() => {
             openNotification({
-              message: errorMessage,
+              message: "Error while signing in to the app",
               type: 'danger',
               duration: 5000
             })
-           }
-        })
-        .catch(() => {
-          openNotification({
-            message:  "Error while signing in to the app",
-            type: 'danger',
-            duration: 5000
-          })
-        });
+          });
     },
   },
   validations: {
@@ -132,5 +134,12 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.container {
+  position: relative !important;
+}
+
+
+.centered-card {
+}
 </style>

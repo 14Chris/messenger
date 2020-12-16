@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <h4>Register</h4>
+    <div class="card centered-card">
+      <div class="card-content">
+    <h2 class="title is-2">Register</h2>
     <form @submit.prevent="register">
       <!-- First name -->
       <div class="field" v-if="!$v.model.first_name.$invalid">
@@ -47,7 +49,11 @@
         <div class="control">
           <input class="input is-danger" type="text" placeholder="Email" v-model="model.email">
         </div>
-        <p class="help is-danger">{{ GetEmailErrors() }}</p>
+        <p class="help is-danger">
+          <span v-for="(error,index) in GetEmailErrors()" :key="index">
+          {{ error }}
+      </span>
+        </p>
       </div>
 
       <!-- Password -->
@@ -63,7 +69,11 @@
         <div class="control">
           <input class="input is-danger" type="password" placeholder="Password" v-model="model.password">
         </div>
-        <p class="help is-danger">{{ GetPasswordErrors() }}</p>
+        <p class="help is-danger">
+          <span v-for="(error,index) in GetPasswordErrors()" :key="index">
+          {{ error }}
+      </span>
+        </p>
       </div>
 
       <!-- Password confirmation -->
@@ -77,25 +87,32 @@
       <div class="field" v-else>
         <label class="label">Confirm Password</label>
         <div class="control">
-          <input class="input is-danger" type="password" placeholder="Confirm Password" v-model="model.password_confirmation">
+          <input class="input is-danger" type="password" placeholder="Confirm Password"
+                 v-model="model.password_confirmation">
         </div>
-        <p class="help is-danger">{{ GetConfirmPasswordErrors() }}</p>
+        <p class="help is-danger">
+          <span v-for="(error,index) in GetConfirmPasswordErrors()" :key="index">
+            {{ error }}
+          </span>
+        </p>
       </div>
 
       <div>
-        <button type="submit">Register</button>
+        <button class="button is-primary" type="submit">Register</button>
       </div>
       <p>Already have an account ? Log in :</p>
       <router-link to="/login">
-        <button type="button">Sign in</button>
+        <button class="button is-primary is-light" type="button">Sign in</button>
       </router-link>
 
     </form>
   </div>
+  </div>
+  </div>
 </template>
 
 <script>
-import { required, minLength, sameAs, email } from "vuelidate/lib/validators";
+import {required, minLength, sameAs, email} from "vuelidate/lib/validators";
 import ApiService from "../service/api";
 
 import Notification from "@/shared_components/Notification/Notification";
@@ -147,30 +164,30 @@ export default {
       if (!this.$v.$invalid) {
 
         api
-          .create("users", JSON.stringify(data))
-          .then((response) => response.json()).then(data=>{
-            if (data.HttpStatus == 201) {
-              openNotification({
-                message: "Your account has been created. Please check your emails to validate your before sign in.",
-                type: 'success',
-                duration: 5000
-              })
-              this.$router.push("/login");
-            } else {
-              openNotification({
-                message: "An error happened while creating your account",
-                type: 'danger',
-                duration: 5000
-              })
-            }
-          })
-          .catch(() => {
+            .create("users", JSON.stringify(data))
+            .then((response) => response.json()).then(data => {
+          if (data.HttpStatus == 201) {
+            openNotification({
+              message: "Your account has been created. Please check your emails to validate your before sign in.",
+              type: 'success',
+              duration: 5000
+            })
+            this.$router.push("/login");
+          } else {
             openNotification({
               message: "An error happened while creating your account",
               type: 'danger',
               duration: 5000
             })
-          });
+          }
+        })
+            .catch(() => {
+              openNotification({
+                message: "An error happened while creating your account",
+                type: 'danger',
+                duration: 5000
+              })
+            });
       }
     },
     GetEmailErrors() {
@@ -194,7 +211,7 @@ export default {
       } else {
         if (!this.$v.model.password.minLength) {
           errors.push(
-            "Password must have at least " +
+              "Password must have at least " +
               this.$v.model.password.$params.minLength.min +
               " letters."
           );
@@ -241,7 +258,7 @@ export default {
           }
           return new Promise((resolve) => {
             this.chkUsernameAvailabilityTimer = setTimeout(() => {
-              api.getData("users/email_exists/" + value).then((response) => response.json()).then(data=>{
+              api.getData("users/email_exists/" + value).then((response) => response.json()).then(data => {
                 console.log(data.HttpStatus);
                 if (data.HttpStatus == 200) {
                   resolve(true);
