@@ -17,18 +17,27 @@ namespace Messenger.Api.Controllers
         {
         }
 
+        // POST: User login informations to be authenticated in the system
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ReturnApiObject PostLogin(LoginModel model)
+        public IActionResult PostLogin(LoginModel model)
         {
             try
             {
-                return _userService.Login(model.email, model.password);
+                ResponseObject response = _userService.Login(model.email, model.password);
+
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError);
+                return StatusCode(500);
             }
         }
     }
