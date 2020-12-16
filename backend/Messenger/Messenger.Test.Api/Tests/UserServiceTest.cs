@@ -1,284 +1,282 @@
-﻿//using Messenger.Facade.Helpers;
-//using Messenger.Facade.Models;
-//using Messenger.Facade.Response;
-//using Messenger.Service.Interface;
-//using Microsoft.Extensions.DependencyInjection;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using System;
-//using System.Net;
-//using System.Threading.Tasks;
-
-//namespace Messenger.Test.Api
-//{
-//    [TestClass]
-//    public class UserServiceTest : BaseTest
-//    {
-
-//        [TestMethod]
-//        public async Task TestCreateUser()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
-
-//            //Test
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = "ChrisChris11!";
-
-//            ReturnApiObject result = await _userService.CreateUser(user);
-
-//            Assert.IsNotNull(result);
-//            Assert.IsTrue(result.HttpStatus == HttpStatusCode.Created);
-//            Assert.IsTrue(result.ResponseType == ResponseType.Success);
-
-//            //Test create user with same email
-//            Database.User userSameEmail = new Database.User();
-//            user.FirstName = "TestFirstName2";
-//            user.LastName = "TestLastName2";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = "ChrisChris11!";
-
-//            ReturnApiObject resultSameEmail = await _userService.CreateUser(user);
-
-//            Assert.IsNotNull(resultSameEmail, resultSameEmail.HttpStatus.ToString());
-//            Assert.IsTrue(resultSameEmail.HttpStatus == HttpStatusCode.BadRequest, resultSameEmail.HttpStatus.ToString());
-//            Assert.IsTrue(resultSameEmail.ResponseType == ResponseType.Error);
-
-//        }
-
-//        [TestMethod]
-//        public async Task TestCreateUserWithoutPassword()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
-
-//            //Test without password
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-
-//            ReturnApiObject result = await _userService.CreateUser(user);
-
-//            Assert.IsNotNull(result);
-//            Assert.IsTrue(result.ResponseType == ResponseType.Error);
-
-//            Database.User user2 = new Database.User();
-//            user2.FirstName = "TestFirstName";
-//            user2.LastName = "TestLastName";
-//            user2.Email = "lenfant.chris@hotmail.fr";
-//            user2.Password = "";
-
-//            ReturnApiObject result2 = await _userService.CreateUser(user2);
-
-//            Assert.IsNotNull(result2);
-//            Assert.IsTrue(result2.ResponseType == ResponseType.Error);
-//        }
-
-//        [TestMethod]
-//        public async Task TestUpdateUser()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
-
-//            //Create user
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = "ChrisChris11!";
-
-//            ReturnApiObject result = await _userService.CreateUser(user);
-
-//            Assert.IsNotNull(result);
-//            Assert.IsTrue(result.HttpStatus == HttpStatusCode.Created);
-//            Assert.IsTrue(result.ResponseType == ResponseType.Success);
-
-//            //Create user
-//            string newName = "TestUpdateName";
-//            user.FirstName = newName;
-
-//            UserBasicModel basicUser = new UserBasicModel()
-//            {
-//                Id = user.Id,
-//                FirstName = newName,
-//                LastName = user.LastName,
-//                Email = user.Email,
+﻿using Messenger.Facade.Helpers;
+using Messenger.Facade.Models;
+using Messenger.Facade.Response;
+using Messenger.Service.Interface;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Net;
+using System.Threading.Tasks;
+
+namespace Messenger.Test.Api
+{
+    [TestClass]
+    public class UserServiceTest : BaseTest
+    {
+
+        [TestMethod]
+        public async Task TestCreateUser()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            //Test
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = "ChrisChris11!";
+
+            ResponseObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ResponseType == ResponseType.Success);
+
+            //Test create user with same email
+            Database.User userSameEmail = new Database.User();
+            user.FirstName = "TestFirstName2";
+            user.LastName = "TestLastName2";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = "ChrisChris11!";
+
+            ResponseObject resultSameEmail = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(resultSameEmail);
+            Assert.IsTrue(resultSameEmail.ResponseType == ResponseType.Error);
+
+        }
+
+        [TestMethod]
+        public async Task TestCreateUserWithoutPassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            //Test without password
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+
+            ResponseObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ResponseType == ResponseType.Error);
+
+            Database.User user2 = new Database.User();
+            user2.FirstName = "TestFirstName";
+            user2.LastName = "TestLastName";
+            user2.Email = "lenfant.chris@hotmail.fr";
+            user2.Password = "";
+
+            ResponseObject result2 = await _userService.CreateUser(user2);
+
+            Assert.IsNotNull(result2);
+            Assert.IsTrue(result2.ResponseType == ResponseType.Error);
+        }
+
+        [TestMethod]
+        public async Task TestUpdateUser()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
 
-//            };
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = "ChrisChris11!";
 
-//            //Update user informations
-//            ReturnApiObject resultUpdate = await _userService.UpdateUserInformations(basicUser);
+            ResponseObject result = await _userService.CreateUser(user);
 
-//            Assert.IsNotNull(resultUpdate);
-//            Assert.IsTrue(resultUpdate.HttpStatus == HttpStatusCode.OK);
-//            Assert.IsTrue(resultUpdate.ResponseType == ResponseType.Success);
-//            Assert.IsTrue(((Database.User)resultUpdate.Result).FirstName == newName);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ResponseType == ResponseType.Success);
 
-//        }
+            //Create user
+            string newName = "TestUpdateName";
+            user.FirstName = newName;
 
-//        [TestMethod]
-//        public async Task TestUpdateUserWithNewMail()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+            UserBasicModel basicUser = new UserBasicModel()
+            {
+                Id = user.Id,
+                FirstName = newName,
+                LastName = user.LastName,
+                Email = user.Email,
 
+            };
 
-//            //Create user
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = "ChrisChris11!";
+            //Update user informations
+            ResponseObject resultUpdate = await _userService.UpdateUserInformations(basicUser);
 
-//            ReturnApiObject result = await _userService.CreateUser(user);
+            Assert.IsNotNull(resultUpdate);
+            Assert.IsTrue(resultUpdate.ResponseType == ResponseType.Success);
+            Assert.IsTrue(((Database.User)resultUpdate.Result).FirstName == newName);
 
-//            Assert.IsNotNull(result);
-//            Assert.IsTrue(result.HttpStatus == HttpStatusCode.Created);
-//            Assert.IsTrue(result.ResponseType == ResponseType.Success);
+        }
 
-//            //Change user email
-//            string newName = "TestUpdateName";
-//            string newEmail = "lenfant.chris@gmail.com";
+        [TestMethod]
+        public async Task TestUpdateUserWithNewMail()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
 
-//            UserBasicModel basicUser = new UserBasicModel()
-//            {
-//                Id = user.Id,
-//                FirstName = newName,
-//                LastName = user.LastName,
-//                Email = newEmail,
 
-//            };
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = "ChrisChris11!";
 
-//            //Update user informations
-//            ReturnApiObject resultUpdate = await _userService.UpdateUserInformations(basicUser);
+            ResponseObject result = await _userService.CreateUser(user);
 
-//            Assert.IsNotNull(resultUpdate);
-//            Assert.IsTrue(resultUpdate.HttpStatus == HttpStatusCode.OK);
-//            Assert.IsTrue(resultUpdate.ResponseType == ResponseType.Success);
-//            Assert.IsTrue(((Database.User)resultUpdate.Result).FirstName == newName);
-//            Assert.IsTrue(((Database.User)resultUpdate.Result).Email == user.Email);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ResponseType == ResponseType.Success);
 
-//        }
+            //Change user email
+            string newName = "TestUpdateName";
+            string newEmail = "lenfant.chris@gmail.com";
 
-//        [TestMethod]
-//        public async Task TestAddUserProfilePicture()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+            UserBasicModel basicUser = new UserBasicModel()
+            {
+                Id = user.Id,
+                FirstName = newName,
+                LastName = user.LastName,
+                Email = newEmail,
 
-//            //Create user
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = "ChrisChris11!";
+            };
 
-//            ReturnApiObject result = await _userService.CreateUser(user);
+            //Update user informations
+            ResponseObject resultUpdate = await _userService.UpdateUserInformations(basicUser);
 
-//            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultUpdate);
+            Assert.IsTrue(resultUpdate.ResponseType == ResponseType.Success);
+            Assert.IsTrue(((Database.User)resultUpdate.Result).FirstName == newName);
+            Assert.IsTrue(((Database.User)resultUpdate.Result).Email == user.Email);
 
+        }
 
-//            //Change user picture
-//            string base64Picture = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
-//            ReturnApiObject resultChangePicture = await _userService.ChangeUserProfilePicture(user.Id, base64Picture);
+        [TestMethod]
+        public async Task TestAddUserProfilePicture()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
 
-//            Assert.IsNotNull(resultChangePicture);
-//            Assert.IsTrue(resultChangePicture.HttpStatus == HttpStatusCode.OK);
-//            Assert.IsTrue(resultChangePicture.ResponseType == ResponseType.Success);
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = "ChrisChris11!";
 
-//            //Get user profile picture
-//            byte[] resultGetPicture =  _userService.GetUserProfilePicture(user.Id);
-//            string userPictureString = Convert.ToBase64String(resultGetPicture);
+            ResponseObject result = await _userService.CreateUser(user);
 
-//            Assert.IsTrue(userPictureString.Equals(base64Picture));
-//        }
+            Assert.IsNotNull(result);
 
-//        [TestMethod]
-//        public async Task TestChangeUserPassword()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
 
-//            string oldPassword = "ChrisChris11!";
-//            string newPassword = "TestPASSWord28&";
+            //Change user picture
+            string base64Picture = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+            ResponseObject resultChangePicture = await _userService.ChangeUserProfilePicture(user.Id, base64Picture);
 
-//            //Create user
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = oldPassword;
+            Assert.IsNotNull(resultChangePicture);
+            Assert.IsTrue(resultChangePicture.ResponseType == ResponseType.Success);
 
-//            ReturnApiObject result = await _userService.CreateUser(user);
+            //Get user profile picture
+            ResponseObject resultGetPicture = _userService.GetUserProfilePicture(user.Id);
 
-//            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultChangePicture);
+            Assert.IsTrue(resultChangePicture.ResponseType == ResponseType.Success);
 
-//            //Change password user
-//            ReturnApiObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, newPassword);
-//            Assert.IsNotNull(resultPasswordChange);
-//            Assert.IsTrue(resultPasswordChange.HttpStatus == HttpStatusCode.OK);
-//            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Success);
+            byte[] userPicture = resultGetPicture.Result as byte[];
 
+            string userPictureString = Convert.ToBase64String(userPicture);
 
-//            ReturnApiObject resultUser = _userService.GetUser(user.Id);
+            Assert.IsTrue(userPictureString.Equals(base64Picture));
+        }
 
-//            Database.User updatedUser = (Database.User)resultUser.Result;
-//            Assert.IsTrue(updatedUser.Password.Equals(SecurityHelper.HashPassword(newPassword)));
+        [TestMethod]
+        public async Task TestChangeUserPassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
 
-//        }
+            string oldPassword = "ChrisChris11!";
+            string newPassword = "TestPASSWord28&";
 
-//        [TestMethod]
-//        public async Task TestChangeUserPasswordWithSamePassword()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = oldPassword;
 
-//            string oldPassword = "ChrisChris11!";
+            ResponseObject result = await _userService.CreateUser(user);
 
-//            //Create user
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = oldPassword;
+            Assert.IsNotNull(result);
 
-//            ReturnApiObject result = await _userService.CreateUser(user);
+            //Change password user
+            ResponseObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, newPassword);
+            Assert.IsNotNull(resultPasswordChange);
+            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Success);
 
-//            Assert.IsNotNull(result);
 
-//            //Change password user with same password
-//            ReturnApiObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, oldPassword);
-//            Assert.IsNotNull(resultPasswordChange);
-//            Assert.IsTrue(resultPasswordChange.HttpStatus == HttpStatusCode.BadRequest);
-//            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Error);
-//            Assert.IsTrue(resultPasswordChange.Message == "SAME_NEW_PASSWORD");
+            ResponseObject resultUser = _userService.GetUser(user.Id);
 
-//        }
+            Database.User updatedUser = resultUser.Result as Database.User;
+            Assert.IsTrue(updatedUser.Password.Equals(SecurityHelper.HashPassword(newPassword)));
 
-//        [TestMethod]
-//        public async Task TestChangeUserPasswordWithWeakPassword()
-//        {
-//            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+        }
 
-//            string oldPassword = "ChrisChris11!";
-//            string newPassword = "Chris";
+        [TestMethod]
+        public async Task TestChangeUserPasswordWithSamePassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
 
-//            //Create user
-//            Database.User user = new Database.User();
-//            user.FirstName = "TestFirstName";
-//            user.LastName = "TestLastName";
-//            user.Email = "lenfant.chris@hotmail.fr";
-//            user.Password = oldPassword;
+            string oldPassword = "ChrisChris11!";
 
-//            ReturnApiObject result = await _userService.CreateUser(user);
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = oldPassword;
 
-//            Assert.IsNotNull(result);
+            ResponseObject result = await _userService.CreateUser(user);
 
-//            //Change password user with weak password
-//            ReturnApiObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, newPassword);
-//            Assert.IsNotNull(resultPasswordChange);
-//            Assert.IsTrue(resultPasswordChange.HttpStatus == HttpStatusCode.BadRequest);
-//            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Error);
-//            Assert.IsTrue(resultPasswordChange.Message == "NEW_PASSWORD_TOO_WEAK");
+            Assert.IsNotNull(result);
 
-//        }
+            //Change password user with same password
+            ResponseObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, oldPassword);
 
-//    }
-//}
+            Assert.IsNotNull(resultPasswordChange);
+            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Error);
+            Assert.IsTrue(resultPasswordChange.Message == "SAME_NEW_PASSWORD");
+
+        }
+
+        [TestMethod]
+        public async Task TestChangeUserPasswordWithWeakPassword()
+        {
+            IUserService _userService = _serviceProvider.GetRequiredService<IUserService>();
+
+            string oldPassword = "ChrisChris11!";
+            string newPassword = "Chris";
+
+            //Create user
+            Database.User user = new Database.User();
+            user.FirstName = "TestFirstName";
+            user.LastName = "TestLastName";
+            user.Email = "lenfant.chris@hotmail.fr";
+            user.Password = oldPassword;
+
+            ResponseObject result = await _userService.CreateUser(user);
+
+            Assert.IsNotNull(result);
+
+            //Change password user with weak password
+            ResponseObject resultPasswordChange = await _userService.UpdateUserPassword(user.Id, oldPassword, newPassword);
+
+            Assert.IsNotNull(resultPasswordChange);
+            Assert.IsTrue(resultPasswordChange.ResponseType == ResponseType.Error);
+            Assert.IsTrue(resultPasswordChange.Message == "NEW_PASSWORD_TOO_WEAK");
+
+        }
+
+    }
+}
 
