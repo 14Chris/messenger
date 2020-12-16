@@ -1,5 +1,6 @@
 ﻿using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,9 @@ namespace Messenger.Api.Controllers
         // GET: Get conversations for a user by his session token
         [HttpGet("user")]
         [Authorize]
-        public ReturnApiObject GetConversationByUser()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetConversationByUser()
         {
             int id = -1;
 
@@ -30,22 +33,31 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return _conversationService.GetConversationsByUser(id);
+                ResponseObject response = _conversationService.GetConversationsByUser(id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: Get conversations by his id
         [HttpGet("{convId}")]
         [Authorize]
-        public ReturnApiObject GetConversationById(int convId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetConversationById(int convId)
         {
             int id = -1;
 
@@ -54,22 +66,31 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return _conversationService.GetConversationById(convId, id);
+                ResponseObject response = _conversationService.GetConversationById(convId, id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: Get conversations by his id
         [HttpGet("{convId}/messages/{lastMessageId}/more")]
         [Authorize]
-        public ReturnApiObject GetConversationMoreMessages(int convId, int lastMessageId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetConversationMoreMessages(int convId, int lastMessageId)
         {
             int id = -1;
 
@@ -78,22 +99,31 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return _messageService.LoadMoreMessagesFromConversation(id, convId, lastMessageId);
+                ResponseObject response = _messageService.LoadMoreMessagesFromConversation(id, convId, lastMessageId);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: Get conversations detail by his id
         [HttpGet("{convId}/detail")]
         [Authorize]
-        public ReturnApiObject GetConversationDetailById(int convId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetConversationDetailById(int convId)
         {
             int id = -1;
 
@@ -102,22 +132,31 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return _conversationService.GetConversationDetailById(convId, id);
+                ResponseObject response = _conversationService.GetConversationDetailById(convId, id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // POST: Add new conversation
         [HttpPost]
         [Authorize]
-        public async Task<ReturnApiObject> PostConversation(NewConversationModel model)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PostConversation(NewConversationModel model)
         {
             int id = -1;
 
@@ -126,22 +165,32 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return await _conversationService.CreateConversation(id, model.friends, model.texte);
+                ResponseObject response = await _conversationService.CreateConversation(id, model.friends, model.texte);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Created("", response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
-        // POST: Add new conversation
+        // POST: Verify if conversation already exists with the users in body
         [HttpPost("exists")]
         [Authorize]
-        public ReturnApiObject PostConversationExists([FromBody]List<int> users)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult PostConversationExists([FromBody] List<int> users)
         {
             int id = -1;
 
@@ -150,24 +199,40 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             users.Add(id);
 
             try
             {
-                return _conversationService.GetConversationExistsByUsers(users.ToArray());
+                ResponseObject response = _conversationService.GetConversationExistsByUsers(users.ToArray());
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                //NO conversation already exists
+                if (response.Result == null)
+                {
+                    return Ok();
+                }
+
+                //conversation already exists
+                return Conflict();
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // PUT: Archive user conversation
         [HttpPut("{convId}/archive")]
         [Authorize]
-        public async Task<ReturnApiObject> PutConversationArchive(int convId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PutConversationArchive(int convId)
         {
             int id = -1;
 
@@ -176,15 +241,22 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return await _conversationService.ArchiveConversation(convId, id);
+                ResponseObject response = await _conversationService.ArchiveConversation(convId, id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
     }
