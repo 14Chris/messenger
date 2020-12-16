@@ -21,7 +21,7 @@
                  placeholder="Password">
         </div>
       </div>
-      <button type="submit">Login</button>
+      <button class="button is-primary" type="submit">Login</button>
     </form>
     <router-link to="/forgot_password"
       ><a>Forgot your password ?</a></router-link
