@@ -36,7 +36,7 @@ namespace Messenger.Test.Api
             var services = new ServiceCollection();
             services.AddDbContext<MessengerDbContext>(options => options.UseSqlite(connection));
 
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.test.json").Build();
             var startup = new Startup(configuration);
 
             startup.ConfigureServices(services);
