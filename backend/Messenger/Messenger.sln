@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Facade", "Messeng
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Database", "Messenger.Database\Messenger.Database.csproj", "{4B9516AE-0D82-4057-BE36-A4E35F7FC4C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger.EmailSending", "Messenger.EmailSending\Messenger.EmailSending.csproj", "{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.EmailSending", "Messenger.EmailSending\Messenger.EmailSending.csproj", "{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

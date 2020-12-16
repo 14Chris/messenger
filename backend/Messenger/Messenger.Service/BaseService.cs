@@ -10,7 +10,7 @@ namespace Messenger.Service.Implementation
 {
     public class BaseService
     {
-        private IServiceProvider _serviceProvider;
+        protected readonly IServiceProvider _serviceProvider;
         protected readonly JwtSettings _jwtSettings;
         
 
@@ -18,7 +18,6 @@ namespace Messenger.Service.Implementation
         {
             this._serviceProvider = serviceProvider;
             this._jwtSettings = jwtSettings.Value;
-           
         }
 
         protected IEmailSenderService _emailSender

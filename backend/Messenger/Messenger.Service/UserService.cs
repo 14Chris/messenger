@@ -36,7 +36,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> CreateUser(User user)
+        public async Task<ResponseObject> CreateUser(User user)
         {
             PrepareUser(user);
 
@@ -44,7 +44,7 @@ namespace Messenger.Service.Implementation
 
             if(validationError != null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, validationError, null);
+                return new ResponseObject(ResponseType.Error, validationError, null);
             }
 
             //Hash password to store in database
@@ -57,7 +57,7 @@ namespace Messenger.Service.Implementation
 
             if (result == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
+                return new ResponseObject(ResponseType.Error, "", null);
             }
 
             // Generate JWT token to authenticate user account activation request
@@ -81,7 +81,7 @@ namespace Messenger.Service.Implementation
             Token tokenResult = await _tokenRepository.CreateAsync(token);
 
             if (tokenResult == null)
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Create email model
             ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel()
@@ -93,7 +93,7 @@ namespace Messenger.Service.Implementation
 
             _emailSender.SendActivateAccountEmail(emailModel);
 
-            return new ReturnApiObject(HttpStatusCode.Created, ResponseType.Success, "", result);
+            return new ResponseObject(ResponseType.Success, "", result);
         }
 
         /// <summary>
@@ -101,12 +101,12 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ReturnApiObject GetUser(int id)
+        public ResponseObject GetUser(int id)
         {
             User user = _userRepository.List().Where(x => x.Id == id)
                 .SingleOrDefault();
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", user);
+            return new ResponseObject(ResponseType.Success, "", user);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ReturnApiObject GetUserSession(int id)
+        public ResponseObject GetUserSession(int id)
         {
             UserSessionModel user = _userRepository.List().Where(x => x.Id == id)
                 .Select(x => new UserSessionModel
@@ -126,7 +126,7 @@ namespace Messenger.Service.Implementation
                 })
                 .SingleOrDefault();
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", user);
+            return new ResponseObject(ResponseType.Success, "", user);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> UpdateUserInformations(UserBasicModel updatedUser)
+        public async Task<ResponseObject> UpdateUserInformations(UserBasicModel updatedUser)
         {
             User user = _userRepository.List().Where(x => x.Id == updatedUser.Id)
              .SingleOrDefault();
@@ -148,10 +148,10 @@ namespace Messenger.Service.Implementation
 
             if (result == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
+                return new ResponseObject(ResponseType.Error, "", null);
             }
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", result);
+            return new ResponseObject(ResponseType.Success, "", result);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Messenger.Service.Implementation
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public ReturnApiObject Login(string email, string password)
+        public ResponseObject Login(string email, string password)
         {
             //Get the hashed password provided
             string hashedPassword = SecurityHelper.HashPassword(password);
@@ -171,11 +171,11 @@ namespace Messenger.Service.Implementation
 
             if (user == null)
             {
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error, "BAD_CREDENTIALS", null);
+                return new ResponseObject(ResponseType.Error, "BAD_CREDENTIALS", null);
             }
             else if (user.State == UserState.WaitingActivation)
             {
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error, "NOT_ACTIVATED", null);
+                return new ResponseObject(ResponseType.Error, "NOT_ACTIVATED", null);
             }
             else
             {
@@ -190,7 +190,7 @@ namespace Messenger.Service.Implementation
                     LastName = user.LastName
                 };
 
-                return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", new { token = tokenString, user = userModel });
+                return new ResponseObject(ResponseType.Success, "", new { token = tokenString, user = userModel });
             }
         }
 
@@ -199,19 +199,19 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public ReturnApiObject EmailAlreadyExists(string email)
+        public ResponseObject EmailAlreadyExists(string email)
         {
             bool result = IsUserEmailUsed(email);
 
             //If email is already used
             if (result)
             {
-                return new ReturnApiObject(HttpStatusCode.Conflict, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
             //If not
             else
             {
-                return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+                return new ResponseObject(ResponseType.Success);
             }
         }
 
@@ -299,30 +299,30 @@ namespace Messenger.Service.Implementation
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> UpdateUserPassword(int userId, string oldPassword, string newPassword)
+        public async Task<ResponseObject> UpdateUserPassword(int userId, string oldPassword, string newPassword)
         {
             User user = await _userRepository.GetById(userId);
 
             if(user == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             string hashedOldPwd = SecurityHelper.HashPassword(oldPassword);
 
             if(user.Password != hashedOldPwd)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "OLD_PASSWORD_DIFFERENT", null);
+                return new ResponseObject(ResponseType.Error, "OLD_PASSWORD_DIFFERENT", null);
             }
 
             if (oldPassword == newPassword)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "SAME_NEW_PASSWORD", null);
+                return new ResponseObject(ResponseType.Error, "SAME_NEW_PASSWORD", null);
             }
 
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
+                return new ResponseObject(ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
             }
 
             user.Password = SecurityHelper.HashPassword(newPassword);
@@ -332,10 +332,10 @@ namespace Messenger.Service.Implementation
 
             if (userUpdated == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
 
         }
 
@@ -344,12 +344,12 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ForgotPassword(string email)
+        public async Task<ResponseObject> ForgotPassword(string email)
         {
             User user = _userRepository.List().Where(x => x.Email == email).SingleOrDefault();
 
             if(user == null)
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             // Generate JWT token to authenticate user reset password request
             var tokenValue = new JwtBuilder()
@@ -372,7 +372,7 @@ namespace Messenger.Service.Implementation
             Token tokenResult = await _tokenRepository.CreateAsync(token);
 
             if(tokenResult == null)
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Create email model
             ResetPasswordEmailModel emailModel = new ResetPasswordEmailModel()
@@ -385,7 +385,7 @@ namespace Messenger.Service.Implementation
             //Send reset password email
             _emailSender.SendResetPasswordEmail(emailModel);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject( ResponseType.Success);
         }
 
         /// <summary>
@@ -393,12 +393,12 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
+        public async Task<ResponseObject> ValidateTokenPasswordReset(string token)
         {
             Token tokenResult = _tokenRepository.List().Where(x=>x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if(tokenResult == null)
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Token verification (expiration, key, ...)
             try
@@ -414,14 +414,14 @@ namespace Messenger.Service.Implementation
             catch (TokenExpiredException)
             {
                 await _tokenRepository.DeleteAsync(tokenResult);
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
             catch (SignatureVerificationException)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
@@ -430,12 +430,12 @@ namespace Messenger.Service.Implementation
         /// <param name="token"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ResetPassword(string token, string newPassword)
+        public async Task<ResponseObject> ResetPassword(string token, string newPassword)
         {
             Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.ForgotPassword).SingleOrDefault();
 
             if (tokenResult == null)
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Token verification (expiration, key, ...)
             try
@@ -452,26 +452,26 @@ namespace Messenger.Service.Implementation
             catch (TokenExpiredException)
             {
                 await _tokenRepository.DeleteAsync(tokenResult);
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
             // If token signature verification failed
             catch (SignatureVerificationException)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             // Get user from token
             User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
 
             if(user == null)
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             string newPasswordHash = SecurityHelper.HashPassword(newPassword);
 
             // If new password is too weak
             if (!SecurityHelper.PasswordMatchRegex(newPassword))
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
+                return new ResponseObject( ResponseType.Error, "NEW_PASSWORD_TOO_WEAK", null);
             }
 
             // Set user new password
@@ -482,13 +482,13 @@ namespace Messenger.Service.Implementation
 
             if (userUpdated == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             // Delete token
             await _tokenRepository.DeleteAsync(tokenResult);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
@@ -496,7 +496,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ReturnApiObject GetUserProfile(int id)
+        public ResponseObject GetUserProfile(int id)
         {
             UserProfileModel userProfile = _userRepository.List().Where(x => x.Id == id).Select(x => new UserProfileModel()
             {
@@ -508,10 +508,10 @@ namespace Messenger.Service.Implementation
 
             if(userProfile == null)
             {
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success, "", userProfile);
+            return new ResponseObject(ResponseType.Success, "", userProfile);
         }
 
         /// <summary>
@@ -519,14 +519,14 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public byte[] GetUserProfilePicture(int id)
+        public ResponseObject GetUserProfilePicture(int id)
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
 
             if (user == null)
-                return null;
+                return new ResponseObject(ResponseType.Error);
 
-            return user.ProfilePicture;
+            return new ResponseObject(ResponseType.Success, "", user.ProfilePicture);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace Messenger.Service.Implementation
         /// <param name="id"></param>
         /// <param name="pictureBase64"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ChangeUserProfilePicture(int id, string pictureBase64)
+        public async Task<ResponseObject> ChangeUserProfilePicture(int id, string pictureBase64)
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
 
@@ -544,9 +544,9 @@ namespace Messenger.Service.Implementation
             User userUpdated = await _userRepository.UpdateAsync(user);
 
             if(userUpdated == null)
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
@@ -554,7 +554,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> DeleteUserProfilePicture(int id)
+        public async Task<ResponseObject> DeleteUserProfilePicture(int id)
         {
             User user = _userRepository.List().Where(x => x.Id == id).SingleOrDefault();
 
@@ -563,9 +563,9 @@ namespace Messenger.Service.Implementation
             User userUpdated = await _userRepository.UpdateAsync(user);
 
             if(userUpdated == null)
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
@@ -573,12 +573,12 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ActivateAccount(string token)
+        public async Task<ResponseObject> ActivateAccount(string token)
         {
             Token tokenResult = _tokenRepository.List().Where(x => x.Value == token && x.Type == TokenType.AccountActivation).SingleOrDefault();
 
             if (tokenResult == null)
-                return new ReturnApiObject(HttpStatusCode.NotFound, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Token verification (expiration, key, ...)
             try
@@ -595,19 +595,19 @@ namespace Messenger.Service.Implementation
             catch (TokenExpiredException)
             {
                 await _tokenRepository.DeleteAsync(tokenResult);
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
             // If token signature verification failed
             catch (SignatureVerificationException)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
 
             // Get user from token
             User user = _userRepository.List().Where(x => x.Id == tokenResult.UserId).SingleOrDefault();
 
             if(user == null)
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             // Change user state to activate account
             user.State = UserState.Activated;
@@ -615,9 +615,9 @@ namespace Messenger.Service.Implementation
             User userUpdated = await _userRepository.UpdateAsync(user);
 
             if (userUpdated == null)
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
-            return new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         /// <summary>
@@ -625,14 +625,14 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> ResendAccountActivationEmail(string email)
+        public async Task<ResponseObject> ResendAccountActivationEmail(string email)
         {
             //Get user
             User user = _userRepository.List().Where(x=>x.Email == email).SingleOrDefault();
 
             if (user == null)
             {
-                return new ReturnApiObject(HttpStatusCode.BadRequest, ResponseType.Error, "", null);
+                return new ResponseObject(ResponseType.Error, "", null);
             }
 
             // Generate JWT token to authenticate user account activation request
@@ -656,7 +656,7 @@ namespace Messenger.Service.Implementation
             Token tokenResult = await _tokenRepository.CreateAsync(token);
 
             if (tokenResult == null)
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
 
             //Create email model
             ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel()
@@ -669,7 +669,7 @@ namespace Messenger.Service.Implementation
 
             bool result =  await _emailSender.SendActivateAccountEmail(emailModel);
 
-            return (result ? new ReturnApiObject(HttpStatusCode.OK, ResponseType.Success) : new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error));
+            return (result ? new ResponseObject(ResponseType.Success) : new ResponseObject(ResponseType.Error));
         }
     }
 

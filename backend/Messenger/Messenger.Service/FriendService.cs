@@ -24,7 +24,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public ReturnApiObject GetFriendsByUser(int userId)
+        public ResponseObject GetFriendsByUser(int userId)
         {
             List<UserBasicModel> friends = _userRelationRepository.List()
                 .Where(x => (x.FriendId == userId) && x.State == UserRelationState.Accepted).Select(x => x.User)
@@ -39,7 +39,7 @@ namespace Messenger.Service.Implementation
                 })
                 .ToList();
 
-            return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
+            return new ResponseObject(ResponseType.Success, "", friends);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Messenger.Service.Implementation
         /// <param name="searchTerm"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public ReturnApiObject SearchFriendsByUser(int userId, string searchTerm)
+        public ResponseObject SearchFriendsByUser(int userId, string searchTerm)
         {
             List<UserBasicModel> friends = _userRelationRepository.List().Where(x =>
                     (x.FriendId == userId) && x.State == UserRelationState.Accepted &&
@@ -68,7 +68,7 @@ namespace Messenger.Service.Implementation
                     Email = x.Email,
                 }).ToList();
 
-            return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
+            return new ResponseObject(ResponseType.Success, "", friends);
         }
 
         /// <summary>
@@ -77,14 +77,14 @@ namespace Messenger.Service.Implementation
         /// <param name="userId"></param>
         /// <param name="friendId"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> AddFriend(int userId, string friendEmail)
+        public async Task<ResponseObject> AddFriend(int userId, string friendEmail)
         {
 
             User friend = _userRepository.List().Where(x => x.Email == friendEmail).SingleOrDefault();
 
             if(friend == null)
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "FRIEND_DOESNT_EXIST", null);
+                return new ResponseObject(ResponseType.Error, "FRIEND_DOESNT_EXIST", null);
             }
 
             UserRelation relation = RetrieveUserRelation(userId, friend.Id);
@@ -100,10 +100,10 @@ namespace Messenger.Service.Implementation
 
                 if (result == null)
                 {
-                    return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error);
+                    return new ResponseObject(ResponseType.Error);
                 }
 
-                return new ReturnApiObject(System.Net.HttpStatusCode.Created, ResponseType.Success, "", result);
+                return new ResponseObject(ResponseType.Success, "", result);
             }
             else if (relation.State == UserRelationState.Deleted)
             {
@@ -114,14 +114,14 @@ namespace Messenger.Service.Implementation
 
                 if (result == null)
                 {
-                    return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error);
+                    return new ResponseObject( ResponseType.Error);
                 }
 
-                return new ReturnApiObject(System.Net.HttpStatusCode.Created, ResponseType.Success, "", result);
+                return new ResponseObject(ResponseType.Success, "", result);
             }
             else
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error);
+                return new ResponseObject(ResponseType.Error);
             }
         }
 
@@ -131,9 +131,9 @@ namespace Messenger.Service.Implementation
         /// <param name="userId"></param>
         /// <param name="friendId"></param>
         /// <returns></returns>
-        public ReturnApiObject RemoveFriend(int userId, int friendId)
+        public ResponseObject RemoveFriend(int userId, int friendId)
         {
-            return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success);
+            return new ResponseObject(ResponseType.Success);
         }
 
         private UserRelation RetrieveUserRelation(int userId, int friendId)
@@ -150,7 +150,7 @@ namespace Messenger.Service.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public ReturnApiObject GetFriendsRequestByUser(int userId)
+        public ResponseObject GetFriendsRequestByUser(int userId)
         {
             List<UserBasicModel> friends = _userRelationRepository.List()
                 .Where(x => (x.FriendId == userId) && x.State == UserRelationState.Requested).Select(x => x.User)
@@ -163,7 +163,7 @@ namespace Messenger.Service.Implementation
                 })
                 .ToList();
 
-            return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", friends);
+            return new ResponseObject(ResponseType.Success, "", friends);
         }
 
         /// <summary>
@@ -172,13 +172,13 @@ namespace Messenger.Service.Implementation
         /// <param name="userId"></param>
         /// <param name="friendId"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> AcceptFriendRequest(int userId, int friendId)
+        public async Task<ResponseObject> AcceptFriendRequest(int userId, int friendId)
         {
             UserRelation relation = RetrieveUserRelation(userId, friendId);
 
             if(relation == null)
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NO_REQUEST", null);
+                return new ResponseObject(ResponseType.Error, "NO_REQUEST", null);
             }
 
             if(relation.State == UserRelationState.Requested)
@@ -188,11 +188,11 @@ namespace Messenger.Service.Implementation
 
                 UserRelation result = await _userRelationRepository.UpdateAsync(relation);
 
-                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+                return new ResponseObject(ResponseType.Success, "", null);
             }
             else
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
+                return new ResponseObject(ResponseType.Error, "NOT_A_REQUEST", null);
             }
         }
 
@@ -202,13 +202,13 @@ namespace Messenger.Service.Implementation
         /// <param name="userId"></param>
         /// <param name="friendId"></param>
         /// <returns></returns>
-        public async Task<ReturnApiObject> DeleteFriendRequest(int userId, int friendId)
+        public async Task<ResponseObject> DeleteFriendRequest(int userId, int friendId)
         {
             UserRelation relation = RetrieveUserRelation(userId, friendId);
 
             if (relation == null)
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NO_REQUEST", null);
+                return new ResponseObject(ResponseType.Error, "NO_REQUEST", null);
             }
 
             if (relation.State == UserRelationState.Requested)
@@ -218,15 +218,15 @@ namespace Messenger.Service.Implementation
 
                 UserRelation result = await _userRelationRepository.UpdateAsync(relation);
 
-                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+                return new ResponseObject(ResponseType.Success, "", null);
             }
             else
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error, "NOT_A_REQUEST", null);
+                return new ResponseObject(ResponseType.Error, "NOT_A_REQUEST", null);
             }
         }
 
-        public async Task<ReturnApiObject> DeleteFriend(int userId, int friendId)
+        public async Task<ResponseObject> DeleteFriend(int userId, int friendId)
         {
             UserRelation relation = RetrieveUserRelation(userId, friendId);
 
@@ -237,11 +237,11 @@ namespace Messenger.Service.Implementation
 
                 UserRelation result = await _userRelationRepository.UpdateAsync(relation);
 
-                return new ReturnApiObject(System.Net.HttpStatusCode.OK, ResponseType.Success, "", null);
+                return new ResponseObject(ResponseType.Success, "", null);
             }
             else
             {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest);
+                return new ResponseObject(ResponseType.Error);
             }
         }
     }

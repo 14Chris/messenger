@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="conv-messages">
-      <MessageList v-if="conversation != null" :messages="conversation.messages"></MessageList>
+      <MessageList v-if="conversation != null" :convId="conversation.id" :convMessages="conversation.messages"></MessageList>
     </div>
     <div class="conv-send-message">
       <SendMessageBar :message-submit="SendMessage"></SendMessageBar>

@@ -1,4 +1,5 @@
 ﻿using Messenger.Database;
+using Messenger.Facade.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,8 +9,8 @@ namespace Messenger.Service.Interface
 {
     public interface IUserConversationService
     {
-        public Task<UserConversation> UpdateUserConversation(UserConversation user);
-        public List<int> GetConversationIdUsers(int idConversation);
-        public List<UserConversation> GetConversationUsers(int idConversation);
+        public Task<ResponseObject> UpdateUserConversation(UserConversation user);
+        public ResponseObject GetConversationIdUsers(int idConversation);
+        public ResponseObject GetConversationUsers(int idConversation);
     }
 }

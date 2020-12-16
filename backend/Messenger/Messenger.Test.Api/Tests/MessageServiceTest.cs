@@ -11,7 +11,7 @@ namespace Messenger.Test.Api
     [TestClass]
     public class MessageServiceTest : BaseTest
     {
-        
+
         [TestMethod]
         public async Task TestCreateMessage()
         {
@@ -28,7 +28,7 @@ namespace Messenger.Test.Api
             user.Password = "ChrisChris11!";
 
             //Add user 1
-            ReturnApiObject resultUser = await _userService.CreateUser(user);
+            ResponseObject resultUser = await _userService.CreateUser(user);
 
             //User 2
             Database.User user2 = new Database.User();
@@ -38,16 +38,16 @@ namespace Messenger.Test.Api
             user2.Password = "ChrisChris11!";
 
             //Add user 2
-            ReturnApiObject resultUser2 = await _userService.CreateUser(user2);
+            ResponseObject resultUser2 = await _userService.CreateUser(user2);
 
             //Add users relation
-            ReturnApiObject resultAddFriend = await _friendService.AddFriend(user.Id, user2.Email);
+            ResponseObject resultAddFriend = await _friendService.AddFriend(user.Id, user2.Email);
 
             //Accept friend
-            ReturnApiObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
+            ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
 
             //Add new conversation
-            ReturnApiObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message");
+            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message");
 
             Conversation conversationAdded = (Conversation)resultConversation.Result;
 
@@ -59,11 +59,9 @@ namespace Messenger.Test.Api
             };
 
             //Add a message
-
-            ReturnApiObject resultMessage = await _messageService.CreateMessage(user.Id, message);
+            ResponseObject resultMessage = await _messageService.CreateMessage(user.Id, message);
 
             Assert.IsNotNull(resultMessage);
-            Assert.IsTrue(resultMessage.HttpStatus == HttpStatusCode.Created);
             Assert.IsTrue(resultMessage.ResponseType == ResponseType.Success);
         }
     }

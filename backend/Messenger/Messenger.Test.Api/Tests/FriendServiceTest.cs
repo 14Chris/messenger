@@ -28,7 +28,7 @@ namespace Messenger.Test.Api
             user.Email = "lenfant.chris@hotmail.fr";
             user.Password = "ChrisChris11!";
 
-            ReturnApiObject result = await _userService.CreateUser(user);
+            ResponseObject result = await _userService.CreateUser(user);
 
             Assert.IsTrue(result.ResponseType == ResponseType.Success);
 
@@ -39,13 +39,12 @@ namespace Messenger.Test.Api
             friend.Email = "lenfant.chris@gmail.com";
             friend.Password = "ChrisChris11!";
 
-            ReturnApiObject resultFriend = await _userService.CreateUser(friend);
+            ResponseObject resultFriend = await _userService.CreateUser(friend);
 
             Assert.IsTrue(resultFriend.ResponseType == ResponseType.Success);
 
             //Test add users relation
-
-            ReturnApiObject resultAddFriend = await _friendService.AddFriend(user.Id, friend.Email);
+            ResponseObject resultAddFriend = await _friendService.AddFriend(user.Id, friend.Email);
             Assert.IsTrue(resultFriend.ResponseType == ResponseType.Success);
         }
 
@@ -62,7 +61,7 @@ namespace Messenger.Test.Api
             user.Email = "lenfant.chris@hotmail.fr";
             user.Password = "ChrisChris11!";
 
-            ReturnApiObject result = await _userService.CreateUser(user);
+            ResponseObject result = await _userService.CreateUser(user);
 
             Assert.IsTrue(result.ResponseType == ResponseType.Success);
 
@@ -73,20 +72,20 @@ namespace Messenger.Test.Api
             friend.Email = "lenfant.chris@gmail.com";
             friend.Password = "ChrisChris11!";
 
-            ReturnApiObject resultFriend = await _userService.CreateUser(friend);
+            ResponseObject resultFriend = await _userService.CreateUser(friend);
 
             Assert.IsTrue(resultFriend.ResponseType == ResponseType.Success);
 
             //Test add users relation
-            ReturnApiObject resultAddFriend = await _friendService.AddFriend(user.Id, friend.Email);
+            ResponseObject resultAddFriend = await _friendService.AddFriend(user.Id, friend.Email);
             Assert.IsTrue(resultFriend.ResponseType == ResponseType.Success);
 
             //Test accept friend
-            ReturnApiObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, friend.Id);
+            ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, friend.Id);
             Assert.IsTrue(resultAcceptFriend.ResponseType == ResponseType.Success);
 
             //Test accept not friend
-            ReturnApiObject resultAcceptNotFriend = await _friendService.AcceptFriendRequest(user.Id, 200);
+            ResponseObject resultAcceptNotFriend = await _friendService.AcceptFriendRequest(user.Id, 200);
             Assert.IsTrue(resultAcceptNotFriend.ResponseType == ResponseType.Error);
         }
 
@@ -103,7 +102,7 @@ namespace Messenger.Test.Api
             user.Email = "lenfant.chris@hotmail.fr";
             user.Password = "ChrisChris11!";
 
-            ReturnApiObject result = await _userService.CreateUser(user);
+            ResponseObject result = await _userService.CreateUser(user);
 
             Assert.IsTrue(result.ResponseType == ResponseType.Success);
 
@@ -114,22 +113,21 @@ namespace Messenger.Test.Api
             friend.Email = "lenfant.chris@gmail.com";
             friend.Password = "ChrisChris11!";
 
-            ReturnApiObject resultFriend = await _userService.CreateUser(friend);
+            ResponseObject resultFriend = await _userService.CreateUser(friend);
 
             Assert.IsTrue(resultFriend.ResponseType == ResponseType.Success);
 
             //Test add users relation
-            ReturnApiObject resultAddFriend = await _friendService.AddFriend(user.Id, friend.Email);
+            ResponseObject resultAddFriend = await _friendService.AddFriend(user.Id, friend.Email);
             Assert.IsTrue(resultFriend.ResponseType == ResponseType.Success);
 
             //Test accept friend
-            ReturnApiObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, friend.Id);
+            ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, friend.Id);
             Assert.IsTrue(resultAcceptFriend.ResponseType == ResponseType.Success);
 
-            ReturnApiObject friendsList = _friendService.GetFriendsByUser(user.Id);
+            ResponseObject friendsList = _friendService.GetFriendsByUser(user.Id);
             Assert.IsTrue(resultAcceptFriend.ResponseType == ResponseType.Success);
-            Assert.IsTrue(((List<UserBasicModel>)friendsList.Result).Select(x=>x.Id).Contains(friend.Id));
-
+            Assert.IsTrue(((List<UserBasicModel>)friendsList.Result).Select(x => x.Id).Contains(friend.Id));
         }
 
     }

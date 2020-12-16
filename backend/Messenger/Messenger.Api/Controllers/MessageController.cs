@@ -1,6 +1,7 @@
 ﻿using Messenger.Database;
 using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
@@ -21,7 +22,10 @@ namespace Messenger.Api.Controllers
         // POST: Add new message
         [HttpPost]
         [Authorize]
-        public async Task<ReturnApiObject> PostConversation(Message message)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PostMessage(Message message)
         {
             int id = -1;
 
@@ -30,15 +34,22 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return await _messageService.CreateMessage(id, message);
+                ResponseObject response = await _messageService.CreateMessage(id, message);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Created("", response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
     }

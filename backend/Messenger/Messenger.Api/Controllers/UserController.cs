@@ -26,15 +26,23 @@ namespace Messenger.Api.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ReturnApiObject> PostUser(User user)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PostUser(User user)
         {
             try
             {
-                return await _userService.CreateUser(user);
+                ResponseObject response = await _userService.CreateUser(user);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Created("", response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError);
+                return StatusCode(500);
             }
         }
 
@@ -42,24 +50,32 @@ namespace Messenger.Api.Controllers
         [HttpGet("session")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public ReturnApiObject GetSession()
+        public IActionResult GetSession()
         {
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+            if (!ok)
+                return Unauthorized();
+
             try
             {
-                int id = -1;
+                ResponseObject response = _userService.GetUserSession(id);
 
-                var claimsIdentity = this.User.Identity as ClaimsIdentity;
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
 
-                bool ok = int.TryParse(claimsIdentity.Name, out id);
-                if (!ok)
-                    return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
-
-                return _userService.GetUserSession(id);
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
@@ -67,22 +83,33 @@ namespace Messenger.Api.Controllers
         [HttpGet("email_exists/{email}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public ReturnApiObject EmailAlreadyExists(string email)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult EmailAlreadyExists(string email)
         {
             try
             {
-                return _userService.EmailAlreadyExists(email);
+                ResponseObject response = _userService.EmailAlreadyExists(email);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return Conflict();
+                }
+
+                return Ok();
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
-         
+
         // PUT: update password
         [HttpPut("password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public async Task<ReturnApiObject> UpdateUserPassword(UpdatePasswordModel model)
+        public async Task<IActionResult> UpdateUserPassword(UpdatePasswordModel model)
         {
             int id = -1;
 
@@ -91,115 +118,189 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return await _userService.UpdateUserPassword(id, model.oldPassword, model.newPassword);
+                ResponseObject response = await _userService.UpdateUserPassword(id, model.oldPassword, model.newPassword);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
 
         }
 
         // GET: send account activation email
         [HttpGet("account_activation/send/{email}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [AllowAnonymous]
-        public async Task<ReturnApiObject> SendAccountActivationEmail(string email)
+        public async Task<IActionResult> SendAccountActivationEmail(string email)
         {
             try
             {
-                return await _userService.ResendAccountActivationEmail(email);
+                ResponseObject response = await _userService.ResendAccountActivationEmail(email);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: activate user account
         [HttpGet("account_activation/{token}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [AllowAnonymous]
-        public async Task<ReturnApiObject> ActivateAccount(string token)
+        public async Task<IActionResult> ActivateAccount(string token)
         {
             try
             {
-                return await _userService.ActivateAccount(token);
+                ResponseObject response = await _userService.ActivateAccount(token);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // POST: to register token for forgot password
         [HttpPost("forgot_password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [AllowAnonymous]
-        public async Task<ReturnApiObject> ForgotPassword([FromBody] string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
-
             try
             {
-                return await _userService.ForgotPassword(email);
+                ResponseObject response = await _userService.ForgotPassword(email);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: Validate reset password token
         [HttpGet("reset_password/{token}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [AllowAnonymous]
-        public async Task<ReturnApiObject> ValidateTokenPasswordReset(string token)
+        public async Task<IActionResult> ValidateTokenPasswordReset(string token)
         {
             try
             {
-                return await _userService.ValidateTokenPasswordReset(token);
+                ResponseObject response = await _userService.ValidateTokenPasswordReset(token);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
 
         }
 
         // POST: Reset password
         [HttpPost("reset_password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [AllowAnonymous]
-        public async Task<ReturnApiObject> ResetPassword(ResetPasswordModel model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
         {
             try
             {
-                return await _userService.ResetPassword(model.token, model.newPassword);
+                ResponseObject response = await _userService.ResetPassword(model.token, model.newPassword);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: User profile informations
-        [HttpGet("{id}/profile")]
+        [HttpGet("{userId}/profile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public ReturnApiObject GetUserProfile(int id)
+        public IActionResult GetUserProfile(int userId)
         {
+
+            int id = -1;
+
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+
+            bool ok = int.TryParse(claimsIdentity.Name, out id);
+
+            if (!ok)
+                return Unauthorized();
+
             try
             {
-                return _userService.GetUserProfile(id);
+                ResponseObject response = _userService.GetUserProfile(userId);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: User session profile informations
         [HttpGet("profile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public ReturnApiObject GetUserSessionProfile()
+        public IActionResult GetUserSessionProfile()
         {
 
             int id = -1;
@@ -209,26 +310,43 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return _userService.GetUserProfile(id);
+                ResponseObject response = _userService.GetUserProfile(id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // GET: User profile picture
         [HttpGet("{id}/picture")]
-        //[AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [AllowAnonymous]
         public IActionResult GetUserProfilePicture(int id)
         {
             try
             {
-                byte[] userPicture = _userService.GetUserProfilePicture(id);
+                ResponseObject response = _userService.GetUserProfilePicture(id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                byte[] userPicture = response.Result as byte[];
 
                 if (userPicture == null || userPicture.Length == 0)
                     return NotFound();
@@ -237,18 +355,28 @@ namespace Messenger.Api.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
         // HEAD: User profile picture
         [HttpHead("{id}/picture")]
-        //[Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [AllowAnonymous]
         public IActionResult HeadUserProfilePicture(int id)
         {
             try
             {
-                byte[] userPicture = _userService.GetUserProfilePicture(id);
+                ResponseObject response = _userService.GetUserProfilePicture(id);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                byte[] userPicture = response.Result as byte[];
 
                 if (userPicture == null || userPicture.Length == 0)
                     return NotFound();
@@ -257,14 +385,17 @@ namespace Messenger.Api.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
-        // POST: Chnage user profile picture
+        // POST: Change user profile picture
         [HttpPost("{id}/picture")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public async Task<ReturnApiObject> ChangeProfilePicture(ChangeProfilePictureModel model)
+        public async Task<IActionResult> ChangeProfilePicture(ChangeProfilePictureModel model)
         {
             int id = -1;
 
@@ -273,22 +404,33 @@ namespace Messenger.Api.Controllers
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
             if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return await _userService.ChangeUserProfilePicture(id, model.picture);
+                ResponseObject response = await _userService.ChangeUserProfilePicture(id, model.picture);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
+
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // DELETE: Delete user profile picture
-        [HttpDelete("{id}/picture")]
+        [HttpDelete("{userId}/picture")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public async Task<ReturnApiObject> DeleteProfilePicture(ChangeProfilePictureModel model)
+        public async Task<IActionResult> DeleteProfilePicture(int userId)
         {
             int id = -1;
 
@@ -296,23 +438,34 @@ namespace Messenger.Api.Controllers
 
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
-            if (!ok)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+            // Check if user is authenticated and if user id and request user id are same
+            if (!ok || userId != id)
+                return Unauthorized();
 
             try
             {
-                return await _userService.DeleteUserProfilePicture(id);
+                ResponseObject response = await _userService.DeleteUserProfilePicture(userId);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
 
         // PUT: Update user informations
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
-        public async Task<ReturnApiObject> UpdateUser(UserBasicModel user)
+        public async Task<IActionResult> UpdateUser(UserBasicModel user)
         {
             int id = -1;
 
@@ -320,16 +473,24 @@ namespace Messenger.Api.Controllers
 
             bool ok = int.TryParse(claimsIdentity.Name, out id);
 
+            // Check if user is authenticated and if user id and request user id are same
             if (!ok || user.Id != id)
-                return new ReturnApiObject(HttpStatusCode.Unauthorized, ResponseType.Error);
+                return Unauthorized();
 
             try
             {
-                return await _userService.UpdateUserInformations(user);
+                ResponseObject response = await _userService.UpdateUserInformations(user);
+
+                if (response.ResponseType == ResponseType.Error)
+                {
+                    return StatusCode(500, response);
+                }
+
+                return Ok(response);
             }
             catch (Exception)
             {
-                return new ReturnApiObject(HttpStatusCode.InternalServerError, ResponseType.Error);
+                return StatusCode(500);
             }
         }
     }

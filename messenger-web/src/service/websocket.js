@@ -11,7 +11,16 @@ export default function CreateWebSocket(token){
 
     socket.onmessage = function (event) {
         // console.log("receive data from server : ", event.data);
-        eventBus.$emit('message-received', event.data)
+        let objectData = JSON.parse(event.data)
+
+        switch(objectData.type){
+            case "MessageAdded":eventBus.$emit('message-received', objectData.data);
+            break;
+
+            case "ConversationCreated":eventBus.$emit('conversation-created', objectData.data);
+            break;
+
+        }
     }
 
     socket.onclose = function () {
