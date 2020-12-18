@@ -1,5 +1,5 @@
 export default class ApiService {
-    apiUrl = process.env.VUE_APP_API_URL;
+    apiUrl = "https://" + process.env.VUE_APP_API_URL;
     apiKey = process.env.VUE_APP_API_KEY;
 
     getData(route) {

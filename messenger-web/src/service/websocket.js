@@ -1,7 +1,7 @@
 import eventBus from "../eventBus.js";
 
 export default function CreateWebSocket(token){
-    var socket = new WebSocket("wss://localhost:5001/chat",
+    var socket = new WebSocket("wss://" + process.env.VUE_APP_API_URL + "/chat",
         ["access_token", token]
     );
 
