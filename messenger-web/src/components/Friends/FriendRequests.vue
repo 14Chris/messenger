@@ -4,12 +4,12 @@
       <div class="box" v-for="f in requests" :key="f.id" @click="GoToUserProfile(f.id)">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
         <div class="request-actions">
-          <button class="button is-success is-light" @click="AcceptFriendRequest(f.id)">
+          <button class="button is-success is-light" @click.prevent="AcceptFriendRequest(f.id)">
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
           </button>
-          <button class="button button is-danger is-light" @click="DeleteFriendRequest(f.id)">
+          <button class="button button is-danger is-light" @click.prevent="DeleteFriendRequest(f.id)">
               <span class="icon">
                 <i class="fas fa-times"></i>
               </span>

@@ -12,6 +12,7 @@ export default {
   name: "App",
   async mounted() {
     await this.$store.dispatch('getUserSession')
+    this.$store.dispatch("CreateWebSocket")
 
   },
 };

@@ -6,7 +6,7 @@
       </div>
       <div v-else>
         <div v-if="conversationDetail != null">
-          <Avatar v-if="conversationDetail.friends.length <= 1" class="conversation-detail-avatar" userId="1"></Avatar>
+          <Avatar v-if="conversationDetail.friends.length <= 1" class="conversation-detail-avatar" :userId="conversationDetail.friends[0].id"></Avatar>
           <AvatarGroup v-else class="conversation-detail-avatars"
                        :friendsIds="conversationDetail.friends.map(f=>f.id)"></AvatarGroup>
           <div class="conversation-detail-name">

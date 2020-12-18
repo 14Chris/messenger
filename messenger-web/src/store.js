@@ -87,6 +87,12 @@ export default new Vuex.Store({
                         commit("logout")
                     }
                 })
+        },
+        CreateWebSocket({ commit }){
+            return new Promise((resolve) => {
+                commit('create_websocket')
+                resolve()
+            })
         }
     },
     getters: {
