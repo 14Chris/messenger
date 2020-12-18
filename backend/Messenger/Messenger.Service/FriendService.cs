@@ -123,10 +123,6 @@ namespace Messenger.Service.Implementation
             {
                 return new ResponseObject(ResponseType.Error);
             }
-            else
-            {
-                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error);
-            }
         }
 
         /// <summary>
