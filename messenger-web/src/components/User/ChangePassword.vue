@@ -56,8 +56,27 @@
 <script>
 import { required, minLength, sameAs, } from "vuelidate/lib/validators";
 import ApiService from "@/service/api";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 var api = new ApiService();
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
+
 export default {
     data(){
         return {
@@ -109,52 +128,45 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.ok == true) {
-              response.json().then((data) => {
-                if (data.ResponseType == 1) {
-                  this.$buefy.notification.open({
-                    message: "Password have been changed",
-                    type: "is-success",
-                    duration: 5000,
-                    closable: true,
-                  });
-                } else {
+                openNotification({
+                  message: "Password have been changed",
+                  type: 'success',
+                  duration: 5000
+                })
 
-                  var errorMessage = ""
-
-                  switch(data.Message){
-                    case "OLD_PASSWORD_DIFFERENT":errorMessage = "Old password is incorrect"
-                      break;
-                      case "SAME_NEW_PASSWORD":errorMessage = "New password has to be different from old password"
-                      break;
-                      case "NEW_PASSWORD_TOO_WEAK":errorMessage = "New password is too weak"
-                      break;
-                      default:errorMessage = "Error while changing password"
-                  }
-
-                  this.$buefy.notification.open({
-                    message: errorMessage,
-                    type: "is-danger",
-                    duration: 5000,
-                    closable: true,
-                  });
-                }
-              });
             } else {
-              this.$buefy.notification.open({
-                message: "Error while changing password",
-                type: "is-danger",
-                duration: 5000,
-                closable: true,
-              });
+              response.json().then((data) => {
+                var errorMessage = ""
+
+                switch (data.Message) {
+                  case "OLD_PASSWORD_DIFFERENT":
+                    errorMessage = "Old password is incorrect"
+                    break;
+                  case "SAME_NEW_PASSWORD":
+                    errorMessage = "New password has to be different from old password"
+                    break;
+                  case "NEW_PASSWORD_TOO_WEAK":
+                    errorMessage = "New password is too weak"
+                    break;
+                  default:
+                    errorMessage = "Error while changing password"
+                }
+
+                openNotification({
+                  message: errorMessage,
+                  type: 'danger',
+                  duration: 5000
+                })
+
+              })
             }
           })
           .catch(() => {
-            this.$buefy.notification.open({
+            openNotification({
               message: "Error while changing password",
-              type: "is-danger",
-              duration: 5000,
-              closable: true,
-            });
+              type: 'danger',
+              duration: 5000
+            })
           });
         }
     }

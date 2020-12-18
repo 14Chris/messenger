@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
       <div v-if="isActivate == null">
             <div class="loader-wrapper">
                 <div class="loader is-loading"></div>
@@ -9,7 +9,15 @@
           An error occured while activating your account. Retry again.
       </div>
       <div v-else>
-          Congratulations, your account has been activated !
+        <div class="card">
+          <div class="card-content">
+          <h2 class="title is-2">Account activated</h2>
+            <p>Congratulations, your account has been activated !</p>
+            <p>You can now log in :
+            </p>
+            <router-link to="/login"><button class="button is-primary is-light">Log in</button></router-link>
+        </div>
+        </div>
       </div>
   </div>
 </template>
@@ -32,20 +40,19 @@ export default {
     methods:{
         ActivateAccount(){
             api.getData("users/account_activation/"+this.token)
-            .then((response) => response.json())
-            .then((resp) => {
-              if(resp.ResponseType == 1){
-                  this.isActivate = true
-              }
-              else{
-                  this.isActivate = false
-              }
+                .then(response => {
+                  if (response.ok == true) {
+                    this.isActivate = true
+                  }
+                  else{
+                      this.isActivate = false
+                  }
           })
-        .catch(() => {
-           this.isActivate = false
-        })
-    }
+          .catch(() => {
+             this.isActivate = false
+          })
         }
+    }
 }
 </script>
 

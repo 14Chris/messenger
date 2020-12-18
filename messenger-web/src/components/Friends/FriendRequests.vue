@@ -9,7 +9,7 @@
                 <i class="fas fa-check"></i>
               </span>
           </button>
-          <button class="button button is-danger is-light" @click="AeleteFriendRequest(f.id)">
+          <button class="button button is-danger is-light" @click="DeleteFriendRequest(f.id)">
               <span class="icon">
                 <i class="fas fa-times"></i>
               </span>
@@ -23,8 +23,26 @@
 
 <script>
 import ApiService from "@/service/api";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 const api = new ApiService();
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
 
 export default {
   name: "FriendRequests",
@@ -40,20 +58,15 @@ export default {
     GetFriendRequests() {
       api.getData("friends/request")
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
               response.json()
                   .then(data => {
-                    if (data.ResponseType == 1) {
                       this.requests = data.Result
-                    } else {
-                      this.requests = []
-                    }
                   })
             }
-          })
-          .catch(err => {
-            console.log(err)
+            else{
+              this.requests = []
+            }
           })
     },
     AcceptFriendRequest(id){
@@ -61,48 +74,30 @@ export default {
           .then(response => {
             console.log(response)
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                    if (data.ResponseType == 1) {
-                      this.getFriendRequests()
-                    } else {
-                      this.$buefy.notification.open({
-                        message: 'Error while accepting the request',
-                        type: 'is-danger',
-                        duration:5000,
-                        closable:true
-                      })
-                    }
-                  })
+              this.getFriendRequests()
             }
-          })
-          .catch(err => {
-            console.log(err)
+            else {
+              openNotification({
+                message: 'Error while accepting the request',
+                type: 'danger',
+                duration: 5000
+              })
+            }
           })
     },
     DeleteFriendRequest(id){
       api.create("friends/request/delete", JSON.stringify(id))
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                    if (data.ResponseType == 1) {
-                      this.getFriendRequests()
-                    }
-                    else {
-                      this.$buefy.notification.open({
-                        message: 'Error while deleting the request',
-                        type: 'is-danger',
-                        duration:5000,
-                        closable:true
-                      })
-                    }
-                  })
+              this.getFriendRequests()
             }
-          })
-          .catch(err => {
-            console.log(err)
+            else {
+              openNotification({
+                message: 'Error while deleting the request',
+                type: 'danger',
+                duration: 5000
+              })
+            }
           })
     },
      GoToUserProfile(userId){
@@ -117,9 +112,4 @@ export default {
   margin-top: 10px;
 }
 
-.request-actions {
-  /*button{*/
-  /*  margin-right: 5px;*/
-  /*}*/
-}
 </style>

@@ -55,7 +55,6 @@ export default {
       var messageTempArray = this.messages
       if (messageTempArray != null) {
         messageTempArray.sort(this.SortMessageByDate);
-
         return messageTempArray
       } else {
         return []
@@ -85,7 +84,6 @@ export default {
           .then((response) => {
             if (response.ok == true) {
               response.json().then((data) => {
-                if (data.ResponseType == 1) {
                   let divMessages = this.$refs.convMessagesList
 
                   //Get the previous height of message list
@@ -105,7 +103,6 @@ export default {
                     divMessages.scrollTop = newHeight - previousHeight
                   });
 
-                }
               });
             }
           })

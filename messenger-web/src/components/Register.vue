@@ -162,11 +162,10 @@ export default {
       this.$v.$touch();
 
       if (!this.$v.$invalid) {
-
         api
             .create("users", JSON.stringify(data))
             .then((response) => response.json()).then(data => {
-          if (data.HttpStatus == 201) {
+          if (data.ResponseType == 1) {
             openNotification({
               message: "Your account has been created. Please check your emails to validate your before sign in.",
               type: 'success',
@@ -258,9 +257,8 @@ export default {
           }
           return new Promise((resolve) => {
             this.chkUsernameAvailabilityTimer = setTimeout(() => {
-              api.getData("users/email_exists/" + value).then((response) => response.json()).then(data => {
-                console.log(data.HttpStatus);
-                if (data.HttpStatus == 200) {
+              api.getData("users/email_exists/" + value).then((response) => {
+                if (response.ok) {
                   resolve(true);
                 } else {
                   resolve(false);

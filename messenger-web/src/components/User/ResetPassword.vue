@@ -28,7 +28,9 @@
               v-model="model.newPassword"
             />
           </div>
-          <p class="help is-danger">{{ GetPasswordErrors() }}</p>
+          <p class="help is-danger"><span v-for="(error,index) in GetPasswordErrors()" :key="index">
+            {{ error }}
+          </span></p>
         </div>
 
         <!-- New password confirmation-->
@@ -54,7 +56,11 @@
               v-model="model.repeatNewPassword"
             />
           </div>
-          <p class="help is-danger">{{ GetConfirmPasswordErrors() }}</p>
+          <p class="help is-danger">
+            <span v-for="(error,index) in GetConfirmPasswordErrors()" :key="index">
+            {{ error }}
+          </span>
+          </p>
         </div>
 
         <button class="button is-primary">Change</button>
@@ -67,8 +73,28 @@
 <script>
 import { required, minLength, sameAs } from "vuelidate/lib/validators";
 import ApiService from "@/service/api";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 var api = new ApiService();
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
+
+
 export default {
   data() {
     return {
@@ -81,6 +107,7 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$route)
     this.model.token = this.$route.params.token;
     this.ValidateToken(this.model.token);
   },
@@ -89,31 +116,25 @@ export default {
       api
         .getData("users/reset_password/" + token)
         .then((response) => {
-          console.log(response);
           if (response.ok == true) {
-            response.json().then((data) => {
-              if (data.ResponseType == 1) {
-                this.tokenOk = true;
-              } else {
-                this.tokenOk = false;
-                this.$buefy.notification.open({
-                  message: "Invalid token",
-                  type: "is-success",
-                  duration: 5000,
-                  closable: true,
-                });
-                this.$router.push("/login");
-              }
+            this.tokenOk = true;
+          }
+          else {
+            this.tokenOk = false;
+            openNotification({
+              message: "The token provided is invalid",
+              type: "danger",
+              duration: 5000,
             });
+            this.$router.push("/login");
           }
         })
         .catch(() => {
           this.tokenOk = false;
-          this.$buefy.notification.open({
-            message: "Invalid token",
-            type: "is-success",
+          openNotification({
+            message: "Error while validating the token provided",
+            type: "danger",
             duration: 5000,
-            closable: true,
           });
           this.$router.push("/login");
         });
@@ -129,49 +150,46 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.ok == true) {
-            response.json().then((data) => {
-              if (data.ResponseType == 1) {
-                this.$buefy.notification.open({
-                  message:
+              openNotification({
+                message:
                     "Your password have been changed. You can now log in.",
-                  type: "is-success",
-                  duration: 5000,
-                  closable: true,
-                });
-                this.$router.push("/login");
-              } else {
+                type: "success",
+                duration: 5000,
+              });
+              this.$router.push("/login");
+          } else {
+            response.json().then((data) => {
+              var errorMessage = ""
+              switch (data.Message) {
 
-                var errorMessage = ""
-
-                  switch(data.Message){
-                      case "SAME_NEW_PASSWORD":errorMessage = "New password has to be different from old password"
-                      break;
-                      case "NEW_PASSWORD_TOO_WEAK":errorMessage = "New password is too weak"
-                      break;
-                      default:errorMessage = "Error while changing your password"
-                  }
-
-                  this.$buefy.notification.open({
-                    message: errorMessage,
-                    type: "is-danger",
-                    duration: 5000,
-                    closable: true,
-                  })
+                case "SAME_NEW_PASSWORD":
+                  errorMessage = "New password has to be different from old password"
+                  break;
+                case "NEW_PASSWORD_TOO_WEAK":
+                  errorMessage = "New password is too weak"
+                  break;
+                default:
+                  errorMessage = "Error while changing your password"
               }
-            });
+
+              openNotification({
+                message: errorMessage,
+                type: "danger",
+                duration: 5000,
+              });
+            })
           }
         })
         .catch(() => {
-          this.$buefy.notification.open({
-            message: "Error while resetting your password",
-            type: "is-danger",
+          openNotification({
+            message: "Error while changing your password",
+            type: "danger",
             duration: 5000,
-            closable: true,
           });
         });
     },
     GetPasswordErrors() {
-      var errors = [];
+      let errors = [];
       if (!this.$v.model.newPassword.required) {
         errors.push("New password is required");
       } else {
@@ -199,7 +217,7 @@ export default {
       return errors;
     },
     GetConfirmPasswordErrors() {
-      var errors = [];
+      let errors = [];
       if (!this.$v.model.repeatNewPassword.required) {
         errors.push("Confirmation password is required");
       } else if (!this.$v.model.repeatNewPassword.sameAsPassword) {

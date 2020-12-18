@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-// import ApiService from './service/api'
+import ApiService from './service/api'
 import CreateWebSocket from './service/websocket'
 
-// var api = new ApiService
+var api = new ApiService
 
 Vue.use(Vuex)
 
@@ -33,6 +33,7 @@ export default new Vuex.Store({
             state.status = ''
             state.token = ''
             state.chatWebsocket = null
+            localStorage.removeItem('token')
         },
         set_user(state, user) {
             state.user = user
@@ -61,7 +62,6 @@ export default new Vuex.Store({
         logout({ commit }) {
             return new Promise((resolve) => {
                 commit('logout')
-                localStorage.removeItem('token')
                 delete axios.defaults.headers.common['Authorization']
                 resolve()
             })
@@ -73,6 +73,21 @@ export default new Vuex.Store({
                 resolve()
             })
         },
+        getUserSession({ commit }){
+            api
+                .getData("users/session")
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((resp) => {
+                            const user = resp.Result;
+                            commit('set_user', user)
+                        });
+                    }
+                    else {
+                        commit("logout")
+                    }
+                })
+        }
     },
     getters: {
         isLoggedIn(state) {

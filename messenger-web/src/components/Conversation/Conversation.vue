@@ -50,11 +50,6 @@ export default {
       this.GetConversationById(this.$route.params.id)
     }
   },
-  created() {
-    // eventBus.$on("message-received", (data) => {
-    //   this.MessageReceived(data);
-    // });
-  },
   mounted() {
     this.GetConversationById(this.$route.params.id)
   },
@@ -66,17 +61,12 @@ export default {
           .then((response) => {
             if (response.ok == true) {
               response.json().then((data) => {
-                if (data.ResponseType == 1) {
                   this.conversation = data.Result;
-
-                } else {
-                  this.conversation = null;
-                }
               });
             }
-          })
-          .catch((err) => {
-            console.log(err);
+            else {
+              this.conversation = null;
+            }
           })
           .finally(() => {
             this.loading = false;
@@ -93,13 +83,6 @@ export default {
 
         this.$store.state.chatWebsocket.send(JSON.stringify(model));
     },
-    // MessageReceived(data) {
-    //   var object = JSON.parse(data);
-    //
-    //   if (object.message.conversation_id == this.conversation.id) {
-    //     this.conversation.messages.push(object.message);
-    //   }
-    // },
   },
 };
 </script>

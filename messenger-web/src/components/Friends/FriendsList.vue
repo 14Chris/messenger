@@ -25,8 +25,26 @@
 <script>
 import ApiService from "@/service/api";
 import AddFriend from "@/components/Friends/AddFriend";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 const api = new ApiService();
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
 
 export default {
   name: "FriendsList",
@@ -43,21 +61,18 @@ export default {
     GetFriends() {
       api.getData("friends")
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
               response.json()
                   .then(data => {
-                    if (data.ResponseType == 1) {
                       this.friends = data.Result
-                    } else {
-                      this.friends = []
-                    }
+
                   })
             }
+            else {
+              this.friends = []
+            }
           })
-          .catch(err => {
-            console.log(err)
-          })
+
     },
     OpenAddFriendModal() {
       var element = document.getElementById("add-friend-modal");
@@ -70,25 +85,16 @@ export default {
     DeleteFriend(id) {
       api.delete("friends", JSON.stringify(id))
           .then(response => {
-            console.log(response)
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                    if (data.ResponseType == 1) {
-                      this.getFriends()
-                    } else {
-                      this.$buefy.notification.open({
-                        message: 'Error while deleting the friend',
-                        type: 'is-danger',
-                        duration: 5000,
-                        closable: true
-                      })
-                    }
-                  })
+              this.getFriends()
             }
-          })
-          .catch(err => {
-            console.log(err)
+            else {
+              openNotification({
+                message: "Error while deleting the friend",
+                type: 'danger',
+                duration: 5000
+              })
+            }
           })
     },
     GoToUserProfile(userId){

@@ -104,16 +104,10 @@ export default {
               +"/archive", null)
           .then((response) => {
             if (response.ok == true) {
-              response.json().then((data) => {
-                if(data.ResponseType == 1){
                   this.ConversationArchived()
-                  console.log("url id",this.convId)
-                  console.log("item id",this.conversationItem.id)
-                  if(this.convId == this.conversationItem.id){
+                  if(this.convId == this.conversationItem.id) {
                     this.$router.push("/conv");
                   }
-                }
-              });
             }
           })
           .catch((err) => {

@@ -56,15 +56,14 @@ export default {
       api
         .getData("users/" + id + "/profile")
         .then((response) => {
-          console.log(response);
           if (response.ok == true) {
             response.json().then((data) => {
-              if (data.ResponseType == 1) {
                 this.userProfile = data.Result;
-              } else {
-                this.userProfile = null;
-              }
+
             });
+          }
+          else {
+            this.userProfile = null;
           }
         })
         .catch((err) => {

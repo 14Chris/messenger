@@ -89,8 +89,26 @@ import { required } from "vuelidate/lib/validators";
 import ApiService from "@/service/api";
 import AvatarEdit from "@/components/User/Avatar/AvatarEdit";
 import ChangePassword from "@/components/User/ChangePassword";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 const api = new ApiService();
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
 export default {
   components: {
     AvatarEdit,
@@ -111,15 +129,13 @@ export default {
       api
         .getData("users/profile")
         .then((response) => {
-          console.log(response);
           if (response.ok == true) {
             response.json().then((data) => {
-              if (data.ResponseType == 1) {
                 this.userProfile = data.Result;
-              } else {
-                this.userProfile = null;
-              }
             });
+          }
+          else {
+            this.userProfile = null;
           }
         })
         .catch((err) => {
@@ -137,39 +153,29 @@ export default {
             console.log(response);
             if (response.ok == true) {
               response.json().then((data) => {
-                if (data.ResponseType == 1) {
                   this.userProfile = data.Result;
-                  this.$buefy.notification.open({
-                    message: "Your informations have been updated",
-                    type: "is-success",
-                    duration: 5000,
-                    closable: true,
-                  });
-                } else {
-                  this.$buefy.notification.open({
-                    message: "Error while updating user informations",
-                    type: "is-danger",
-                    duration: 5000,
-                    closable: true,
-                  });
-                }
+
+                openNotification({
+                  message: "Your informations have been updated",
+                  type: 'success',
+                  duration: 5000
+                })
               });
-            } else {
-              this.$buefy.notification.open({
+            }
+            else {
+              openNotification({
                 message: "Error while updating user informations",
-                type: "is-danger",
-                duration: 5000,
-                closable: true,
-              });
+                type: 'danger',
+                duration: 5000
+              })
             }
           })
           .catch(() => {
-            this.$buefy.notification.open({
+            openNotification({
               message: "Error while updating user informations",
-              type: "is-danger",
-              duration: 5000,
-              closable: true,
-            });
+              type: 'danger',
+              duration: 5000
+            })
           })
           .finally(() => {
             this.isLoading = false;

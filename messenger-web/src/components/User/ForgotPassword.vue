@@ -1,43 +1,66 @@
 <template>
   <div class="container">
-    <h3 class="title is-3">Forgot password</h3>
-    <form @submit.prevent="ForgotPassword">
-      <!-- New password -->
-      <div class="field" v-if="$v.email.required">
-        <label class="label">Email</label>
-        <div class="control">
-          <input
-            class="input"
-            type="text"
-            placeholder="Email"
-            v-model="email"
-          />
-        </div>
-      </div>
+    <div class="card">
+      <div class="card-content">
+        <h2 class="title is-2">Forgot password</h2>
+        <form @submit.prevent="ForgotPassword">
+          <!-- New password -->
+          <div class="field" v-if="$v.email.required">
+            <label class="label">Email</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                placeholder="Email"
+                v-model="email"
+              />
+            </div>
+          </div>
 
-      <div class="field" v-else>
-        <label class="label">Email</label>
-        <div class="control">
-          <input
-            class="input is-danger"
-            type="text"
-            placeholder="Email"
-            v-model="email"
-          />
-        </div>
-        <p class="help is-danger">Email is required</p>
-      </div>
+          <div class="field" v-else>
+            <label class="label">Email</label>
+            <div class="control">
+              <input
+                class="input is-danger"
+                type="text"
+                placeholder="Email"
+                v-model="email"
+              />
+            </div>
+            <p class="help is-danger">Email is required</p>
+          </div>
 
-      <button class="button is-primary">Send</button>
-    </form>
+          <button class="button is-primary">Send</button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { required, } from "vuelidate/lib/validators";
 import ApiService from "@/service/api";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 var api = new ApiService();
+
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
+
 export default {
   data() {
     return {
@@ -51,22 +74,22 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.ok == true) {
-            response.json().then((data) => {
-              if (data.ResponseType == 1) {
-                this.$buefy.notification.open({
-                  message:
-                    "If an account is linked to this email address, you will receive a email with a link to reset your password",
-                  type: "is-success",
-                  duration: 5000,
-                  closable: true,
-                });
+            openNotification({
+              message: "If an account is linked to this email address, you will receive a email with a link to reset your password",
+              type: 'success',
+              duration: 5000
+            })
 
-                this.$router.push("/login");
-              }
-            });
+            this.$router.push("/login");
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          openNotification({
+            message: "Error while sending reset password request",
+            type: 'danger',
+            duration: 5000
+          })
+        });
     },
   },
   validations: {

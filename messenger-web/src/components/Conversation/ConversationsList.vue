@@ -53,16 +53,12 @@ export default {
             if (response.ok == true) {
               response.json()
                   .then(data => {
-                    if (data.ResponseType == 1) {
                       this.conversations = data.Result
-                    } else {
-                      this.conversations = []
-                    }
                   })
             }
-          })
-          .catch(() => {
-            console.log()
+            else {
+              this.conversations = []
+            }
           })
     },
     MessageReceived(data) {

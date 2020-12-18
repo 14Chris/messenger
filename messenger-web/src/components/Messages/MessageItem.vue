@@ -46,9 +46,6 @@ export default {
   components: {
     Avatar,
   },
-  mounted(){
-    // console.log(this.message)
-  },
   computed:{
     MessageDate(){
       var date =  this.message.date

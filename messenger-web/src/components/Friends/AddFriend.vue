@@ -1,7 +1,6 @@
 <template>
   <div class="box">
     <form @submit.prevent="addFriend">
-
       <div class="field">
         <label class="label">Friend email</label>
         <div class="control">
@@ -9,15 +8,32 @@
         </div>
       </div>
 
-      <button class="button">Add</button>
+      <button class="button is-primary">Add</button>
     </form>
   </div>
 </template>
 
 <script>
 import ApiService from "@/service/api";
+import Vue from "vue";
+import Notification from "@/shared_components/Notification/Notification";
 
 const api = new ApiService();
+const NotificationComponent = Vue.extend(Notification)
+
+const openNotification = (propsData = {
+  title: '',
+  message: '',
+  type: '',
+  direction: '',
+  duration: 4500,
+  container: '.notifications'
+}) => {
+  return new NotificationComponent({
+    el: document.createElement('div'),
+    propsData
+  })
+}
 
 export default {
   name: "AddFriend",
@@ -36,11 +52,10 @@ export default {
             if (response.ok == true) {
               response.json()
                   .then(() => {
-                    this.$buefy.notification.open({
+                    openNotification({
                       message: 'Your friend request has been sent. Please wait for your friend to accept it.',
-                      type: 'is-success',
-                      duration:5000,
-                      closable:true
+                      type: 'success',
+                      duration: 5000
                     })
                   })
             }

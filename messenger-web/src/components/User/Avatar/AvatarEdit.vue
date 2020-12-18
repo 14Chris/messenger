@@ -74,12 +74,8 @@ export default {
     CheckUrlValidity() {
       api.headData("users/" + this.userId + "/picture")
           .then((response) => {
-        console.log(response);
         this.imageExists = response.ok;
       })
-          .catch(()=>{
-
-          });
     },
     ChangeImage() {
       var imageValue = this.newImage.split("base64,")[1];

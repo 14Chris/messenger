@@ -83,11 +83,9 @@ export default {
     api.getData("users/session").then((response) => {
       if (response.ok) {
         response.json().then((resp) => {
-          if (resp.ResponseType == 1) {
             const user = resp.Result;
             this.connectedUser = user;
             this.CheckUrlValidity();
-          }
         });
       }
     });

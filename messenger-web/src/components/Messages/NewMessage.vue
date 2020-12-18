@@ -71,13 +71,7 @@ export default {
       api.create("conversation", JSON.stringify(model))
           .then(response => {
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                    if (data.ResponseType == 1) {
-                      console.log(data.Result)
-                      this.$router.push("/");
-                    }
-                  })
+              this.$router.push("/");
             }
           })
           .catch(err => {
@@ -108,12 +102,11 @@ export default {
             if (response.ok == true) {
               response.json()
                   .then(data => {
-                    if (data.ResponseType == 1) {
-                      this.conversation = data.Result
-                    } else {
-                      this.conversation = null
-                    }
+                     this.conversation = data.Result
                   })
+            }
+            else {
+              this.conversation = null
             }
           })
           .catch(err => {
@@ -135,12 +128,11 @@ export default {
             if (response.ok == true) {
               response.json()
                   .then(data => {
-                    if (data.ResponseType == 1) {
                       this.friendsSearch = data.Result.filter(arrayItem => !this.selected.map(x => x.id).includes(arrayItem.id));
-                    } else {
-                      this.friendsSearch = []
-                    }
                   })
+            }
+            else {
+              this.friendsSearch = []
             }
           })
           .catch(err => {
@@ -158,12 +150,11 @@ export default {
             if (response.ok == true) {
               response.json()
                   .then(data => {
-                    if (data.ResponseType == 1) {
                       this.conversation = data.Result
-                    } else {
-                      this.conversation = null
-                    }
                   })
+            }
+            else {
+              this.conversation = null
             }
           })
           .catch(err => {

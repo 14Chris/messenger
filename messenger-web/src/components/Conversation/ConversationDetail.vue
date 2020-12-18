@@ -73,7 +73,7 @@
             <img class="action-img action-img-left" src="@/assets/icons/image-grey.svg"/>
             Shared photos
             <div class="conversation-detail-photos-list">
-<!--              No shared photos-->
+              <!--  No shared photos-->
             </div>
           </div>
         </div>
@@ -103,7 +103,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.conversationId)
     this.GetConversationDetail(this.conversationId)
   },
   methods: {
@@ -114,12 +113,13 @@ export default {
           .then((response) => {
             if (response.ok == true) {
               response.json().then((data) => {
-                if (data.ResponseType == 1) {
+
                   this.conversationDetail = data.Result;
-                } else {
-                  this.conversationDetail = null;
-                }
+
               });
+            }
+            else {
+              this.conversationDetail = null;
             }
           })
           .catch((err) => {
