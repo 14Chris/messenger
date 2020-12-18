@@ -29,9 +29,11 @@
 <script>
 import ApiService from "../../service/api";
 import MessageList from "@/components/Messages/MessageList";
+
 import autocomplete from "@/components/Messages/FriendAutocomplete";
 import eventBus from "@/eventBus";
 import SendMessageBar from "@/components/Messages/SendMessageBar";
+
 
 const api = new ApiService();
 
@@ -65,6 +67,7 @@ export default {
     AddNewConversation(message) {
       var model = {
         texte: message.text,
+
         friends: this.selected.map(f => f.id)
       }
 
@@ -134,6 +137,7 @@ export default {
             else {
               this.friendsSearch = []
             }
+
           })
           .catch(err => {
             console.log(err)
@@ -177,4 +181,5 @@ export default {
 .conv-send-message {
   margin-bottom: 10px !important;
 }
+
 </style>

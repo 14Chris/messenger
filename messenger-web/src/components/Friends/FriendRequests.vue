@@ -1,14 +1,17 @@
 <template>
   <div>
     <div v-if="requests != null">
+
       <div class="box" v-for="f in requests" :key="f.id" @click="GoToUserProfile(f.id)">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
         <div class="request-actions">
           <button class="button is-success is-light" @click.prevent="AcceptFriendRequest(f.id)">
+
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
           </button>
+
           <button class="button button is-danger is-light" @click.prevent="DeleteFriendRequest(f.id)">
               <span class="icon">
                 <i class="fas fa-times"></i>
@@ -23,6 +26,7 @@
 
 <script>
 import ApiService from "@/service/api";
+
 import Vue from "vue";
 import Notification from "@/shared_components/Notification/Notification";
 
@@ -70,6 +74,7 @@ export default {
           })
     },
     AcceptFriendRequest(id){
+
       api.create("friends/request/accept", JSON.stringify(id))
           .then(response => {
             console.log(response)
@@ -102,6 +107,7 @@ export default {
     },
      GoToUserProfile(userId){
       this.$router.push("profile/"+userId)
+
     }
   }
 }

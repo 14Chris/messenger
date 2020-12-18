@@ -36,6 +36,7 @@ export default {
 }
 
 .part-separator{
+
   margin: 0;
   background-color: #f2f2f2;
 }
@@ -48,5 +49,11 @@ export default {
 .column-no-top-marging{
   padding-top:0px !important;
   padding-bottom:0px !important;
+
+}
+
+.home{
+  flex:1;
+  overflow-y: hidden;
 }
 </style>

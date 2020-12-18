@@ -123,6 +123,10 @@ namespace Messenger.Service.Implementation
             {
                 return new ResponseObject(ResponseType.Error);
             }
+            else
+            {
+                return new ReturnApiObject(System.Net.HttpStatusCode.BadRequest, ResponseType.Error);
+            }
         }
 
         /// <summary>
@@ -179,6 +183,7 @@ namespace Messenger.Service.Implementation
             if(relation == null)
             {
                 return new ResponseObject(ResponseType.Error, "NO_REQUEST", null);
+
             }
 
             if(relation.State == UserRelationState.Requested)

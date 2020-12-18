@@ -3,6 +3,8 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Home from './components/Home'
 import store from './store'
+
+
 import NewMessage from "@/components/Messages/NewMessage";
 import Conversation from "@/components/Conversation/Conversation";
 import ConversationHome from "@/components/Conversation/ConversationHome";
@@ -15,6 +17,7 @@ import ResetPassword from "@/components/User/ResetPassword"
 import ForgotPassword from "@/components/User/ForgotPassword"
 import ActivateAccount from "@/components/User/ActivateAccount"
 import Settings from "@/components/Settings/Settings"
+
 
 const routes = [
     {

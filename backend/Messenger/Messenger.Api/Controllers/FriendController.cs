@@ -57,6 +57,7 @@ namespace Messenger.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetFriendRequests()
+
         {
             int id = -1;
 
@@ -81,6 +82,7 @@ namespace Messenger.Api.Controllers
             catch (Exception)
             {
                 return StatusCode(500);
+
             }
         }
 
@@ -123,6 +125,7 @@ namespace Messenger.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PostFriendRequest([FromBody]string friendEmail)
+
         {
             int id = -1;
 

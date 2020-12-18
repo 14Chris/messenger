@@ -15,6 +15,7 @@
 
 <script>
 import ApiService from "@/service/api";
+
 import Vue from "vue";
 import Notification from "@/shared_components/Notification/Notification";
 
@@ -34,6 +35,7 @@ const openNotification = (propsData = {
     propsData
   })
 }
+
 
 export default {
   name: "AddFriend",

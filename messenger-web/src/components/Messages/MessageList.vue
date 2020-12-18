@@ -127,6 +127,7 @@ export default {
         this.messages.push(object.message);
       }
     },
+
   }
 }
 </script>
@@ -141,5 +142,6 @@ export default {
   height: 100%;
   overflow-y: auto;
 }
+
 
 </style>

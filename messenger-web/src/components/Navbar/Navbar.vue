@@ -44,6 +44,7 @@
           />
 
           <button v-else class="button navbar-icon" slot="trigger">
+
               <span class="icon">
                 <i class="fas fa-user"></i>
               </span>

@@ -38,7 +38,7 @@ export default {
     eventBus.$on("message-received", data => {
       this.MessageReceived(data)
     });
-
+    
     eventBus.$on("conversation-created", data => {
       this.MessageReceived(data)
     });
@@ -99,10 +99,12 @@ export default {
     }
 
   }
+
 }
 </script>
 
 <style scoped lang="scss">
+
 .conversations {
   height: 100%;
   margin-left: 20px;
@@ -137,4 +139,5 @@ export default {
 
   background-color: #349CFC;
 }
+
 </style>

@@ -33,6 +33,7 @@
         <Avatar class="message-avatar message-avatar-right" :userId="message.sender_id"></Avatar>
       </template>
     </div>
+
   </div>
 </template>
 
@@ -129,4 +130,5 @@ export default {
 .message-box-right{
   margin-right : 70px;
 }
+
 </style>

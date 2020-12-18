@@ -9,6 +9,7 @@
           <li v-bind:class="[$route.fullPath == '/friends/requests' ? 'is-active' : '']"><a>Requests</a></li>
         </router-link>
       </ul>
+
     </div>
     <router-view></router-view>
   </div>

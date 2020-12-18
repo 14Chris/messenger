@@ -5,6 +5,7 @@
       <div class="box" v-for="f in friends" :key="f.id" @click="GoToUserProfile(f.id)">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
         <button class="button button is-danger is-light" @click="DeleteFriend(f.id)">
+
               <span class="icon">
                 <i class="fas fa-times"></i>
               </span>
@@ -18,6 +19,7 @@
         <AddFriend></AddFriend>
       </div>
       <button class="modal-close is-large" aria-label="close" @click="CloseAddFriendModal"></button>
+
     </div>
   </div>
 </template>
@@ -99,6 +101,7 @@ export default {
     },
     GoToUserProfile(userId){
       this.$router.push("profile/"+userId)
+
     }
   }
 }
@@ -107,6 +110,7 @@ export default {
 <style scoped>
   .box{
     margin-top: 10px;
+
     cursor: pointer;
-  }
+    }
 </style>
