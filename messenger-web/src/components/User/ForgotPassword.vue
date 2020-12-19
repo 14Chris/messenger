@@ -2,35 +2,35 @@
   <div class="container">
     <div class="card">
       <div class="card-content">
-        <h2 class="title is-2">Forgot password</h2>
+        <h2 class="title is-2">{{$t('title')}}</h2>
         <form @submit.prevent="ForgotPassword">
           <!-- New password -->
           <div class="field" v-if="$v.email.required">
-            <label class="label">Email</label>
+            <label class="label">{{$t('emailLabel')}}</label>
             <div class="control">
               <input
                 class="input"
                 type="text"
-                placeholder="Email"
+                :placeholder="$t('emailPlaceholder')"
                 v-model="email"
               />
             </div>
           </div>
 
           <div class="field" v-else>
-            <label class="label">Email</label>
+            <label class="label">{{$t('emailLabel')}}</label>
             <div class="control">
               <input
                 class="input is-danger"
                 type="text"
-                placeholder="Email"
+                :placeholder="$t('emailPlaceholder')"
                 v-model="email"
               />
             </div>
-            <p class="help is-danger">Email is required</p>
+            <p class="help is-danger">{{$t('emailRequiredError')}}</p>
           </div>
 
-          <button class="button is-primary">Send</button>
+          <button class="button is-primary">{{$t('forgotPasswordButton')}}</button>
         </form>
       </div>
     </div>
@@ -72,20 +72,18 @@ export default {
       api
         .create("users/forgot_password", JSON.stringify(this.email))
         .then((response) => {
-          console.log(response);
           if (response.ok == true) {
             openNotification({
-              message: "If an account is linked to this email address, you will receive a email with a link to reset your password",
+              message: this.$t('requestSuccess'),
               type: 'success',
               duration: 5000
             })
-
             this.$router.push("/login");
           }
         })
         .catch(() => {
           openNotification({
-            message: "Error while sending reset password request",
+            message: this.$t('requestError'),
             type: 'danger',
             duration: 5000
           })
@@ -102,3 +100,26 @@ export default {
 
 <style>
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Forgot password",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "emailRequiredError": "Email is required",
+    "forgotPasswordButton": "Send",
+    "requestSuccess": "If an account is linked to this email address, you will receive a email with a link to reset your password",
+    "requestError": "Error while sending forgot password request"
+  },
+  "fr": {
+    "title": "Mot de passe oublié",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "emailRequiredError": "L'adresse email est requise",
+    "forgotPasswordButton": "Envoyer",
+    "requestSuccess": "Si un compte est lié à cette adresse email, vous recevrez un email contenant un lien pour réinitialiser votre mot de passe",
+    "requestError": "Erreur lors de l'envoi de la requête de mot de passe oublié"
+  }
+}
+</i18n>
