@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint",
     "css-build": "node-sass --omit-source-map-url src/styles/mystyles.scss src/styles/mystyles.css",
     "css-watch": "npm run css-build -- --watch",
+    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "start": "npm run css-watch"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "css-loader": "^5.0.1",
     "moment": "^2.29.1",
     "vue": "^2.6.11",
+    "vue-i18n": "^8.17.3",
     "vue-router": "^3.4.3",
     "vuelidate": "^0.7.5",
     "vuex": "^3.5.1"
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
+    "@intlify/vue-i18n-loader": "^1.0.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
@@ -34,6 +37,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.2",
+    "vue-cli-plugin-i18n": "~1.0.1",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

@@ -2,7 +2,7 @@
   <div class="container">
     <div class="card centered-card">
       <div class="card-content">
-    <h2 class="title is-2">Register</h2>
+    <h2 class="title is-2">{{ $t('title') }}</h2>
     <form @submit.prevent="register">
       <!-- First name -->
       <div class="field" v-if="!$v.model.first_name.$invalid">
@@ -307,3 +307,15 @@ export default {
   flex-direction: column;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Register",
+
+  },
+  "fr": {
+    "title": "S'enregistrer",
+  }
+}
+</i18n>

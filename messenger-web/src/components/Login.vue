@@ -2,34 +2,34 @@
   <div class="container">
     <div class="card centered-card">
       <div class="card-content">
-        <h2 class="title is-2">Sign in</h2>
+        <h2 class="title is-2">{{$t('title')}}</h2>
         <form class="login" @submit.prevent="login">
           <div class="field">
-            <label class="label">Email</label>
+            <label class="label">{{$t('emailLabel')}}</label>
             <div class="control">
               <input class="input" v-model="model.email"
                      type="email"
-                     placeholder="Email">
+                     :placeholder="$t('emailPlaceholder')">
             </div>
           </div>
 
           <div class="field">
-            <label class="label">Password</label>
+            <label class="label">{{$t('passwordLabel')}}</label>
             <div class="control">
               <input class="input" v-model="model.password"
                      type="password"
-                     placeholder="Password">
+                     :placeholder="$t('passwordPlaceholder')">
             </div>
           </div>
-          <button class="button is-primary" type="submit">Login</button>
+          <button class="button is-primary" type="submit">{{$t('loginButton')}}</button>
         </form>
         <router-link to="/forgot_password"
-        ><a>Forgot your password ?</a></router-link
+        ><a>{{$t('forgotPasswordLabel')}}</a></router-link
         >
 
-        <p>No account ? Create one :</p>
+        <p>{{$t('registerLabel')}}</p>
         <router-link to="/register">
-          <button class="button is-primary is-light" type="submit">Register</button>
+          <button class="button is-primary is-light" type="submit">{{$t('registerButton')}}</button>
         </router-link>
       </div>
     </div>
@@ -95,14 +95,14 @@ export default {
 
               switch (resp.Message) {
                 case "BAD_CREDENTIALS":
-                  errorMessage = "Invalid credentials";
+                  errorMessage = this.$t('invalidCredentialsError');
                   break;
                 case "NOT_ACTIVATED":
                   errorMessage =
-                      "Your account has not been activated yet. Please check your emails and clicked on the link to activate it.";
+                       this.$t('unactiveAccountError');
                   break;
                 default:
-                  errorMessage = "Error while signing in to the app";
+                  errorMessage = this.$t('loginError');
               }
 
               openNotification({
@@ -114,7 +114,7 @@ export default {
           })
           .catch(() => {
             openNotification({
-              message: "Error while signing in to the app",
+              message: this.$t('loginError'),
               type: 'danger',
               duration: 5000
             })
@@ -143,3 +143,36 @@ export default {
 .centered-card {
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Login",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Password",
+    "forgotPasswordLabel": "Forgot your password ?",
+    "registerLabel": "No account ? Create one :",
+    "registerButton": "Register",
+    "loginButton": "Login",
+    "invalidCredentialsError": "Invalid credentials",
+    "unactiveAccountError": "Your account has not been activated yet. Please check your emails and clicked on the link to activate it.",
+    "loginError": "Error while signing in to the app"
+  },
+  "fr": {
+    "title": "Connexion",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Mot de passe",
+    "forgotPasswordLabel": "Mot de passe oublié ?",
+    "registerLabel": "Pas encore de compte ? Créez en un :",
+    "registerButton": "S'enregistrer",
+    "loginButton": "Connexion",
+    "invalidCredentialsError": "Identifiants invalides",
+    "unactiveAccountError": "Votre compte n'est pas encore activé. Veuillez vérifiez vos emails et clicker sur le lien fourni pour l'activer.",
+    "loginError": "Erreur lors de la connexion à l'application"
+  }
+}
+</i18n>

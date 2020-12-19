@@ -8,6 +8,7 @@ import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
 
 import Axios from 'axios'
+import i18n from './i18n'
 
 Vue.prototype.$http = Axios;
 const token = localStorage.getItem('token')
@@ -21,5 +22,6 @@ Vue.use(VueRouter)
 new Vue({
   router,
   store,
-  render: h => h(App),
+  i18n,
+  render: h => h(App)
 }).$mount('#app')
