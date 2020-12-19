@@ -106,9 +106,6 @@ export default {
               });
             }
           })
-          .catch((err) => {
-            console.log(err);
-          })
           .finally(() => {
             this.loading = false;
           });
@@ -121,7 +118,6 @@ export default {
     },
     MessageReceived(data) {
       var object = data;
-      console.log(object)
 
       if (object.message.conversation_id == this.convId) {
         this.messages.push(object.message);

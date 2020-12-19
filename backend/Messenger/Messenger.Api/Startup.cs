@@ -4,7 +4,6 @@ using Messenger.Api.WebSocketsHandlers;
 using Messenger.Database;
 using Messenger.EmailSending;
 using Messenger.Facade;
-using Messenger.Facade.KafkaConfiguration;
 using Messenger.Facade.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

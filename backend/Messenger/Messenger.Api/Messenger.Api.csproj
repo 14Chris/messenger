@@ -26,8 +26,8 @@
     <ProjectReference Include="..\Messenger.Facade\Messenger.Facade.csproj" />
     <ProjectReference Include="..\Messenger.Repository.Implementation\Messenger.Repository.Interface.csproj" />
     <ProjectReference Include="..\Messenger.Repository.Interface\Messenger.Repository.Implementation.csproj" />
+    <ProjectReference Include="..\Messenger.Service.Implementation\Messenger.Service.Implementation.csproj" />
     <ProjectReference Include="..\Messenger.Service.Interface\Messenger.Service.Interface.csproj" />
-    <ProjectReference Include="..\Messenger.Service\Messenger.Service.Implementation.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

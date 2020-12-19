@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
 
 namespace Messenger.Api.WebSocketsHandlers
@@ -15,20 +16,28 @@ namespace Messenger.Api.WebSocketsHandlers
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var request = httpContext.Request;
-
-            // web sockets cannot pass headers so we must take the access token from query param and
-            // add it to the header before authentication middleware runs
-            if (request.Headers.ContainsKey("sec-websocket-protocol"))
+            try
             {
-                var protocols = request.Headers["sec-websocket-protocol"].ToString().Split(", ");
-                var token = protocols[1];
+                var request = httpContext.Request;
 
-                request.Headers.Add("Authorization", $"Bearer {token}");
-                request.Headers.Remove("sec-websocket-protocol");
+                // web sockets cannot pass headers so we must take the access token from query param and
+                // add it to the header before authentication middleware runs
+                if (request.Headers.ContainsKey("sec-websocket-protocol"))
+                {
+                    var protocols = request.Headers["sec-websocket-protocol"].ToString().Split(", ");
+                    var token = protocols[1];
+
+                    request.Headers.Add("Authorization", $"Bearer {token}");
+                    request.Headers.Remove("sec-websocket-protocol");
+                }
+
+                await _next(httpContext);
+
             }
-
-            await _next(httpContext);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

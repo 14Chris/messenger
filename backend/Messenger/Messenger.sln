@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Api", "Messenger.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Repository.Interface", "Messenger.Repository.Implementation\Messenger.Repository.Interface.csproj", "{B78F6F9C-2737-44B2-8843-89C8857E4535}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Service.Implementation", "Messenger.Service\Messenger.Service.Implementation.csproj", "{3F3A9990-26EA-4BEE-90BC-047BE2CB7779}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Test.Api", "Messenger.Test.Api\Messenger.Test.Api.csproj", "{91450E2C-805A-49B9-84C7-3EA90B9CABB0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Repository.Implementation", "Messenger.Repository.Interface\Messenger.Repository.Implementation.csproj", "{2293281D-42AA-4729-A872-6333F637D9C3}"
@@ -20,6 +18,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Database", "Messenger.Database\Messenger.Database.csproj", "{4B9516AE-0D82-4057-BE36-A4E35F7FC4C3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.EmailSending", "Messenger.EmailSending\Messenger.EmailSending.csproj", "{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Service.Implementation", "Messenger.Service.Implementation\Messenger.Service.Implementation.csproj", "{23A59CC7-04D3-4526-9070-D5A89CEACFF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,6 @@ Global
 		{B78F6F9C-2737-44B2-8843-89C8857E4535}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B78F6F9C-2737-44B2-8843-89C8857E4535}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B78F6F9C-2737-44B2-8843-89C8857E4535}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F3A9990-26EA-4BEE-90BC-047BE2CB7779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F3A9990-26EA-4BEE-90BC-047BE2CB7779}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F3A9990-26EA-4BEE-90BC-047BE2CB7779}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F3A9990-26EA-4BEE-90BC-047BE2CB7779}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91450E2C-805A-49B9-84C7-3EA90B9CABB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91450E2C-805A-49B9-84C7-3EA90B9CABB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91450E2C-805A-49B9-84C7-3EA90B9CABB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,6 +59,10 @@ Global
 		{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4050DCF7-10A2-4CF1-863F-AE4A64B044C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23A59CC7-04D3-4526-9070-D5A89CEACFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23A59CC7-04D3-4526-9070-D5A89CEACFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23A59CC7-04D3-4526-9070-D5A89CEACFF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23A59CC7-04D3-4526-9070-D5A89CEACFF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
