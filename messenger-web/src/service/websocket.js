@@ -23,12 +23,12 @@ export default function CreateWebSocket(token){
         }
     }
 
-    socket.onclose = function () {
-        // console.log("on close", event)
+    socket.onclose = function (event) {
+        console.log("on close", event)
     };
 
-    socket.onerror = function () {
-        // console.log("on error", event)
+    socket.onerror = function (event) {
+        console.log("on error", event)
     };
 
     return socket;

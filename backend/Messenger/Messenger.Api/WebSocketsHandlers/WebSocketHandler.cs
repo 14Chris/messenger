@@ -37,65 +37,72 @@ namespace Messenger.Api.WebSocketsHandlers
         {
             ServiceProvider _serviceProvider = new ServiceProvider(serviceProvider);
 
-            //If it's not a websocket request
-            if (!context.WebSockets.IsWebSocketRequest)
+            try
             {
-                await _next.Invoke(context);
-                return;
-            }
-
-            int id = -1;
-
-            //Get the user identity from the token provided
-            var claimsIdentity = context.User.Identity as ClaimsIdentity;
-
-            
-            bool ok = int.TryParse(claimsIdentity.Name, out id);
-            if (!ok)
-                return;
-
-            CancellationToken ct = context.RequestAborted;
-            WebSocket currentSocket = await context.WebSockets.AcceptWebSocketAsync("access_token");
-
-            webSocketStore.TryAddWebSocket(id, currentSocket);
-
-            while (true)
-            {
-                if (ct.IsCancellationRequested)
+                //If it's not a websocket request
+                if (!context.WebSockets.IsWebSocketRequest)
                 {
-                    break;
+                    await _next.Invoke(context);
+                    return;
                 }
 
-                //Read the data provided by websocket
-                var response = await ReceiveStringAsync(currentSocket, ct);
-                if (string.IsNullOrEmpty(response))
+                int id = -1;
+
+                //Get the user identity from the token provided
+                var claimsIdentity = context.User.Identity as ClaimsIdentity;
+
+
+                bool ok = int.TryParse(claimsIdentity.Name, out id);
+                if (!ok)
+                    return;
+
+                CancellationToken ct = new CancellationToken();
+                WebSocket currentSocket = await context.WebSockets.AcceptWebSocketAsync("access_token");
+
+                webSocketStore.TryAddWebSocket(id, currentSocket);
+
+                while (true)
                 {
-                    if (currentSocket.State != WebSocketState.Open)
+                    //if (ct.IsCancellationRequested)
+                    //{
+                    //    break;
+                    //}
+
+                    //Read the data provided by websocket
+                    var response = await ReceiveStringAsync(currentSocket, ct);
+                    if (string.IsNullOrEmpty(response))
                     {
-                        break;
+                        if (currentSocket.State != WebSocketState.Open)
+                        {
+                            break;
+                        }
+
+                        continue;
                     }
 
-                    continue;
-                } 
+                    SocketRequestModel json = JsonConvert.DeserializeObject<SocketRequestModel>(response);
 
-                SocketRequestModel json = JsonConvert.DeserializeObject<SocketRequestModel>(response);
-
-                //handle the request depending on the request type
-                switch (json.type)
-                {
-                    //If the request is a new message sending
-                    case "send_message":
-                        _serviceProvider._communicationService.SendNewMessageNotification(id, json.data);
-                        break;
+                    //handle the request depending on the request type
+                    switch (json.type)
+                    {
+                        //If the request is a new message sending
+                        case "send_message":
+                            _serviceProvider._communicationService.SendNewMessageNotification(id, json.data);
+                            break;
+                    }
                 }
+
+                //Try to remove the user from the websocket store
+                WebSocket dummy = webSocketStore.TryRemoveWebSocket(id);
+
+                //CLose the socket connection
+                await currentSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
+                currentSocket.Dispose();
             }
-
-            //Try to remove the user from the websocket store
-            WebSocket dummy = webSocketStore.TryRemoveWebSocket(id);
-
-            //CLose the socket connection
-            await currentSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
-            currentSocket.Dispose();
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
        
