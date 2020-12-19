@@ -8,7 +8,7 @@ namespace Messenger.Facade.Helpers
 {
     public class SecurityHelper
     {
-        public static string regexPassword = @"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$";
+        public static string regexPassword = @"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[\]:;<>,.?\/~_+-=|\\]).{8,}$";
         public static string dictionnary = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         /// <summary>

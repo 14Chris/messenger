@@ -49,7 +49,7 @@
         <div class="control">
           <input class="input is-danger" type="text" placeholder="Email" v-model="model.email">
         </div>
-        <p class="help is-danger">
+        <p class="help is-danger input-errors">
           <span v-for="(error,index) in GetEmailErrors()" :key="index">
           {{ error }}
       </span>
@@ -69,7 +69,7 @@
         <div class="control">
           <input class="input is-danger" type="password" placeholder="Password" v-model="model.password">
         </div>
-        <p class="help is-danger">
+        <p class="help is-danger input-errors">
           <span v-for="(error,index) in GetPasswordErrors()" :key="index">
           {{ error }}
       </span>
@@ -90,7 +90,7 @@
           <input class="input is-danger" type="password" placeholder="Confirm Password"
                  v-model="model.password_confirmation">
         </div>
-        <p class="help is-danger">
+        <p class="help is-danger input-errors">
           <span v-for="(error,index) in GetConfirmPasswordErrors()" :key="index">
             {{ error }}
           </span>
@@ -224,6 +224,9 @@ export default {
         if (!this.$v.model.password.oneLowerCase) {
           errors.push("Password must have at least one lower case character");
         }
+        if (!this.$v.model.password.specialCharacter) {
+          errors.push("Password must have at least one special character among these : *.!@$%^&(){}[]:;<>,?/~_+-=|");
+        }
       }
       return errors;
     },
@@ -272,14 +275,18 @@ export default {
         required,
         minLength: minLength(8),
         oneNumber(password) {
-          return /(?=.*\d)/.test(password);
+          return /(?=.*\d.*)/.test(password);
         },
         oneUpperCase(password) {
-          return /(?=.*[A-Z])/.test(password);
+          return /(?=.*[A-Z].*)/.test(password);
         },
         oneLowerCase(password) {
-          return /(?=.*[a-z])/.test(password);
+          return /(?=.*[a-z].*)/.test(password);
         },
+        specialCharacter(password){
+          let regexSpeChar = RegExp("(?=.*[*\\.!@$%^&\\(\\){}\\[\\]:;<>,?\\/~_+\\-=|].*)")
+          return regexSpeChar.test(password);
+        }
       },
       password_confirmation: {
         required,
@@ -293,5 +300,10 @@ export default {
 <style>
 .error {
   color: red;
+}
+
+.input-errors{
+  display: flex !important;
+  flex-direction: column;
 }
 </style>

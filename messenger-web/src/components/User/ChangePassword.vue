@@ -30,7 +30,10 @@
         <div class="control">
             <input class="input is-danger" type="password" placeholder="New password" v-model="model.newPassword">
         </div>
-        <p class="help is-danger">{{GetPasswordErrors()}}</p>
+        <p class="help is-danger input-errors">
+          <span v-for="(error,index) in GetPasswordErrors()" :key="index">
+            {{ error }}
+          </span></p>
         </div>
 
        <div class="field" v-if="!$v.model.repeatPassword.$invalid">
@@ -45,7 +48,9 @@
         <div class="control">
             <input class="input is-danger" type="password" placeholder="Confirm new password" v-model="model.repeatPassword">
         </div>
-        <p class="help is-danger">{{GetConfirmPasswordErrors()}}</p>
+        <p class="help is-danger input-errors"><span v-for="(error,index) in GetConfirmPasswordErrors()" :key="index">
+            {{ error }}
+          </span></p>
         </div>
 
        <button class="button is-primary">Change</button>
@@ -108,6 +113,9 @@ export default {
         }
         if (!this.$v.model.newPassword.oneLowerCase) {
           errors.push("New password must have at least one lower case character");
+        }
+        if (!this.$v.model.password.specialCharacter) {
+          errors.push("Password must have at least one special character among these : *.!@$%^&(){}[]:;<>,?/~_+-=|");
         }
       }
       return errors;
@@ -180,14 +188,18 @@ export default {
         required,
         minLength: minLength(8),
         oneNumber(password) {
-          return /(?=.*\d)/.test(password);
+          return /(?=.*\d.*)/.test(password);
         },
         oneUpperCase(password) {
-          return /(?=.*[A-Z])/.test(password);
+          return /(?=.*[A-Z].*)/.test(password);
         },
         oneLowerCase(password) {
-          return /(?=.*[a-z])/.test(password);
+          return /(?=.*[a-z].*)/.test(password);
         },
+        specialCharacter(password){
+          let regexSpeChar = RegExp("(?=.*[*\\.!@$%^&\\(\\){}\\[\\]:;<>,?\\/~_+\\-=|].*)")
+          return regexSpeChar.test(password);
+        }
       },
       repeatPassword: {
         required,
