@@ -6,5 +6,12 @@
   "passwordLowerError": "Password must have at least one lower case character",
   "passwordSpecialCharError": "Password must have at least one special character among these : *.!@$%^&(){}[]:;<>,?/~_+-=|",
   "passwordLengthError": "Password must have at least 8 characters",
-  "confirmPasswordSameError": "Confirmation password has to be the same as password"
+  "confirmPasswordSameError": "Confirmation password has to be the same as password",
+  "firstNameRequiredError": "First name is required",
+  "lastNameRequiredError": "Last name is required",
+  "emailRequiredError": "Email is required",
+  "passwordRequiredError": "Password is required",
+  "confirmPasswordRequiredError": "Password confirmation is required",
+  "emailValidityError": "Please enter valid email address",
+  "emailUniqueError": "Email is already taken"
 }

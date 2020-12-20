@@ -322,20 +322,7 @@ export default {
     "registerButton": "Register",
     "loginButton": "Login",
     "loginLabel": "Already have an account ? Login :",
-    "firstNameRequiredError": "First name is required",
-    "lastNameRequiredError": "Last name is required",
-    "emailRequiredError": "Email is required",
-    "passwordRequiredError": "Password is required",
-    "confirmPasswordRequiredError": "Password confirmation is required",
-    "emailValidityError": "Please enter valid email address",
-    "emailUniqueError": "Email is already taken",
-    "passwordNumberError": "Password must have at least one number",
-    "passwordUpperError": "Password must have at least one upper case character",
-    "passwordLowerError": "Password must have at least one lower case character",
-    "passwordSpecialCharError": "Password must have at least one special character among these : *.!@$%^&(){}[]:;<>,?/~_+-=|",
-    "passwordLengthError": "Password must have at least 8 characters",
-    "confirmPasswordSameError": "Confirmation password has to be the same as password",
-    "accountCreationSuccess": "Your account has been created. Please check your emails to validate your before sign in.",
+    "accountCreationSuccess": "Your account has been created. An email just been sent to you with the instructions for activating your account",
     "accountCreationError": "An error happened while creating your account"
 
   },
@@ -354,19 +341,8 @@ export default {
     "registerButton": "S'enregistrer",
     "loginButton": "Connexion",
     "loginLabel": "Vous avez déjà un compte ? Connectez-vous :",
-    "firstNameRequiredError": "Le prénom est requis",
-    "lastNameRequiredError": "Le nom est requis",
-    "emailRequiredError": "L'adresse email est requise",
-    "passwordRequiredError": "Le mot de passe est requis",
-    "confirmPasswordRequiredError": "Le mot de passe de confirmation est requis",
-    "emailValidityError": "Veuillez entrer une adresse email valide",
-    "emailUniqueError": "Cette adresse email est déjà prise",
-    "passwordNumberError": "Le mot de passe doit avoir au moins un nombre",
-    "passwordUpperError": "Le mot de passe doit avoir au moins une lettre majuscule",
-    "passwordLowerError": "Le mot de passe doit avoir au moins une lettre minuscule",
-    "passwordSpecialCharError": "Le mot de passe doit avoir au moins un caractère spécial parmi ceuxlà : *.!@$%^&(){}[]:;<>,?/~_+-=|",
-    "passwordLengthError": "Le mot de passe doit avoir au moins 8 caractères",
-    "confirmPasswordSameError": "Le mot de passe de confirmation est différent du mot de passe"
+    "accountCreationSuccess": "Votre compte a été créé. Un email vient de vous être envoyer contenant les instructions pour activer votre compte",
+    "accountCreationError": "Un erreur est apparue pendant la création de votre compte"
   }
 }
 </i18n>

@@ -2,16 +2,16 @@
   <div class="container">
     
     <div v-if="isLoading">
-      <p>Loading...</p>
+      <p>{{$t('loadingText')}}</p>
     </div>
     <div v-else>
       <div v-if="userProfile != null">
         <h3 class="title is-3">{{ userProfile.first_name }} {{ userProfile.last_name }}</h3>
         <Avatar class="profile-avatar" :userId="userProfile.id"></Avatar>
         <div class="box">
-          <h4 class="title is-4">Informations</h4>
+          <h4 class="title is-4">{{$t('informationsTitle')}}</h4>
           <div class="field">
-              <label class="label">Email</label>
+              <label class="label">{{$t('emailLabel')}}</label>
   
                 <p class="control">
                   <input
@@ -26,7 +26,7 @@
         </div>
       </div>
       <div v-else>
-        <p>An error occured while retrieving user profile</p>
+        <p>{{$t('getProfileError')}}</p>
       </div>
     </div>
   </div>
@@ -66,9 +66,6 @@ export default {
             this.userProfile = null;
           }
         })
-        .catch((err) => {
-          console.log(err);
-        })
         .finally(() => {
           this.isLoading = false;
         });
@@ -89,3 +86,21 @@ export default {
   margin: 0 auto;
 }
 </style>
+
+
+<i18n>
+{
+  "en": {
+    "loadingText": "Loading...",
+    "informationsTitle": "Informations",
+    "emailLabel": "Email",
+    "getProfileError": "An error occured while retrieving user profile"
+  },
+  "fr": {
+    "loadingText": "Chargement...",
+    "informationsTitle": "Informations",
+    "emailLabel": "Email",
+    "getProfileError": "Une erreur est apparue pendant la récupération du profil"
+  }
+}
+</i18n>
