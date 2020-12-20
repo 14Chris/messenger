@@ -5,14 +5,15 @@
 </template>
 
 <script>
-// import ApiService from './service/api'
-// var api = new ApiService
 
 export default {
   name: "App",
   async mounted() {
     await this.$store.dispatch('getUserSession')
     this.$store.dispatch("CreateWebSocket")
+
+    //Set the navigator default language for i18n config
+    this.$i18n.locale = navigator.language.split(/-|_/)[0]
 
   },
 };
