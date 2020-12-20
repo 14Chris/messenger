@@ -50,7 +50,7 @@ export default {
   computed:{
     MessageDate(){
       var date =  this.message.date
-      return moment(date).calendar()
+      return moment(date).locale(this.$i18n.locale).calendar()
     }
   }
 };
