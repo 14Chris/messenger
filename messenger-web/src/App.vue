@@ -12,9 +12,16 @@ export default {
     await this.$store.dispatch('getUserSession')
     this.$store.dispatch("CreateWebSocket")
 
-    //Set the navigator default language for i18n config
-    this.$i18n.locale = navigator.language.split(/-|_/)[0]
-
+    if(this.$store.getters.selectedLanguage == null){
+      //Set the navigator default language for i18n config
+      this.$store.dispatch("SetApplicationLanguage", navigator.language.split(/-|_/)[0])
+          .then(()=>{
+            this.$i18n.locale = this.$store.getters.selectedLanguage
+          })
+    }
+    else{
+      this.$i18n.locale = this.$store.getters.selectedLanguage
+    }
   },
 };
 </script>
@@ -48,5 +55,7 @@ button:focus {
   background: none;
   cursor: pointer;
 }
+
+
 
 </style>

@@ -14,7 +14,8 @@ export default new Vuex.Store({
         token: localStorage.getItem('token'),
         user: {},
         chatWebsocket: null,
-        conversations: []
+        conversations: [],
+        selectedLanguage: localStorage.getItem("language")
     },
     mutations: {
         auth_request(state) {
@@ -45,6 +46,11 @@ export default new Vuex.Store({
         },
         add_conversation(state, conversations) {
             state.conversations = conversations
+        },
+        set_language(state, language)
+        {
+            localStorage.setItem("language", language)
+            state.selectedLanguage = language
         }
     },
     actions: {
@@ -93,6 +99,12 @@ export default new Vuex.Store({
                 commit('create_websocket')
                 resolve()
             })
+        },
+        SetApplicationLanguage({commit}, language){
+            return new Promise((resolve) => {
+                commit('set_language', language)
+                resolve()
+            })
         }
     },
     getters: {
@@ -101,7 +113,8 @@ export default new Vuex.Store({
         },
         authStatus: state => state.status,
         connectedUser: state => state.user,
-        chatWebsocket: state => state.chatWebsocket
+        chatWebsocket: state => state.chatWebsocket,
+        selectedLanguage: state => state.selectedLanguage
     }
 })
 

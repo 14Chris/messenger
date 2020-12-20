@@ -31,8 +31,8 @@ export default {
 
 .full-page{
   height:100%;
-  display: flex;
-  flex-direction: column;
+  /*display: flex;*/
+  /*flex-direction: column;*/
 }
 
 .part-separator{

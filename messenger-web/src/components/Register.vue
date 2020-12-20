@@ -1,8 +1,11 @@
 <template>
-  <div class="container">
-    <div class="card centered-card">
-      <div class="card-content">
-    <h2 class="title is-2">{{ $t('title') }}</h2>
+  <div class="columns">
+    <div class="column column-illustration">
+      <img class="illustration" src="../assets/illustrations/user_chat_illustration.svg">
+    </div>
+    <div class="column">
+      <div class="div-form">
+    <h3 class="title is-3">{{ $t('title') }}</h3>
     <form @submit.prevent="register">
       <!-- First name -->
       <div class="field" v-if="!$v.model.first_name.$invalid">
@@ -102,11 +105,11 @@
       </div>
       <p>{{$t('loginLabel')}}</p>
       <router-link to="/login">
-        <button class="button is-primary is-light" type="button">{{$t('loginButton')}}</button>
+        <button class="button is-primary is-outlined" type="button">{{$t('loginButton')}}</button>
       </router-link>
     </form>
-  </div>
-  </div>
+    </div>
+    </div>
   </div>
 </template>
 
@@ -302,6 +305,28 @@ export default {
 .input-errors{
   display: flex !important;
   flex-direction: column;
+}
+
+.column{
+  position: relative;
+}
+
+.column-illustration{
+  background-color: whitesmoke;
+}
+
+.illustration{
+  /* Center vertically and horizontally*/
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  height:50%;
+}
+
+.div-form{
+  margin:20px;
 }
 </style>
 

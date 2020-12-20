@@ -1,8 +1,11 @@
 <template>
-  <div class="container">
-    <div class="card centered-card">
-      <div class="card-content">
-        <h2 class="title is-2">{{$t('title')}}</h2>
+  <div class="columns full-page">
+    <div class="column column-illustration">
+      <img class="illustration" src="../assets/illustrations/form_illustration.svg">
+    </div>
+    <div class="column">
+      <div class="div-form">
+        <h3 class="title is-3">{{$t('title')}}</h3>
         <form class="login" @submit.prevent="login">
           <div class="field">
             <label class="label">{{$t('emailLabel')}}</label>
@@ -21,19 +24,19 @@
                      :placeholder="$t('passwordPlaceholder')">
             </div>
           </div>
-          <button class="button is-primary" type="submit">{{$t('loginButton')}}</button>
-        </form>
-        <router-link to="/forgot_password"
-        ><a>{{$t('forgotPasswordLabel')}}</a></router-link
-        >
+          <div>
+            <button class="button is-primary" type="submit">{{$t('loginButton')}}</button>
+            <router-link to="/forgot_password" class="forgot-password-link">{{$t('forgotPasswordLabel')}}</router-link>
+          </div>
 
+        </form>
         <p>{{$t('registerLabel')}}</p>
         <router-link to="/register">
-          <button class="button is-primary is-light" type="submit">{{$t('registerButton')}}</button>
+          <button class="button is-primary is-outlined" type="submit">{{$t('registerButton')}}</button>
         </router-link>
       </div>
-    </div>
-  </div>
+      </div>
+      </div>
 </template>
 
 <script>
@@ -134,13 +137,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .container {
   position: relative !important;
 }
 
 
-.centered-card {
+.forgot-password-link{
+  float: right;
+
 }
 </style>
 
