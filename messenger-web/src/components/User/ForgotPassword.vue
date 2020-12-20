@@ -1,8 +1,9 @@
 <template>
   <div class="container">
-    <div class="card">
+    <div class="card centered-card">
       <div class="card-content">
-        <h2 class="title is-2">{{$t('title')}}</h2>
+        <h3 class="title is-3">{{$t('title')}}</h3>
+        <p>{{$t('instructionsTitle')}}</p>
         <form @submit.prevent="ForgotPassword">
           <!-- New password -->
           <div class="field" v-if="$v.email.required">
@@ -98,13 +99,26 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+
+  html{
+    background-color: whitesmoke;
+  }
+
+  .centered-card{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+  }
 </style>
 
 <i18n>
 {
   "en": {
     "title": "Forgot password",
+    "instructionsTitle": "Please enter your email address and we'll send you instructions on how to reset your password.",
     "emailLabel": "Email",
     "emailPlaceholder": "Email",
     "emailRequiredError": "Email is required",
@@ -114,6 +128,7 @@ export default {
   },
   "fr": {
     "title": "Mot de passe oublié",
+    "instructionsTitle": "Veuillez entrer votre adresse email et nous vous enverrons des instructions sur comment réinitialiser votre mot de passe.",
     "emailLabel": "Email",
     "emailPlaceholder": "Email",
     "emailRequiredError": "L'adresse email est requise",
