@@ -1,30 +1,29 @@
 <template>
   <div class="container">
-    <h3 class="title is-3">Reset password</h3>
-    <div v-if="tokenOk == null">Loading...</div>
+    <h3 class="title is-3">{{$t('title')}}</h3>
+    <div v-if="tokenOk == null">{{$t('loadingText')}}</div>
     <div v-else-if="tokenOk == true">
-      token : {{ model.token }}
       <form @submit.prevent="ResetPassword">
         <!-- New password -->
         <div class="field" v-if="!$v.model.newPassword.$invalid">
-          <label class="label">New password</label>
+          <label class="label">{{ $t('passwordLabel') }}</label>
           <div class="control">
             <input
               class="input"
               type="password"
-              placeholder="New password"
+              :placeholder="$t('passwordPlaceholder')"
               v-model="model.newPassword"
             />
           </div>
         </div>
 
         <div class="field" v-else>
-          <label class="label">New password</label>
+          <label class="label">{{ $t('passwordLabel') }}</label>
           <div class="control">
             <input
               class="input is-danger"
               type="password"
-              placeholder="New password"
+              :placeholder="$t('passwordPlaceholder')"
               v-model="model.newPassword"
             />
           </div>
@@ -36,24 +35,24 @@
 
         <!-- New password confirmation-->
         <div class="field" v-if="!$v.model.repeatNewPassword.$invalid">
-          <label class="label">Confirm new password</label>
+          <label class="label">{{ $t('confirmPasswordLabel') }}</label>
           <div class="control">
             <input
               class="input"
               type="password"
-              placeholder="Confirm new password"
+              :placeholder="$t('confirmPasswordPlaceholder')"
               v-model="model.repeatNewPassword"
             />
           </div>
         </div>
 
         <div class="field" v-else>
-          <label class="label">Confirm new password</label>
+          <label class="label">{{ $t('confirmPasswordLabel') }}</label>
           <div class="control">
             <input
               class="input is-danger"
               type="password"
-              placeholder="Confirm new password"
+              :placeholder="$t('confirmPasswordPlaceholder')"
               v-model="model.repeatNewPassword"
             />
           </div>
@@ -64,10 +63,10 @@
           </p>
         </div>
 
-        <button class="button is-primary">Change</button>
+        <button class="button is-primary">{{$t('resetPasswordButton')}}</button>
       </form>
     </div>
-    <div v-else>Error during token validation</div>
+    <div v-else>{{this.$t('tokenValidationErrorTest')}}</div>
   </div>
 </template>
 
@@ -123,7 +122,7 @@ export default {
           else {
             this.tokenOk = false;
             openNotification({
-              message: "The token provided is invalid",
+              message: this.$t('tokenValidationError'),
               type: "danger",
               duration: 5000,
             });
@@ -133,7 +132,7 @@ export default {
         .catch(() => {
           this.tokenOk = false;
           openNotification({
-            message: "Error while validating the token provided",
+            message: this.$t('tokenValidationRequestError'),
             type: "danger",
             duration: 5000,
           });
@@ -153,7 +152,7 @@ export default {
           if (response.ok == true) {
               openNotification({
                 message:
-                    "Your password have been changed. You can now log in.",
+                    this.$t('requestSuccess'),
                 type: "success",
                 duration: 5000,
               });
@@ -162,15 +161,14 @@ export default {
             response.json().then((data) => {
               var errorMessage = ""
               switch (data.Message) {
-
                 case "SAME_NEW_PASSWORD":
-                  errorMessage = "New password has to be different from old password"
+                  errorMessage = this.$t('sameNewPasswordError')
                   break;
                 case "NEW_PASSWORD_TOO_WEAK":
-                  errorMessage = "New password is too weak"
+                  errorMessage = this.$t('passwordTooWeakError')
                   break;
                 default:
-                  errorMessage = "Error while changing your password"
+                  errorMessage = this.$t('requestError')
               }
 
               openNotification({
@@ -183,49 +181,43 @@ export default {
         })
         .catch(() => {
           openNotification({
-            message: "Error while changing your password",
+            message: this.$t('requestError'),
             type: "danger",
             duration: 5000,
           });
         });
     },
     GetPasswordErrors() {
-      let errors = [];
-      if (!this.$v.model.newPassword.required) {
-        errors.push("New password is required");
+      var errors = [];
+      if (!this.$v.model.password.required) {
+        errors.push(this.$t('passwordRequiredError'));
       } else {
-        if (!this.$v.model.newPassword.minLength) {
+        if (!this.$v.model.password.minLength) {
           errors.push(
-            "New password must have at least " +
-              this.$v.model.newPassword.$params.minLength.min +
-              " letters."
+              this.$t('passwordLengthError')
           );
         }
-        if (!this.$v.model.newPassword.oneNumber) {
-          errors.push("New password must have at least one number");
+        if (!this.$v.model.password.oneNumber) {
+          errors.push(this.$t('passwordNumberError'));
         }
-        if (!this.$v.model.newPassword.oneUpperCase) {
-          errors.push(
-            "New password must have at least one upper case character"
-          );
+        if (!this.$v.model.password.oneUpperCase) {
+          errors.push(this.$t('passwordUpperError'));
         }
-        if (!this.$v.model.newPassword.oneLowerCase) {
-          errors.push(
-            "New password must have at least one lower case character"
-          );
+        if (!this.$v.model.password.oneLowerCase) {
+          errors.push(this.$t('passwordLowerError'));
         }
         if (!this.$v.model.password.specialCharacter) {
-          errors.push("Password must have at least one special character among these : *.!@$%^&(){}[]:;<>,?/~_+-=|");
+          errors.push(this.$t('passwordSpecialCharError'));
         }
       }
       return errors;
     },
     GetConfirmPasswordErrors() {
-      let errors = [];
-      if (!this.$v.model.repeatNewPassword.required) {
-        errors.push("Confirmation password is required");
-      } else if (!this.$v.model.repeatNewPassword.sameAsPassword) {
-        errors.push("Confirmation password has to be the same as password");
+      var errors = [];
+      if (!this.$v.model.password_confirmation.required) {
+        errors.push(this.$t('confirmPasswordRequiredError'));
+      } else if (!this.$v.model.password_confirmation.sameAsPassword) {
+        errors.push(this.$t('confirmPasswordSameError'));
       }
       return errors;
     },
@@ -260,3 +252,38 @@ export default {
 
 <style>
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Reset password",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "sameNewPasswordError": "New password has to be different from older one",
+    "passwordTooWeakError": "New password is too weak",
+    "requestError": "Error while changing your password",
+    "requestSuccess": "Your password have been changed. You can now log in.",
+    "tokenValidationError": "The token provided is invalid",
+    "tokenValidationRequestError": "Error while validating the token provided",
+    "tokenValidationErrorTest": "Error during token validation",
+    "resetPasswordButton": "Change",
+    "loadingText": "Loading..."
+  },
+  "fr": {
+    "title": "Réinialisation du mot de passe",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Mot de passe",
+    "confirmPasswordLabel": "Confirmez le mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez le mot de passe",
+    "requestError": "Error pendant le changement de votre mot de passe",
+    "requestSuccess": "Votre mot de passe a été changé. Vous pouvez maintenant vous connecter",
+    "tokenValidationError": "Le token fourni est invalide",
+    "tokenValidationRequestError": "Erreur pendant la validation du token fourni",
+    "tokenValidationErrorTest": "Erreur pendant la validation du token fourni",
+    "resetPasswordButton": "Changer",
+    "loadingText": "Chargement..."
+  }
+}
+</i18n>

@@ -1,2 +1,10 @@
 {
+  "passwordRequiredError": "Le mot de passe est requis",
+  "confirmPasswordRequiredError": "Le mot de passe de confirmation est requis",
+  "passwordNumberError": "Le mot de passe doit avoir au moins un nombre",
+  "passwordUpperError": "Le mot de passe doit avoir au moins une lettre majuscule",
+  "passwordLowerError": "Le mot de passe doit avoir au moins une lettre minuscule",
+  "passwordSpecialCharError": "Le mot de passe doit avoir au moins un caractère spécial parmi ceuxlà : *.!@$%^&(){}[]:;<>,?/~_+-=|",
+  "passwordLengthError": "Le mot de passe doit avoir au moins 8 caractères",
+  "confirmPasswordSameError": "Le mot de passe de confirmation est différent du mot de passe"
 }
