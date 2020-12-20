@@ -10,7 +10,7 @@
           <div class="field">
             <label class="label">{{$t('emailLabel')}}</label>
             <div class="control">
-              <input class="input is-primary" v-model="model.email"
+              <input class="input" v-model="model.email"
                      type="email"
                      :placeholder="$t('emailPlaceholder')">
             </div>
@@ -19,7 +19,7 @@
           <div class="field">
             <label class="label">{{$t('passwordLabel')}}</label>
             <div class="control">
-              <input class="input is-primary" v-model="model.password"
+              <input class="input" v-model="model.password"
                      type="password"
                      :placeholder="$t('passwordPlaceholder')">
             </div>
@@ -63,7 +63,6 @@ const openNotification = (propsData = {
     propsData
   })
 }
-
 
 export default {
   name: "Login",
