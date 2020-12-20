@@ -1,7 +1,7 @@
 <template>
   <div class="conversations">
     <div class="conversation-list-header">
-      <h3 class="title is-3">Conversations</h3>
+      <h3 class="title is-3">{{$t('title')}}</h3>
     </div>
     <div class="conversation-list">
       <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c" :conversation-archived="ConversationArchived"></ConversationListItem>
@@ -141,3 +141,14 @@ export default {
 }
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Conversations"
+  },
+  "fr": {
+    "title": "Conversations"
+  }
+}
+</i18n>

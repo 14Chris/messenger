@@ -10,7 +10,7 @@
         <h1>{{ conversationItem.name }}</h1>
         <div class="last-message-text">
           <!--  If solo conversation  -->
-          <span v-if="conversationItem.last_message_sender.id == $store.state.user.id">You : </span>
+          <span v-if="conversationItem.last_message_sender.id == $store.state.user.id">{{$t('youLabel')}}</span>
           <!--  If group conversation -->
           <span
               v-else-if="conversationItem.friends_ids.length > 1">{{ conversationItem.last_message_sender.first_name }} {{
@@ -64,7 +64,7 @@ export default {
   computed: {
     MessageDate() {
       var date = this.conversationItem.last_message_date;
-      return moment(date).calendar();
+      return moment(date).locale(this.$i18n.locale).calendar();
     },
   },
   methods: {
@@ -109,9 +109,6 @@ export default {
                     this.$router.push("/conv");
                   }
             }
-          })
-          .catch((err) => {
-            console.log(err);
           })
     }
   },
@@ -219,3 +216,14 @@ export default {
 
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "youLabel": "You :"
+  },
+  "fr": {
+    "youLabel": "Vous :"
+  }
+}
+</i18n>
