@@ -1,5 +1,5 @@
 <template>
-  <div class="columns">
+  <div class="columns full-page">
     <div class="column column-illustration">
       <img class="illustration" src="../assets/illustrations/user_chat_illustration.svg">
     </div>
@@ -8,10 +8,10 @@
     <h3 class="title is-3">{{ $t('title') }}</h3>
     <form @submit.prevent="register">
       <!-- First name -->
-      <div class="field" v-if="!$v.model.first_name.$invalid">
+      <div class="field" v-if="!$v.model.first_name.$invalid || !$v.model.first_name.$dirty">
         <label class="label">{{$t("firstNameLabel")}}</label>
         <div class="control">
-          <input class="input" type="text" :placeholder="$t('firstNamePlaceholder')" v-model="model.first_name">
+          <input class="input" type="text" :placeholder="$t('firstNamePlaceholder')" v-model="model.first_name" @blur="$v.model.first_name.$touch">
         </div>
       </div>
 
@@ -24,10 +24,10 @@
       </div>
 
       <!-- Last name -->
-      <div class="field" v-if="!$v.model.last_name.$invalid">
+      <div class="field" v-if="!$v.model.last_name.$invalid || !$v.model.last_name.$dirty">
         <label class="label">{{$t("lastNameLabel")}}</label>
         <div class="control">
-          <input class="input" type="text" :placeholder="$t('lastNamePlaceholder')"  v-model="model.last_name">
+          <input class="input" type="text" :placeholder="$t('lastNamePlaceholder')"  v-model="model.last_name" @blur="$v.model.last_name.$touch">
         </div>
       </div>
 
@@ -40,10 +40,10 @@
       </div>
 
       <!-- Email -->
-      <div class="field" v-if="!$v.model.email.$invalid">
+      <div class="field" v-if="!$v.model.email.$invalid || !$v.model.email.$dirty">
         <label class="label">{{$t("emailLabel")}}</label>
         <div class="control">
-          <input class="input" type="text" :placeholder="$t('emailPlaceholder')"  v-model="model.email">
+          <input class="input" type="text" :placeholder="$t('emailPlaceholder')"  v-model="model.email" @blur="$v.model.email.$touch">
         </div>
       </div>
 
@@ -60,10 +60,10 @@
       </div>
 
       <!-- Password -->
-      <div class="field" v-if="!$v.model.password.$invalid">
+      <div class="field" v-if="!$v.model.password.$invalid || !$v.model.password.$dirty">
         <label class="label">{{$t("passwordLabel")}}</label>
         <div class="control">
-          <input class="input" type="password" :placeholder="$t('passwordPlaceholder')"  v-model="model.password">
+          <input class="input" type="password" :placeholder="$t('passwordPlaceholder')"  v-model="model.password" @blur="$v.model.password.$touch">
         </div>
       </div>
 
@@ -80,10 +80,10 @@
       </div>
 
       <!-- Password confirmation -->
-      <div class="field" v-if="!$v.model.password_confirmation.$invalid">
+      <div class="field" v-if="!$v.model.password_confirmation.$invalid || !$v.model.password_confirmation.$dirty">
         <label class="label">{{$t("confirmPasswordLabel")}}</label>
         <div class="control">
-          <input class="input" type="password" :placeholder="$t('confirmPasswordPlaceholder')" v-model="model.password_confirmation">
+          <input class="input" type="password" :placeholder="$t('confirmPasswordPlaceholder')" v-model="model.password_confirmation" @blur="$v.model.password_confirmation.$touch">
         </div>
       </div>
 
