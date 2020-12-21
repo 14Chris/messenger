@@ -7,23 +7,42 @@
       <div class="div-form">
         <h3 class="title is-3">{{$t('title')}}</h3>
         <form class="login" @submit.prevent="login">
-          <div class="field">
+          <div class="field" v-if="!$v.model.email.$invalid || !$v.model.email.$dirty">
             <label class="label">{{$t('emailLabel')}}</label>
             <div class="control">
               <input class="input" v-model="model.email"
                      type="email"
-                     :placeholder="$t('emailPlaceholder')">
+                     :placeholder="$t('emailPlaceholder')" @blur="$v.model.email.$touch">
             </div>
           </div>
+          <div class="field" v-else>
+            <label class="label">{{$t('emailLabel')}}</label>
+            <div class="control">
+              <input class="input is-danger" v-model="model.email"
+                     type="email"
+                     :placeholder="$t('emailPlaceholder')" >
+            </div>
+            <p class="help is-danger">{{ $t('emailRequiredError') }}</p>
+          </div>
 
-          <div class="field">
+          <div class="field" v-if="!$v.model.password.$invalid || !$v.model.password.$dirty">
             <label class="label">{{$t('passwordLabel')}}</label>
             <div class="control">
               <input class="input" v-model="model.password"
                      type="password"
-                     :placeholder="$t('passwordPlaceholder')">
+                     :placeholder="$t('passwordPlaceholder')" @blur="$v.model.password.$touch">
             </div>
           </div>
+          <div class="field" v-else>
+            <label class="label">{{$t('passwordLabel')}}</label>
+            <div class="control">
+              <input class="input is-danger" v-model="model.password"
+                     type="password"
+                     :placeholder="$t('passwordPlaceholder')">
+            </div>
+            <p class="help is-danger">{{ $t('passwordRequiredError') }}</p>
+          </div>
+
           <div>
             <button class="button is-primary" type="submit">{{$t('loginButton')}}</button>
             <router-link to="/forgot_password" class="forgot-password-link">{{$t('forgotPasswordLabel')}}</router-link>
@@ -81,46 +100,50 @@ export default {
         email: this.model.email,
         password: this.model.password,
       };
+      this.$v.$touch();
 
-      api
-          .create("login", JSON.stringify(userLogin))
-          .then((response) => response.json())
-          .then((resp) => {
-            if (resp.ResponseType == 1) {
-              const token = resp.Result.token;
-              const user = resp.Result.user;
-              this.$store.dispatch("login", {token, user}).then(() => {
-                this.$router.push("/");
-              });
-            } else {
-              var errorMessage = "";
+      if (!this.$v.$invalid) {
 
-              switch (resp.Message) {
-                case "BAD_CREDENTIALS":
-                  errorMessage = this.$t('invalidCredentialsError');
-                  break;
-                case "NOT_ACTIVATED":
-                  errorMessage =
-                       this.$t('unactiveAccountError');
-                  break;
-                default:
-                  errorMessage = this.$t('loginError');
+        api
+            .create("login", JSON.stringify(userLogin))
+            .then((response) => response.json())
+            .then((resp) => {
+              if (resp.ResponseType == 1) {
+                const token = resp.Result.token;
+                const user = resp.Result.user;
+                this.$store.dispatch("login", {token, user}).then(() => {
+                  this.$router.push("/");
+                });
+              } else {
+                var errorMessage = "";
+
+                switch (resp.Message) {
+                  case "BAD_CREDENTIALS":
+                    errorMessage = this.$t('invalidCredentialsError');
+                    break;
+                  case "NOT_ACTIVATED":
+                    errorMessage =
+                        this.$t('unactiveAccountError');
+                    break;
+                  default:
+                    errorMessage = this.$t('loginError');
+                }
+
+                openNotification({
+                  message: errorMessage,
+                  type: 'danger',
+                  duration: 5000
+                })
               }
-
+            })
+            .catch(() => {
               openNotification({
-                message: errorMessage,
+                message: this.$t('loginError'),
                 type: 'danger',
                 duration: 5000
               })
-            }
-          })
-          .catch(() => {
-            openNotification({
-              message: this.$t('loginError'),
-              type: 'danger',
-              duration: 5000
-            })
-          });
+            });
+      }
     },
   },
   validations: {
@@ -128,9 +151,9 @@ export default {
       email: {
         required,
       },
-    },
-    password: {
-      required,
+      password: {
+        required,
+      },
     },
   },
 };
