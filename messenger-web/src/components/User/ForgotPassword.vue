@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="center-container">
     <div class="card centered-card">
       <div class="card-content">
         <h3 class="title is-3">{{$t('title')}}</h3>
@@ -100,10 +100,15 @@ export default {
 </script>
 
 <style scoped>
+  .center-container{
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
 
   html{
-    background-color: whitesmoke;
-  }
+      background-color: whitesmoke;
+    }
 
   .centered-card{
     position: absolute;

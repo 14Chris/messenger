@@ -1,7 +1,7 @@
 <template>
-  <div class="columns full-page">
+  <div class="columns full-size-page">
     <div class="column column-illustration">
-      <img class="illustration" src="../assets/illustrations/user_chat_illustration.svg">
+      <img class="illustration" src="../assets/illustrations/social_networking_illustration.svg">
     </div>
     <div class="column">
       <div class="div-form">
@@ -327,6 +327,10 @@ export default {
 
 .div-form{
   margin:20px;
+}
+
+.full-size-page{
+  height: 100%;
 }
 </style>
 

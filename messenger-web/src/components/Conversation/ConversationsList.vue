@@ -7,7 +7,7 @@
       <ConversationListItem v-for="c in conversations" :key="c.id" :conversation-item="c" :conversation-archived="ConversationArchived"></ConversationListItem>
     </div>
     <div class="conversation-list-bottom">
-      <router-link class="button" id="new-conversation-button" to="/conv/new" tag="button">
+      <router-link class="button is-primary" id="new-conversation-button" to="/conv/new" tag="button">
                 <span class="icon">
                   <img src="@/assets/icons/plus-white.svg"/>
                 </span>
@@ -136,8 +136,6 @@ export default {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-
-  background-color: #349CFC;
 }
 
 </style>

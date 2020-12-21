@@ -2,7 +2,7 @@
   <div class="container">
     <h3 class="title is-3">{{$t('title')}}</h3>
     <div class="box">
-      <h4 class="title is-4">
+      <h5 class="title is-5">
         {{$t('languageTitle')}}
         <div>
           <div class="field">
@@ -17,7 +17,7 @@
           </div>
           <button class="button is-primary" @click="ChangeLanguage">{{$t('changeLanguageButton')}}</button>
         </div>
-      </h4>
+      </h5>
     </div>
   </div>
 </template>

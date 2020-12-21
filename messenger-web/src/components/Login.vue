@@ -1,5 +1,5 @@
 <template>
-  <div class="columns full-page">
+  <div class="columns full-size-page">
     <div class="column column-illustration">
       <img class="illustration" src="../assets/illustrations/form_illustration.svg">
     </div>
@@ -167,8 +167,11 @@ export default {
 
 .forgot-password-link{
   float: right;
-
 }
+
+  .full-size-page{
+    height: 100%;
+  }
 </style>
 
 <i18n>
