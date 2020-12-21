@@ -1,12 +1,10 @@
 <template>
   <div>
     <div v-if="requests != null">
-
       <div class="box" v-for="f in requests" :key="f.id" @click="GoToUserProfile(f.id)">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
         <div class="request-actions">
           <button class="button is-success is-light" @click.prevent="AcceptFriendRequest(f.id)">
-
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>

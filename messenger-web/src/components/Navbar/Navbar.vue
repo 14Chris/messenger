@@ -57,7 +57,7 @@
                 {{ connectedUser.last_name }}</a
               >
             </router-link>
-            <a class="dropdown-item" @click="Logout">Logout</a>
+            <a class="dropdown-item" @click="Logout">{{$t('logoutButton')}}</a>
           </div>
         </div>
       </div>
@@ -165,3 +165,14 @@ nav {
   display: flex;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "logoutButton": "Log out"
+  },
+  "fr": {
+    "logoutButton": "Déconnexion"
+  }
+}
+</i18n>

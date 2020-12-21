@@ -2,7 +2,7 @@
   <div class="full-page">
     <div class="field is-horizontal conv-header">
       <div class="field-label is-normal">
-        <label>To : </label>
+        <label>{{$t('toLabel')}}</label>
         <span class="tag is-primary is-medium" v-for="f in selected" :key="f.id">
           {{ f.first_name }} {{ f.last_name }}
         <button class="delete is-small" @click="deleteFriendFromSelected(f.id)"></button>
@@ -183,3 +183,14 @@ export default {
 }
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "toLabel": "To :"
+  },
+  "fr": {
+    "toLabel": "À :"
+  }
+}
+</i18n>

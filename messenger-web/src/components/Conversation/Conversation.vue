@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="full-page">Loading...</div>
+  <div v-if="loading" class="full-page">{{$t('loadingText')}}</div>
   <div v-else class="full-page">
     <div v-if="conversation" class="columns conv-columns">
       <div class="conversation column is-two-thirds">
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div v-else>
-      <p>A problem occured when retrieving conversation</p>
+      <p>{{$t('getConversationError')}}</p>
     </div>
   </div>
 </template>
@@ -135,3 +135,16 @@ export default {
 }
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "loadingText": "Loading...",
+    "getConversationError": "A problem occured when retrieving conversation"
+  },
+  "fr": {
+    "loadingText": "Chargement...",
+    "getConversationError": "Une erreur est survenue lors de la récupération de la conversation"
+  }
+}
+</i18n>

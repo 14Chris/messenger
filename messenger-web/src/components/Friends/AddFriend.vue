@@ -1,14 +1,15 @@
 <template>
   <div class="box">
+    <h3 class="title is-3">{{$t('title')}}</h3>
     <form @submit.prevent="addFriend">
       <div class="field">
-        <label class="label">Friend email</label>
+        <label class="label">{{$t('friendEmailLabel')}}</label>
         <div class="control">
-          <input class="input" v-model="model.email" type="text" placeholder="Type your friend email...">
+          <input class="input" v-model="model.email" type="text" :placeholder="$t('friendEmailPlaceholder')">
         </div>
       </div>
 
-      <button class="button is-primary">Add</button>
+      <button class="button is-primary">{{$t('addButton')}}</button>
     </form>
   </div>
 </template>
@@ -55,15 +56,19 @@ export default {
               response.json()
                   .then(() => {
                     openNotification({
-                      message: 'Your friend request has been sent. Please wait for your friend to accept it.',
+                      message: this.$t('requestSuccess'),
                       type: 'success',
                       duration: 5000
                     })
                   })
             }
           })
-          .catch(err => {
-            console.log(err)
+          .catch(() => {
+            openNotification({
+              message: this.$t('requestError'),
+              type: 'danger',
+              duration: 5000
+            })
           })
     }
   }
@@ -73,3 +78,23 @@ export default {
 <style scoped>
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Add friend",
+    "friendEmailLabel": "Friend email",
+    "friendEmailPlaceholder": "Type your friend email...",
+    "addButton": "Add",
+    "requestSuccess": "Your friend request has been sent. Please wait for your friend to accept it.",
+    "requestError": "Error while sending your friend a request"
+  },
+  "fr": {
+    "title": "Ajouter un ami",
+    "friendEmailLabel": "Email de votre ami",
+    "friendEmailPlaceholder": "Taper l'email de votre ami...",
+    "addButton": "Ajouter",
+    "requestError": "Une erreur est survenue lors de l'envoi de la requête à votre ami"
+  }
+}
+</i18n>

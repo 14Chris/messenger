@@ -2,7 +2,7 @@
   <div>
     <div v-if="loading != null">
       <div v-if="loading == true">
-        Loading...
+        {{$t('loadingText')}}
       </div>
       <div v-else>
         <div v-if="conversationDetail != null">
@@ -22,23 +22,23 @@
           <div class="conversation-details-actions">
             <button class="conversation-details-actions-btn button is-primary is-light"
                     v-if="conversationDetail.friends.length <= 1">
-              <img class="action-img conversation-details-actions-img" src="@/assets/icons/phone-blue.svg"/> Call
+              <img class="action-img conversation-details-actions-img" src="@/assets/icons/phone-blue.svg"/> {{$t('callFriendButton')}}
               {{ conversationDetail.friends[0].first_name }}
             </button>
 
             <button class="conversation-details-actions-btn button is-primary is-light" v-else>
-              <img class="action-img conversation-details-actions-img" src="@/assets/icons/phone-blue.svg"/> Call Group
+              <img class="action-img conversation-details-actions-img" src="@/assets/icons/phone-blue.svg"/> {{$t('callGroupButton')}}
             </button>
 
             <button class="conversation-details-actions-btn button is-primary is-light">
-              <img class="action-img conversation-details-actions-img" src="@/assets/icons/video-blue.svg"/>Video Chat
+              <img class="action-img conversation-details-actions-img" src="@/assets/icons/video-blue.svg"/>{{$t('videoChatButton')}}
             </button>
           </div>
 
           <!--  List of group members -->
           <div v-if="conversationDetail.friends.length > 1" class="conversation-group-friends">
             <div>
-              Friends
+              {{$t('friendsTitle')}}
             </div>
             <div v-for="friend in conversationDetail.friends" :key="friend.id">
               <router-link class="conversation-detail-name-link" :to="{ name: 'profilePage', params: { id: friend.id }}">
@@ -50,13 +50,13 @@
           <div>
             <!--  Search in conversation  -->
             <div class="conversation-details-options conversation-search">
-              Search in conversation
+              {{$t('searchConvTitle')}}
               <img class="action-img action-img-right" src="@/assets/icons/search-grey.svg"/>
             </div>
             <hr>
             <!--  Change conversation color -->
             <div class="conversation-details-options conversation-change-color">
-              Change color
+              {{$t('changeColorTitle')}}
               <div class="conversation-change-color-selector action-img-right">
 
               </div>
@@ -64,21 +64,21 @@
             <hr>
             <!--  Change conversation default smiley -->
             <div class="conversation-details-options conversation-change-emoji">
-              Change smiley
+              {{$t('changeSmileyTitle')}}
             </div>
             <hr>
           </div>
           <!--  Conversation shared photos -->
           <div class="conversation-detail-photos">
             <img class="action-img action-img-left" src="@/assets/icons/image-grey.svg"/>
-            Shared photos
+            {{$t('sharedPhotosTitle')}}
             <div class="conversation-detail-photos-list">
               <!--  No shared photos-->
             </div>
           </div>
         </div>
         <div v-else>
-          Error while loading conversation details
+          {{$t('getConversationDetailError')}}
         </div>
       </div>
     </div>
@@ -121,9 +121,6 @@ export default {
             else {
               this.conversationDetail = null;
             }
-          })
-          .catch((err) => {
-            console.log(err);
           })
           .finally(() => {
             this.loading = false;
@@ -226,3 +223,32 @@ export default {
   flex:1;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "loadingText": "Loading...",
+    "getConversationDetailError": "Error while loading conversation details",
+    "callGroupButton": "Call group",
+    "callFriendButton": "Call ",
+    "videoChatButton": "Video chat",
+    "friendsTitle": "Friends",
+    "searchConvTitle": "Search in conversation",
+    "changeColorTitle": "Change conversation color",
+    "changeSmileyTitle": "Change default smiley",
+    "sharedPhotosTitle": "Shared photos"
+  },
+  "fr": {
+    "loadingText": "Chargement...",
+    "getConversationDetailError": "Une erreur est survenue lors du chargement des détails de la conversation",
+    "callGroupButton": "Appeler le groupe",
+    "callFriendButton": "Appeler ",
+    "videoChatButton": "Appel vidéo",
+    "friendsTitle": "Amis",
+    "searchConvTitle": "Rechercher dans la conversation",
+    "changeColorTitle": "Changer la couleur de la conversation",
+    "changeSmileyTitle": "Changer le smiley par défaut de la conversation",
+    "sharedPhotosTitle": "Photos partagées"
+  }
+}
+</i18n>

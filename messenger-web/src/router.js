@@ -116,7 +116,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    console.log("isLoggedIn: ",store.getters.isLoggedIn)
+    //console.log("isLoggedIn: ",store.getters.isLoggedIn)
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (store.getters.isLoggedIn) {
             next()

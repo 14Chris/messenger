@@ -51,9 +51,4 @@ export default {
   padding-bottom:0px !important;
 
 }
-
-.home{
-  flex:1;
-  overflow-y: hidden;
-}
 </style>

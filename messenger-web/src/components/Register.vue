@@ -1,53 +1,56 @@
 <template>
-  <div class="container">
-    <div class="card centered-card">
-      <div class="card-content">
-    <h2 class="title is-2">Register</h2>
+  <div class="columns full-size-page">
+    <div class="column column-illustration">
+      <img class="illustration" src="../assets/illustrations/social_networking_illustration.svg">
+    </div>
+    <div class="column">
+      <div class="div-form">
+    <h3 class="title is-3">{{ $t('title') }}</h3>
     <form @submit.prevent="register">
       <!-- First name -->
-      <div class="field" v-if="!$v.model.first_name.$invalid">
-        <label class="label">First Name</label>
+      <div class="field" v-if="!$v.model.first_name.$invalid || !$v.model.first_name.$dirty">
+        <label class="label">{{$t("firstNameLabel")}}</label>
         <div class="control">
-          <input class="input" type="text" placeholder="First Name" v-model="model.first_name">
+          <input class="input" type="text" :placeholder="$t('firstNamePlaceholder')" v-model="model.first_name" @blur="$v.model.first_name.$touch">
         </div>
       </div>
 
       <div class="field" v-else>
-        <label class="label">First Name</label>
+        <label class="label">{{$t("firstNameLabel")}}</label>
         <div class="control">
-          <input class="input is-danger" type="text" placeholder="First Name" v-model="model.first_name">
+          <input class="input is-danger" type="text" :placeholder="$t('firstNamePlaceholder')"  v-model="model.first_name">
         </div>
-        <p class="help is-danger">First name is required</p>
+        <p class="help is-danger">{{ $t('firstNameRequiredError') }}</p>
       </div>
 
       <!-- Last name -->
-      <div class="field" v-if="!$v.model.last_name.$invalid">
-        <label class="label">Last Name</label>
+      <div class="field" v-if="!$v.model.last_name.$invalid || !$v.model.last_name.$dirty">
+        <label class="label">{{$t("lastNameLabel")}}</label>
         <div class="control">
-          <input class="input" type="text" placeholder="Last Name" v-model="model.last_name">
+          <input class="input" type="text" :placeholder="$t('lastNamePlaceholder')"  v-model="model.last_name" @blur="$v.model.last_name.$touch">
         </div>
       </div>
 
       <div class="field" v-else>
-        <label class="label">Last Name</label>
+        <label class="label">{{$t("lastNameLabel")}}</label>
         <div class="control">
-          <input class="input is-danger" type="text" placeholder="Last Name" v-model="model.last_name">
+          <input class="input is-danger" type="text" :placeholder="$t('lastNamePlaceholder')"  v-model="model.last_name">
         </div>
-        <p class="help is-danger">Last name is required</p>
+        <p class="help is-danger">{{ $t('lastNameRequiredError') }}</p>
       </div>
 
       <!-- Email -->
-      <div class="field" v-if="!$v.model.email.$invalid">
-        <label class="label">Email</label>
+      <div class="field" v-if="!$v.model.email.$invalid || !$v.model.email.$dirty">
+        <label class="label">{{$t("emailLabel")}}</label>
         <div class="control">
-          <input class="input" type="text" placeholder="Email" v-model="model.email">
+          <input class="input" type="text" :placeholder="$t('emailPlaceholder')"  v-model="model.email" @blur="$v.model.email.$touch">
         </div>
       </div>
 
       <div class="field" v-else>
-        <label class="label">Email</label>
+        <label class="label">{{$t("emailLabel")}}</label>
         <div class="control">
-          <input class="input is-danger" type="text" placeholder="Email" v-model="model.email">
+          <input class="input is-danger" type="text" :placeholder="$t('emailPlaceholder')"  v-model="model.email">
         </div>
         <p class="help is-danger input-errors">
           <span v-for="(error,index) in GetEmailErrors()" :key="index">
@@ -57,17 +60,17 @@
       </div>
 
       <!-- Password -->
-      <div class="field" v-if="!$v.model.password.$invalid">
-        <label class="label">Password</label>
+      <div class="field" v-if="!$v.model.password.$invalid || !$v.model.password.$dirty">
+        <label class="label">{{$t("passwordLabel")}}</label>
         <div class="control">
-          <input class="input" type="password" placeholder="Password" v-model="model.password">
+          <input class="input" type="password" :placeholder="$t('passwordPlaceholder')"  v-model="model.password" @blur="$v.model.password.$touch">
         </div>
       </div>
 
       <div class="field" v-else>
-        <label class="label">Password</label>
+        <label class="label">{{$t("passwordLabel")}}</label>
         <div class="control">
-          <input class="input is-danger" type="password" placeholder="Password" v-model="model.password">
+          <input class="input is-danger" type="password" :placeholder="$t('passwordPlaceholder')" v-model="model.password">
         </div>
         <p class="help is-danger input-errors">
           <span v-for="(error,index) in GetPasswordErrors()" :key="index">
@@ -77,17 +80,17 @@
       </div>
 
       <!-- Password confirmation -->
-      <div class="field" v-if="!$v.model.password_confirmation.$invalid">
-        <label class="label">Confirm Password</label>
+      <div class="field" v-if="!$v.model.password_confirmation.$invalid || !$v.model.password_confirmation.$dirty">
+        <label class="label">{{$t("confirmPasswordLabel")}}</label>
         <div class="control">
-          <input class="input" type="password" placeholder="Confirm Password" v-model="model.password_confirmation">
+          <input class="input" type="password" :placeholder="$t('confirmPasswordPlaceholder')" v-model="model.password_confirmation" @blur="$v.model.password_confirmation.$touch">
         </div>
       </div>
 
       <div class="field" v-else>
-        <label class="label">Confirm Password</label>
+        <label class="label">{{$t("confirmPasswordLabel")}}</label>
         <div class="control">
-          <input class="input is-danger" type="password" placeholder="Confirm Password"
+          <input class="input is-danger" type="password" :placeholder="$t('confirmPasswordPlaceholder')"
                  v-model="model.password_confirmation">
         </div>
         <p class="help is-danger input-errors">
@@ -98,16 +101,15 @@
       </div>
 
       <div>
-        <button class="button is-primary" type="submit">Register</button>
+        <button class="button is-primary" type="submit">{{$t('registerButton')}}</button>
       </div>
-      <p>Already have an account ? Log in :</p>
+      <p>{{$t('loginLabel')}}</p>
       <router-link to="/login">
-        <button class="button is-primary is-light" type="button">Sign in</button>
+        <button class="button is-primary is-outlined" type="button">{{$t('loginButton')}}</button>
       </router-link>
-
     </form>
-  </div>
-  </div>
+    </div>
+    </div>
   </div>
 </template>
 
@@ -167,14 +169,14 @@ export default {
             .then((response) => response.json()).then(data => {
           if (data.ResponseType == 1) {
             openNotification({
-              message: "Your account has been created. Please check your emails to validate your before sign in.",
+              message: this.$t('accountCreationSuccess'),
               type: 'success',
               duration: 5000
             })
             this.$router.push("/login");
           } else {
             openNotification({
-              message: "An error happened while creating your account",
+              message: this.$t('accountCreationError'),
               type: 'danger',
               duration: 5000
             })
@@ -182,7 +184,7 @@ export default {
         })
             .catch(() => {
               openNotification({
-                message: "An error happened while creating your account",
+                message: this.$t('accountCreationError'),
                 type: 'danger',
                 duration: 5000
               })
@@ -192,13 +194,13 @@ export default {
     GetEmailErrors() {
       var errors = [];
       if (!this.$v.model.email.required) {
-        errors.push("Email is required");
+        errors.push(this.$t('emailRequiredError'));
       } else {
         if (!this.$v.model.email.email) {
-          errors.push("Please enter valid email address");
+          errors.push(this.$t('emailValidityError'));
         }
         if (!this.$v.model.email.isUnique) {
-          errors.push("Email is already taken");
+          errors.push(this.$t('emailUniqueError'));
         }
       }
       return errors;
@@ -206,26 +208,24 @@ export default {
     GetPasswordErrors() {
       var errors = [];
       if (!this.$v.model.password.required) {
-        errors.push("Password is required");
+        errors.push(this.$t('passwordRequiredError'));
       } else {
         if (!this.$v.model.password.minLength) {
           errors.push(
-              "Password must have at least " +
-              this.$v.model.password.$params.minLength.min +
-              " letters."
+              this.$t('passwordLengthError')
           );
         }
         if (!this.$v.model.password.oneNumber) {
-          errors.push("Password must have at least one number");
+          errors.push(this.$t('passwordNumberError'));
         }
         if (!this.$v.model.password.oneUpperCase) {
-          errors.push("Password must have at least one upper case character");
+          errors.push(this.$t('passwordUpperError'));
         }
         if (!this.$v.model.password.oneLowerCase) {
-          errors.push("Password must have at least one lower case character");
+          errors.push(this.$t('passwordLowerError'));
         }
         if (!this.$v.model.password.specialCharacter) {
-          errors.push("Password must have at least one special character among these : *.!@$%^&(){}[]:;<>,?/~_+-=|");
+          errors.push(this.$t('passwordSpecialCharError'));
         }
       }
       return errors;
@@ -233,9 +233,9 @@ export default {
     GetConfirmPasswordErrors() {
       var errors = [];
       if (!this.$v.model.password_confirmation.required) {
-        errors.push("Confirmation password is required");
+        errors.push(this.$t('confirmPasswordRequiredError'));
       } else if (!this.$v.model.password_confirmation.sameAsPassword) {
-        errors.push("Confirmation password has to be the same as password");
+        errors.push(this.$t('confirmPasswordSameError'));
       }
       return errors;
     },
@@ -306,4 +306,72 @@ export default {
   display: flex !important;
   flex-direction: column;
 }
+
+.column{
+  position: relative;
+}
+
+.column-illustration{
+  background-color: whitesmoke;
+}
+
+.illustration{
+  /* Center vertically and horizontally*/
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  height:50%;
+}
+
+.div-form{
+  margin:20px;
+}
+
+.full-size-page{
+  height: 100%;
+}
 </style>
+
+<i18n>
+{
+  "en": {
+    "title": "Register",
+    "firstNameLabel": "First Name",
+    "firstNamePlaceholder": "First Name",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Last Name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "registerButton": "Register",
+    "loginButton": "Login",
+    "loginLabel": "Already have an account ? Login :",
+    "accountCreationSuccess": "Your account has been created. An email just been sent to you with the instructions for activating your account",
+    "accountCreationError": "An error happened while creating your account"
+
+  },
+  "fr": {
+    "title": "S'enregistrer",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Prénom",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Nom",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Mot de passe",
+    "confirmPasswordLabel": "Confirmez le mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez le mot de passe",
+    "registerButton": "S'enregistrer",
+    "loginButton": "Connexion",
+    "loginLabel": "Vous avez déjà un compte ? Connectez-vous :",
+    "accountCreationSuccess": "Votre compte a été créé. Un email vient de vous être envoyer contenant les instructions pour activer votre compte",
+    "accountCreationError": "Un erreur est apparue pendant la création de votre compte"
+  }
+}
+</i18n>

@@ -6,15 +6,14 @@
             </div>
       </div>
       <div v-else-if="isActivate == false">
-          An error occured while activating your account. Retry again.
+          {{$t('activationError')}}
       </div>
       <div v-else>
         <div class="card">
           <div class="card-content">
-          <h2 class="title is-2">Account activated</h2>
-            <p>Congratulations, your account has been activated !</p>
-            <p>You can now log in :
-            </p>
+          <h2 class="title is-2">{{$t('accountActivatedTitle')}}</h2>
+            <p>{{$t('accountActivatedText')}}</p>
+            <p>{{$t('loginText')}}</p>
             <router-link to="/login"><button class="button is-primary is-light">Log in</button></router-link>
         </div>
         </div>
@@ -81,3 +80,22 @@ export default {
             width: 100px;
         }
 </style>
+
+<i18n>
+{
+  "en": {
+    "activationError": "An error occured while activating your account. Please try again.",
+    "accountActivatedTitle": "Account activated",
+    "accountActivatedText": "Congratulations, your account has been activated !",
+    "loginText": "You can now log in :",
+    "loginButton": "Log in"
+  },
+  "fr": {
+    "activationError": "Une erreur est survenue lors de l'activation de votre compte. Merci de réessayer",
+    "accountActivatedTitle": "Compte activé",
+    "accountActivatedText": "Félicitations, votre compte a été activé !",
+    "loginText": "VOus pouvez maintenant vous connecter",
+    "loginButton": "Connexion"
+  }
+}
+</i18n>

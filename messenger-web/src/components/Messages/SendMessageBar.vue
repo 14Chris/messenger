@@ -34,7 +34,7 @@
           class="send-message-input"
           v-model="message"
           type="text"
-          placeholder="Enter your message"
+          :placeholder="$t('newMessagePlaceholder')"
           v-on:keyup.enter="SendNewMessage"
       />
 
@@ -98,3 +98,14 @@ export default {
   outline: none;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "newMessagePlaceholder": "Type your message"
+  },
+  "fr": {
+    "newMessagePlaceholder": "Taper votre message"
+  }
+}
+</i18n>

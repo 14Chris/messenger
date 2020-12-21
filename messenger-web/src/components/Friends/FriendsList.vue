@@ -1,11 +1,10 @@
 <template>
   <div>
     <div v-if="friends != null">
-      <button class="button is-primary is-light" @click="OpenAddFriendModal">Add new friend</button>
+      <button class="button is-primary is-light" @click="OpenAddFriendModal">{{$t('addFriendButton')}}</button>
       <div class="box" v-for="f in friends" :key="f.id" @click="GoToUserProfile(f.id)">
         <h1>{{ f.first_name }} {{ f.last_name }}</h1>
         <button class="button button is-danger is-light" @click="DeleteFriend(f.id)">
-
               <span class="icon">
                 <i class="fas fa-times"></i>
               </span>
@@ -31,9 +30,7 @@ import Vue from "vue";
 import Notification from "@/shared_components/Notification/Notification";
 
 const api = new ApiService();
-
 const NotificationComponent = Vue.extend(Notification)
-
 const openNotification = (propsData = {
   title: '',
   message: '',
@@ -50,7 +47,7 @@ const openNotification = (propsData = {
 
 export default {
   name: "FriendsList",
-  components: {AddFriend},
+  components: { AddFriend },
   data() {
     return {
       friends: null,
@@ -67,7 +64,6 @@ export default {
               response.json()
                   .then(data => {
                       this.friends = data.Result
-
                   })
             }
             else {
@@ -92,7 +88,7 @@ export default {
             }
             else {
               openNotification({
-                message: "Error while deleting the friend",
+                message: this.$t('deleteFriendError'),
                 type: 'danger',
                 duration: 5000
               })
@@ -114,3 +110,16 @@ export default {
     cursor: pointer;
     }
 </style>
+
+<i18n>
+{
+  "en": {
+    "addFriendButton": "Add a new friend",
+    "deleteFriendError": "Error occurred while deleting the friend"
+  },
+  "fr": {
+    "addFriendButton": "Ajouter un nouvel ami",
+    "deleteFriendError": "Une erreur est survenue lors de la suppression de votre ami"
+  }
+}
+</i18n>
