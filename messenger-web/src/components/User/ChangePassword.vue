@@ -3,10 +3,10 @@
     <h5 class="title is-5">{{ $t('title') }}</h5>
     <form @submit.prevent="ChangePassword">
       <!-- Old password -->
-      <div class="field" v-if="!$v.model.oldPassword.$invalid">
+      <div class="field" v-if="!$v.model.oldPassword.$invalid || !$v.model.oldPassword.$dirty">
         <label class="label">{{ $t('oldPasswordLabel') }}</label>
         <div class="control">
-          <input class="input" type="password" :placeholder="$t('oldPasswordPlaceholder')" v-model="model.oldPassword">
+          <input class="input" type="password" :placeholder="$t('oldPasswordPlaceholder')" v-model="model.oldPassword" @blur="$v.model.oldPassword.$touch">
         </div>
       </div>
 
@@ -19,10 +19,10 @@
         <p class="help is-danger">{{ $t('oldPasswordRequiredError') }}</p>
       </div>
 
-      <div class="field" v-if="!$v.model.newPassword.$invalid">
+      <div class="field" v-if="!$v.model.newPassword.$invalid || !$v.model.newPassword.$dirty">
         <label class="label">{{ $t('newPasswordLabel') }}</label>
         <div class="control">
-          <input class="input" type="password" :placeholder="$t('newPasswordPlaceholder')" v-model="model.newPassword">
+          <input class="input" type="password" :placeholder="$t('newPasswordPlaceholder')" v-model="model.newPassword" @blur="$v.model.newPassword.$touch">
         </div>
       </div>
 
@@ -38,11 +38,10 @@
           </span></p>
       </div>
 
-      <div class="field" v-if="!$v.model.repeatPassword.$invalid">
+      <div class="field" v-if="!$v.model.repeatPassword.$invalid || !$v.model.repeatPassword.$dirty">
         <label class="label">{{ $t('confirmNewPasswordLabel') }}</label>
         <div class="control">
-          <input class="input" type="password" :placeholder="$t('confirmNewPasswordPlaceholder')"
-                 v-model="model.repeatPassword">
+          <input class="input" type="password" :placeholder="$t('confirmNewPasswordPlaceholder')" v-model="model.repeatPassword" @blur="$v.model.repeatPassword.$touch">
         </div>
       </div>
 
@@ -132,6 +131,8 @@ export default {
       return errors;
     },
     ChangePassword() {
+      this.$v.$touch();
+
       if (!this.$v.$invalid) {
         api
             .update("users/password", JSON.stringify(this.model))

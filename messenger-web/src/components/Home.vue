@@ -31,8 +31,8 @@ export default {
 
 .full-page{
   height:100%;
-  /*display: flex;*/
-  /*flex-direction: column;*/
+  display: flex;
+  flex-direction: column;
 }
 
 .part-separator{
@@ -50,10 +50,5 @@ export default {
   padding-top:0px !important;
   padding-bottom:0px !important;
 
-}
-
-.home{
-  flex:1;
-  overflow-y: hidden;
 }
 </style>
