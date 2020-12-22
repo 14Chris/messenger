@@ -4,6 +4,7 @@ export default class ApiService {
 
     getData(route) {
         return fetch(this.createCompleteRoute(route, this.apiUrl), {
+            // mode:'no-cors',
             method: 'GET',
             headers: this.generateHeaders(),
         });
@@ -48,6 +49,8 @@ export default class ApiService {
         var authToken = localStorage.getItem('token')
         if (authToken && authToken.length > 0) {
             return {
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Allow-Headers': '*',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${authToken}`,
@@ -56,6 +59,8 @@ export default class ApiService {
         }
         else {
             return {
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Allow-Headers': '*',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'X-API-KEY': this.apiKey

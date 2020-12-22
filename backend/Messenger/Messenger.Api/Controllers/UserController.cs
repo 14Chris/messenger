@@ -18,6 +18,9 @@ namespace Messenger.Api.Controllers
     [Authorize(Policy = "ApiKeyPolicy")]
     public class UserController : BaseController
     {
+
+        public const int CacheAgeSeconds = 60 * 60 * 24 * 30; // 30 days
+
         public UserController(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
@@ -350,6 +353,10 @@ namespace Messenger.Api.Controllers
 
                 if (userPicture == null || userPicture.Length == 0)
                     return NotFound();
+
+                Response.Headers["Cache-Control"] = $"public,max-age={CacheAgeSeconds}";
+                Response.Headers["Access-Control-Allow-Origin"] = $"*";
+                Response.Headers["Access-Control-Allow-Headers"] = $"*";
 
                 return File(userPicture, "image/jpeg");
             }
