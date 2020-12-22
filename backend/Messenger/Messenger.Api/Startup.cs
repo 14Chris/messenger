@@ -30,11 +30,22 @@ namespace Messenger.Api
         }
 
         public IConfiguration Configuration { get; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("https://localhost:8080",
+                                                          "http://localhost:8080")
+                                      .AllowAnyHeader()
+                                      .WithMethods("GET","POST", "PUT", "DELETE", "HEAD");
+                                  });
+            });
 
             services.AddHttpContextAccessor();
 
@@ -67,7 +78,6 @@ namespace Messenger.Api
             });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -75,12 +85,11 @@ namespace Messenger.Api
                     Version = "v1",
                     Title = "Messenger API",
                     Description = "An ASP.NET Core Web API to manage Messenger Data",
-                    TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
                         Name = "Christopher Lenfant",
                         Email = string.Empty,
-                        Url = new Uri("https://twitter.com/spboyer"),
+                        Url = new Uri("https://twitter.com/Chris_Lnft"),
                     },
                     License = new OpenApiLicense
                     {
@@ -167,14 +176,7 @@ namespace Messenger.Api
                 dbContext.Database.Migrate();
             }
 
-            app.UseCors(
-              options =>
-              {
-                  options.AllowAnyHeader();
-                  options.AllowAnyMethod();
-                  options.AllowAnyOrigin();
-              }
-            );
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
 
