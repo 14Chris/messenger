@@ -103,13 +103,15 @@ export default {
       api.create("conversation/exists/", JSON.stringify(users))
           .then(response => {
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                     this.conversation = data.Result
-                  })
+              this.conversation = null
             }
             else {
-              this.conversation = null
+              if(response.status == 409){
+                response.json()
+                    .then(data => {
+                      this.conversation = data.Result
+                    })
+              }
             }
           })
           .catch(err => {
@@ -152,13 +154,15 @@ export default {
       api.create("conversation/exists/", JSON.stringify(this.selected.map(x => x.id)))
           .then(response => {
             if (response.ok == true) {
-              response.json()
-                  .then(data => {
-                      this.conversation = data.Result
-                  })
+              this.conversation = null
             }
             else {
-              this.conversation = null
+              if(response.status == 409){
+                response.json()
+                    .then(data => {
+                      this.conversation = data.Result
+                    })
+              }
             }
           })
           .catch(err => {

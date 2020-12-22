@@ -218,7 +218,7 @@ namespace Messenger.Api.Controllers
                 }
 
                 //conversation already exists
-                return Conflict();
+                return Conflict(response);
             }
             catch (Exception)
             {
