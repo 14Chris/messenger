@@ -9,7 +9,7 @@
       </button>
 
       <!-- GIF button -->
-      <button class="icon-button">
+      <button class="icon-button" @click="ChangeGifDisplay">
                 <span class="icon">
                   <img src="@/assets/icons/gif-file-grey.svg"/>
                 </span>
@@ -52,6 +52,9 @@
                 </span>
       </button>
     </div>
+    <div id="gif-menu" class="">
+      <p>GIFS !</p>
+    </div>
   </div>
 </template>
 
@@ -79,6 +82,17 @@ export default {
         this.message = ""
       }
     },
+    ChangeGifDisplay(){
+      const gifMenu = document.getElementById('gif-menu')
+      //var buttonCoordinates = e.currentTarget.getBoundingClientRect()
+
+      if(gifMenu.classList.contains("show")){
+        gifMenu.classList.remove('show')
+      }
+      else{
+        gifMenu.classList.add('show')
+      }
+    }
   }
 }
 </script>
@@ -96,6 +110,19 @@ export default {
 
 .send-message-input:focus {
   outline: none;
+}
+
+
+#gif-menu{
+  display: none;
+  position:absolute;
+  background-color: red;
+  width: 200px;
+  height: 400px;
+}
+
+.show{
+  display: block !important;
 }
 </style>
 
