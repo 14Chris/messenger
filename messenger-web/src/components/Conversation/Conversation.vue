@@ -76,10 +76,12 @@ export default {
         var model = {
           type: "send_message",
           data: {
-            conversation_id: this.conversation.id,
+            conversationId: this.conversation.id,
             text: message.text,
             gifId: message.gifId,
             stickerId: message.stickerId,
+            gifUrl: message.gifUrl,
+            stickerUrl: message.stickerUrl,
           },
         };
 

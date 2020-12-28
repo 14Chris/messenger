@@ -43,7 +43,9 @@ namespace Messenger.Service.Implementation
                 Text = requestData.text,
                 GifId = requestData.gifId,
                 StickerId = requestData.stickerId,
-                ConversationId = requestData.conversation_id
+                ConversationId = requestData.conversationId,
+                StickerUrl = requestData.stickerUrl,
+                GifUrl = requestData.gifUrl
             };
 
             ResponseObject result = await _serviceProvider.GetRequiredService<IMessageService>().CreateMessage(userId, newMessage);

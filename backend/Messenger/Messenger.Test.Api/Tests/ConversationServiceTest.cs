@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Messenger.Database;
+using Messenger.Facade.Models;
 using Messenger.Facade.Response;
 using Messenger.Service.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,8 +46,19 @@ namespace Messenger.Test.Api
             //Accept friend
             ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
 
+
+            MessageModel messageModel = new MessageModel()
+            {
+                Text = "test message",
+                GifId = "",
+                StickerId = "",
+                StickerUrl = "",
+                GifUrl = ""
+
+            };
+
             //Add new conversation
-            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message", "", "");
+            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, messageModel);
 
             Assert.IsNotNull(resultConversation);
             Assert.IsTrue(resultConversation.ResponseType == ResponseType.Success);
@@ -85,14 +97,37 @@ namespace Messenger.Test.Api
             //Accept friend
             ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
 
+
+
+            MessageModel messageModel = new MessageModel()
+            {
+                Text = "test message",
+                GifId = "",
+                StickerId = "",
+                StickerUrl = "",
+                GifUrl = ""
+
+            };
+
             //Add new conversation
-            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message", "", "");
+            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, messageModel);
 
             Assert.IsNotNull(resultConversation);
             Assert.IsTrue(resultConversation.ResponseType == ResponseType.Success);
 
+
+            MessageModel messageModel2 = new MessageModel()
+            {
+                Text = "test message with same friend",
+                GifId = "",
+                StickerId = "",
+                StickerUrl = "",
+                GifUrl = ""
+
+            };
+
             //Add conversation with same friend
-            ResponseObject resultConversationSameFriend = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message with same friend", "", "");
+            ResponseObject resultConversationSameFriend = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, messageModel2);
 
             Assert.IsNotNull(resultConversationSameFriend);
             Assert.IsTrue(resultConversationSameFriend.ResponseType == ResponseType.Error);

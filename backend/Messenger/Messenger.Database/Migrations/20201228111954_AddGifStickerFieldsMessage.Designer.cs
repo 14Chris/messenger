@@ -3,14 +3,16 @@ using System;
 using Messenger.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Messenger.Database.Migrations
 {
     [DbContext(typeof(MessengerDbContext))]
-    partial class MessengerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201228111954_AddGifStickerFieldsMessage")]
+    partial class AddGifStickerFieldsMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,16 +50,10 @@ namespace Messenger.Database.Migrations
                     b.Property<string>("GifId")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("GifUrl")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
                     b.Property<int>("SenderId")
                         .HasColumnType("int");
 
                     b.Property<string>("StickerId")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("StickerUrl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Text")

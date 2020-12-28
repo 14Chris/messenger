@@ -1,4 +1,5 @@
-﻿using Messenger.Facade.Response;
+﻿using Messenger.Facade.Models;
+using Messenger.Facade.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -168,7 +169,17 @@ namespace Messenger.Api.Controllers
 
             try
             {
-                ResponseObject response = await _conversationService.CreateConversation(id, model.friends, model.message.text, model.message.gifId, model.message.stickerId);
+                MessageModel message = new MessageModel()
+                {
+                    Text = model.message.text,
+                    GifId = model.message.gifId,
+                    StickerId = model.message.stickerId,
+                    StickerUrl = model.message.stickerUrl,
+                    GifUrl = model.message.gifUrl
+                    
+                };
+
+                ResponseObject response = await _conversationService.CreateConversation(id, model.friends, message);
 
                 if (response.ResponseType == ResponseType.Error)
                 {

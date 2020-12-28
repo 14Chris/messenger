@@ -20,6 +20,12 @@ namespace Messenger.Facade.Models
         [JsonProperty("sticker_id")]
         public string StickerId { get; set; }
 
+        [JsonProperty("gif_url")]
+        public string GifUrl { get; set; }
+
+        [JsonProperty("sticker_url")]
+        public string StickerUrl { get; set; }
+
         [JsonProperty("date")]
         public DateTime Date { get; set; }
     }

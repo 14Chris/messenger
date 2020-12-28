@@ -21,6 +21,12 @@ namespace Messenger.Database
         [JsonProperty("sticker_id")]
         public string StickerId { get; set; }
 
+        [JsonProperty("gif_url")]
+        public string GifUrl { get; set; }
+
+        [JsonProperty("sticker_url")]
+        public string StickerUrl { get; set; }
+
         [Required]
         [JsonProperty("date")]
         public DateTime Date { get; set; }

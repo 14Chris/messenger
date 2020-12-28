@@ -57,7 +57,7 @@
         <input class="input" v-model="gifsSearch" @keyup="SearchGifs">
       </div>
       <div class="gif-results">
-        <div v-for="(gif, index) in gifs" :key="index" @click="GifClicked(gif.id)">
+        <div v-for="(gif, index) in gifs" :key="index" @click="GifClicked(gif)">
           <img :src="gif.images.fixed_width.url">
         </div>
       </div>
@@ -68,7 +68,7 @@
         <input class="input" v-model="stickersSearch" @keyup="SearchStickers">
       </div>
       <div class="stickers-results">
-        <div v-for="(sticker, index) in stickers" :key="index" @click="StickerClicked(sticker.id)">
+        <div v-for="(sticker, index) in stickers" :key="index" @click="StickerClicked(sticker)">
           <img :src="sticker.images.fixed_width.url">
         </div>
       </div>
@@ -247,7 +247,6 @@ export default {
       }
     },
     LoadMoreStickers() {
-
       //if is search
       if (this.stickersSearch.length > 0) {
         fetch("https://api.giphy.com/v1/stickers/search?api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&q=" + this.stickersSearch + "&offset=" + (this.stickersSearch.length - 1), {
@@ -273,17 +272,22 @@ export default {
             })
       }
     },
-    GifClicked(gifId) {
+    GifClicked(gif) {
+      console.log(gif)
       var model = {
-        gifId: gifId,
+        gifId: gif.id,
+        gifUrl: gif.images.original.url
       };
-
+      console.log(model)
       this.MessageSubmit(model)
     },
-  StickerClicked(stickerId) {
+  StickerClicked(sticker) {
+    console.log(sticker)
     var model = {
-      stickerId: stickerId,
+      gifId: sticker.id,
+      gifUrl: sticker.images.original.url
     };
+    console.log(model)
 
     this.MessageSubmit(model)
   },

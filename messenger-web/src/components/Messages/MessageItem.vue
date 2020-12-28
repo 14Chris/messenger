@@ -26,24 +26,13 @@
       <!--  If message is GIF    -->
       <div class="gif-box" v-if="message.gif_id"
            v-bind:class="[$store.state.user.id != message.sender_id ? 'message-box-left': 'message-box-right']">
-        <div class="loading-box" v-if="gif == null" >
-          <Loading class="loading-spinner"></Loading>
-        </div>
-        <div v-else>
-          <img :src="gif.images.original.webp">
-        </div>
+          <img :src="message.gif_url">
       </div>
 
       <!--  If message is sticker    -->
       <div class="sticker-box" v-if="message.sticker_id"
            v-bind:class="[$store.state.user.id != message.sender_id ? 'message-box-left': 'message-box-right']">
-        <div class="loading-box" v-if="sticker == null">
-          <Loading class="loading-spinner"></Loading>
-        </div>
-        <div  v-else>
-          <img :src="sticker.images.original.webp">
-        </div>
-
+          <img :src="message.sticker_url">
       </div>
       <template v-if="lastUserMessage && $store.state.user.id == message.sender_id">
         <Avatar class="message-avatar message-avatar-right" :userId="message.sender_id"></Avatar>
@@ -56,14 +45,14 @@
 <script>
 import Avatar from "@/components/User/Avatar/Avatar";
 import moment from 'moment'
-import Loading from "@/shared_components/Loading/Loading";
+// import Loading from "@/shared_components/Loading/Loading";
 
 export default {
   name: "MessageItem",
   props: ["message", "lastUserMessage"],
   components: {
     Avatar,
-    Loading
+    // Loading
   },
   data() {
     return {
@@ -72,12 +61,12 @@ export default {
     }
   },
   mounted() {
-    if(this.message.gif_id){
-      this.GetGif()
-    }
-    else if(this.message.sticker_id){
-      this.GetSticker()
-    }
+    // if(this.message.gif_id){
+    //   this.GetGif()
+    // }
+    // else if(this.message.sticker_id){
+    //   this.GetSticker()
+    // }
   },
   computed: {
     MessageDate() {
