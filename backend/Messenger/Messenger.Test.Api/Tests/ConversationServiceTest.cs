@@ -46,7 +46,7 @@ namespace Messenger.Test.Api
             ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
 
             //Add new conversation
-            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message");
+            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message", "", "");
 
             Assert.IsNotNull(resultConversation);
             Assert.IsTrue(resultConversation.ResponseType == ResponseType.Success);
@@ -86,13 +86,13 @@ namespace Messenger.Test.Api
             ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
 
             //Add new conversation
-            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message");
+            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message", "", "");
 
             Assert.IsNotNull(resultConversation);
             Assert.IsTrue(resultConversation.ResponseType == ResponseType.Success);
 
             //Add conversation with same friend
-            ResponseObject resultConversationSameFriend = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message with same friend");
+            ResponseObject resultConversationSameFriend = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message with same friend", "", "");
 
             Assert.IsNotNull(resultConversationSameFriend);
             Assert.IsTrue(resultConversationSameFriend.ResponseType == ResponseType.Error);

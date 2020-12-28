@@ -78,6 +78,8 @@ export default {
           data: {
             conversation_id: this.conversation.id,
             text: message.text,
+            gifId: message.gifId,
+            stickerId: message.stickerId,
           },
         };
 

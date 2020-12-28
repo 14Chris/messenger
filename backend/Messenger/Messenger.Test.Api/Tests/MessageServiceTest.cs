@@ -47,7 +47,7 @@ namespace Messenger.Test.Api
             ResponseObject resultAcceptFriend = await _friendService.AcceptFriendRequest(user.Id, user2.Id);
 
             //Add new conversation
-            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message");
+            ResponseObject resultConversation = await _conversationService.CreateConversation(user.Id, new int[] { user2.Id }, "test message", "", "");
 
             Conversation conversationAdded = (Conversation)resultConversation.Result;
 

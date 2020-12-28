@@ -168,7 +168,7 @@ namespace Messenger.Api.Controllers
 
             try
             {
-                ResponseObject response = await _conversationService.CreateConversation(id, model.friends, model.texte);
+                ResponseObject response = await _conversationService.CreateConversation(id, model.friends, model.message.text, model.message.gifId, model.message.stickerId);
 
                 if (response.ResponseType == ResponseType.Error)
                 {

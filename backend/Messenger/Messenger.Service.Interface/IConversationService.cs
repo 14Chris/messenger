@@ -8,7 +8,7 @@ namespace Messenger.Service.Interface
     {
         public ResponseObject GetConversationsByUser(int id);
 
-        public Task<ResponseObject> CreateConversation(int idCreator, int[] friends, string message);
+        public Task<ResponseObject> CreateConversation(int idCreator, int[] friends, string text, string gifId, string stickerId);
 
         public ResponseObject GetConversationExistsByUsers(int[] users);
 

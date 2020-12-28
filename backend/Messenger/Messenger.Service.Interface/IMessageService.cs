@@ -13,6 +13,5 @@ namespace Messenger.Service.Interface
 
         public ResponseObject LoadMoreMessagesFromConversation(int userId, int conversationId, int lastMessageId);
 
-
     }
 }

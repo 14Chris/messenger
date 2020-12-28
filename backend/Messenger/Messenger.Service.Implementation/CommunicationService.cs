@@ -41,6 +41,8 @@ namespace Messenger.Service.Implementation
             Message newMessage = new Message()
             {
                 Text = requestData.text,
+                GifId = requestData.gifId,
+                StickerId = requestData.stickerId,
                 ConversationId = requestData.conversation_id
             };
 

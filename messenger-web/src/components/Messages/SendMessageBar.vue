@@ -68,7 +68,7 @@
         <input class="input" v-model="stickersSearch" @keyup="SearchStickers">
       </div>
       <div class="stickers-results">
-        <div v-for="(sticker, index) in stickers" :key="index">
+        <div v-for="(sticker, index) in stickers" :key="index" @click="StickerClicked(sticker.id)">
           <img :src="sticker.images.fixed_width.url">
         </div>
       </div>
@@ -82,81 +82,79 @@ export default {
   data() {
     return {
       message: "",
-      gifs:[],
-      stickers:[],
-      gifsSearch:"",
-      stickersSearch:"",
+      gifs: [],
+      stickers: [],
+      gifsSearch: "",
+      stickersSearch: "",
     };
   },
-  props:{
-    MessageSubmit:{
+  props: {
+    MessageSubmit: {
       required: true
     }
   },
-  created(){
+  created() {
     this.$nextTick(function () {
       document.getElementById("gif-menu").addEventListener('scroll', this.HandleGifScroll);
       document.getElementById("stickers-menu").addEventListener('scroll', this.HandleStickersScroll);
     })
   },
-  methods:{
-   SendNewMessage() {
+  methods: {
+    SendNewMessage() {
       if (this.message.length > 0) {
         var model = {
-            text: this.message,
+          text: this.message,
         };
 
         this.MessageSubmit(model)
         this.message = ""
       }
     },
-    ChangeGifDisplay(e){
+    ChangeGifDisplay(e) {
       const gifMenu = document.getElementById('gif-menu')
       var buttonCoordinates = e.currentTarget.getBoundingClientRect()
 
-      gifMenu.style.bottom = (window.innerHeight - buttonCoordinates.top) +'px'
+      gifMenu.style.bottom = (window.innerHeight - buttonCoordinates.top) + 'px'
 
       this.LoadGif()
 
-      if(gifMenu.classList.contains("show")){
+      if (gifMenu.classList.contains("show")) {
         gifMenu.classList.remove('show')
-      }
-      else{
+      } else {
         gifMenu.classList.add('show')
       }
     },
-    ChangeStickerDisplay(e){
+    ChangeStickerDisplay(e) {
       const stickersMenu = document.getElementById('stickers-menu')
       var buttonCoordinates = e.currentTarget.getBoundingClientRect()
 
-      stickersMenu.style.bottom = (window.innerHeight - buttonCoordinates.top) +'px'
+      stickersMenu.style.bottom = (window.innerHeight - buttonCoordinates.top) + 'px'
 
       this.LoadStickers()
 
-      if(stickersMenu.classList.contains("show")){
+      if (stickersMenu.classList.contains("show")) {
         stickersMenu.classList.remove('show')
-      }
-      else{
+      } else {
         stickersMenu.classList.add('show')
       }
     },
-    LoadGif(){
+    LoadGif() {
       this.gifs = []
-      fetch("https://api.giphy.com/v1/gifs/trending?limit=15&rating=g&api_key="+process.env.VUE_APP_GIPHY_API_KEY, {
+      fetch("https://api.giphy.com/v1/gifs/trending?limit=15&rating=g&api_key=" + process.env.VUE_APP_GIPHY_API_KEY, {
         method: 'GET',
       })
-       .then(response=>{
-         console.log(response)
-        if(response.ok){
-          response.json().then(data=>{
-            this.gifs = data.data
+          .then(response => {
+            console.log(response)
+            if (response.ok) {
+              response.json().then(data => {
+                this.gifs = data.data
+              })
+            }
           })
-        }
-      })
     },
     async SearchGifs() {
       this.gifs = []
-      if(this.gifsSearch.length > 0){
+      if (this.gifsSearch.length > 0) {
 
         if (this.searchGifAvailabilityTimer) {
           clearTimeout(this.searchGifAvailabilityTimer);
@@ -164,67 +162,65 @@ export default {
         }
 
         this.searchGifAvailabilityTimer = setTimeout(() => {
-          fetch("https://api.giphy.com/v1/gifs/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.gifsSearch, {
+          fetch("https://api.giphy.com/v1/gifs/search?api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&q=" + this.gifsSearch, {
             method: 'GET',
           })
-              .then(response=>{
-                if(response.ok){
-                  response.json().then(data=>{
+              .then(response => {
+                if (response.ok) {
+                  response.json().then(data => {
                     this.gifs = data.data
                   })
                 }
-          })
+              })
         }, 500);
 
-      }
-      else{
+      } else {
         //Load trending gifs
         this.LoadGif()
       }
     },
-    LoadMoreGifs(){
+    LoadMoreGifs() {
       //if is search
-      if(this.gifsSearch.length > 0){
-        fetch("https://api.giphy.com/v1/gifs/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.gifsSearch+"&offset="+(this.gifs.length - 1), {
+      if (this.gifsSearch.length > 0) {
+        fetch("https://api.giphy.com/v1/gifs/search?api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&q=" + this.gifsSearch + "&offset=" + (this.gifs.length - 1), {
           method: 'GET',
         })
-            .then(response=>{
-              if(response.ok){
-                response.json().then(data=>{
+            .then(response => {
+              if (response.ok) {
+                response.json().then(data => {
                   this.gifs = this.gifs.concat(data.data)
                 })
               }
             })
-      }
-      else{
-        fetch("https://api.giphy.com/v1/gifs/trending?limit=15&rating=g&api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&offset="+(this.gifs.length - 1), {
+      } else {
+        fetch("https://api.giphy.com/v1/gifs/trending?limit=15&rating=g&api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&offset=" + (this.gifs.length - 1), {
           method: 'GET',
         })
-            .then(response=>{
-              if(response.ok){
-                response.json().then(data=>{
+            .then(response => {
+              if (response.ok) {
+                response.json().then(data => {
                   this.gifs = this.gifs.concat(data.data)
                 })
               }
             })
       }
     },
-    LoadStickers(){
+    LoadStickers() {
       this.stickers = []
-      fetch("https://api.giphy.com/v1/stickers/trending?limit=15&api_key="+process.env.VUE_APP_GIPHY_API_KEY, {
+      fetch("https://api.giphy.com/v1/stickers/trending?limit=15&api_key=" + process.env.VUE_APP_GIPHY_API_KEY, {
         method: 'GET',
       })
-          .then(response=>{
-            if(response.ok){
-              response.json().then(data=>{
+          .then(response => {
+            if (response.ok) {
+              response.json().then(data => {
                 this.stickers = data.data
               })
             }
           })
     },
-    async SearchStickers(){
+    async SearchStickers() {
       this.stickers = []
-      if(this.stickersSearch.length > 0){
+      if (this.stickersSearch.length > 0) {
 
         if (this.searchStickerAvailabilityTimer) {
           clearTimeout(this.searchStickerAvailabilityTimer);
@@ -232,12 +228,12 @@ export default {
         }
 
         this.searchStickerAvailabilityTimer = setTimeout(() => {
-          fetch("https://api.giphy.com/v1/stickers/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.stickersSearch, {
+          fetch("https://api.giphy.com/v1/stickers/search?api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&q=" + this.stickersSearch, {
             method: 'GET',
           })
-              .then(response=>{
-                if(response.ok){
-                  response.json().then(data=>{
+              .then(response => {
+                if (response.ok) {
+                  response.json().then(data => {
                     this.stickers = data.data
                   })
                 }
@@ -245,64 +241,68 @@ export default {
         }, 500);
 
 
-
-      }
-      else{
+      } else {
         //Load trending stickers
         this.LoadStickers()
       }
     },
-    LoadMoreStickers(){
+    LoadMoreStickers() {
 
-       //if is search
-       if(this.stickersSearch.length > 0){
-         fetch("https://api.giphy.com/v1/stickers/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.stickersSearch+"&offset="+(this.stickersSearch.length - 1), {
-           method: 'GET',
-         })
-             .then(response=>{
-               if(response.ok){
-                 response.json().then(data=>{
-                   this.stickers = this.stickers.concat(data.data)
-                 })
-               }
-             })
-       }
-       else{
-         fetch("https://api.giphy.com/v1/stickers/trending?limit=15&api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&offset="+(this.stickersSearch.length - 1), {
-           method: 'GET',
-         })
-             .then(response=>{
-               if(response.ok){
-                 response.json().then(data=>{
-                   this.stickers = this.stickers.concat(data.data)
-                 })
-               }
-             })
-       }
+      //if is search
+      if (this.stickersSearch.length > 0) {
+        fetch("https://api.giphy.com/v1/stickers/search?api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&q=" + this.stickersSearch + "&offset=" + (this.stickersSearch.length - 1), {
+          method: 'GET',
+        })
+            .then(response => {
+              if (response.ok) {
+                response.json().then(data => {
+                  this.stickers = this.stickers.concat(data.data)
+                })
+              }
+            })
+      } else {
+        fetch("https://api.giphy.com/v1/stickers/trending?limit=15&api_key=" + process.env.VUE_APP_GIPHY_API_KEY + "&offset=" + (this.stickersSearch.length - 1), {
+          method: 'GET',
+        })
+            .then(response => {
+              if (response.ok) {
+                response.json().then(data => {
+                  this.stickers = this.stickers.concat(data.data)
+                })
+              }
+            })
+      }
     },
-    GifClicked(gifId){
+    GifClicked(gifId) {
       var model = {
         gifId: gifId,
       };
 
-      console.log("GIF Clicked:", model)
+      this.MessageSubmit(model)
     },
-    HandleGifScroll(){
-      let gifsMenu = this.$refs.gifsMenu
+  StickerClicked(stickerId) {
+    var model = {
+      stickerId: stickerId,
+    };
 
-      //When scroll down ended
-      if(gifsMenu.scrollHeight - gifsMenu.scrollTop ==  gifsMenu.clientHeight){
-        this.LoadMoreGifs()
-      }
-    },
-    HandleStickersScroll(){
-      let stickersMenu = this.$refs.stickersMenu
-      //When scroll down ended
-      if(stickersMenu.scrollHeight - stickersMenu.scrollTop ==  stickersMenu.clientHeight){
-        this.LoadMoreStickers()
-      }
+    this.MessageSubmit(model)
+  },
+  HandleGifScroll() {
+    let gifsMenu = this.$refs.gifsMenu
+
+    //When scroll down ended
+    if (gifsMenu.scrollHeight - gifsMenu.scrollTop == gifsMenu.clientHeight) {
+      this.LoadMoreGifs()
+    }
+  },
+  HandleStickersScroll() {
+    let stickersMenu = this.$refs.stickersMenu
+    //When scroll down ended
+    if (stickersMenu.scrollHeight - stickersMenu.scrollTop == stickersMenu.clientHeight) {
+      this.LoadMoreStickers()
     }
   }
+}
 }
 </script>
 
@@ -322,9 +322,9 @@ export default {
 }
 
 
-#gif-menu{
+#gif-menu {
   display: none;
-  position:absolute;
+  position: absolute;
   width: 200px;
   height: 400px;
   z-index: 3;
@@ -332,17 +332,17 @@ export default {
   overflow-y: scroll;
 }
 
-.show{
+.show {
   display: block !important;
 }
 
-.gif-results{
+.gif-results {
 
 }
 
-#stickers-menu{
+#stickers-menu {
   display: none;
-  position:absolute;
+  position: absolute;
   width: 200px;
   height: 400px;
   z-index: 3;

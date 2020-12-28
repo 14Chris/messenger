@@ -33,7 +33,7 @@ namespace Messenger.Service.Implementation
         /// <param name="friends"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<ResponseObject> CreateConversation(int idCreator, int[] friends, string message)
+        public async Task<ResponseObject> CreateConversation(int idCreator, int[] friends, string text, string gifId, string stickerId)
         {
             List<int> usersConv = friends.ToList();
             usersConv.Add(idCreator);
@@ -76,7 +76,9 @@ namespace Messenger.Service.Implementation
             {
                 SenderId = idCreator,
                 Date = DateTime.Now,
-                Text = message,
+                Text = text,
+                GifId = gifId,
+                StickerId = stickerId
             };
 
             conversation.Messages = new List<Message>();
@@ -125,6 +127,8 @@ namespace Messenger.Service.Implementation
                     Id = x.Id,
                     SenderId = x.SenderId,
                     Text = x.Text,
+                    StickerId = x.StickerId,
+                    GifId = x.GifId,
                     Date = x.Date
                 }).ToList()
 

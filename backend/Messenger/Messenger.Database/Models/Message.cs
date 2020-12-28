@@ -12,9 +12,14 @@ namespace Messenger.Database
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [Required]
         [JsonProperty("text")]
         public string Text { get; set; }
+
+        [JsonProperty("gif_id")]
+        public string GifId { get; set; }
+
+        [JsonProperty("sticker_id")]
+        public string StickerId { get; set; }
 
         [Required]
         [JsonProperty("date")]

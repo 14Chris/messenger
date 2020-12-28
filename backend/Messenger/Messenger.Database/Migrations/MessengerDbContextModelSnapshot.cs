@@ -45,11 +45,16 @@ namespace Messenger.Database.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("GifId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<int>("SenderId")
                         .HasColumnType("int");
 
+                    b.Property<string>("StickerId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
