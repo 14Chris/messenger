@@ -52,7 +52,7 @@
                 </span>
       </button>
     </div>
-    <div id="gif-menu" class="">
+    <div id="gif-menu" ref="gifsMenu">
       <div class="gif-search">
         <input class="input" v-model="gifsSearch" @keyup="SearchGifs">
       </div>
@@ -63,13 +63,13 @@
       </div>
     </div>
 
-    <div id="stickers-menu" class="">
+    <div id="stickers-menu" ref="stickersMenu">
       <div class="stickers-search">
         <input class="input" v-model="stickersSearch" @keyup="SearchStickers">
       </div>
       <div class="stickers-results">
         <div v-for="(sticker, index) in stickers" :key="index">
-          <img :src="sticker.downsized_small.fixed_width.url">
+          <img :src="sticker.images.fixed_width.url">
         </div>
       </div>
     </div>
@@ -92,6 +92,12 @@ export default {
     MessageSubmit:{
       required: true
     }
+  },
+  created(){
+    this.$nextTick(function () {
+      document.getElementById("gif-menu").addEventListener('scroll', this.HandleGifScroll);
+      document.getElementById("stickers-menu").addEventListener('scroll', this.HandleStickersScroll);
+    })
   },
   methods:{
    SendNewMessage() {
@@ -136,7 +142,7 @@ export default {
     },
     LoadGif(){
       this.gifs = []
-      fetch("https://api.giphy.com/v1/gifs/trending?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&limit=25&rating=g", {
+      fetch("https://api.giphy.com/v1/gifs/trending?limit=15&rating=g&api_key="+process.env.VUE_APP_GIPHY_API_KEY, {
         method: 'GET',
       })
        .then(response=>{
@@ -148,19 +154,28 @@ export default {
         }
       })
     },
-    SearchGifs(){
+    async SearchGifs() {
+      this.gifs = []
       if(this.gifsSearch.length > 0){
-        this.gifs = []
-        fetch("https://api.giphy.com/v1/gifs/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.gifsSearch, {
-          method: 'GET',
-        })
-            .then(response=>{
-              if(response.ok){
-                response.json().then(data=>{
-                  this.gifs = data.data
-                })
-              }
-            })
+
+        if (this.searchGifAvailabilityTimer) {
+          clearTimeout(this.searchGifAvailabilityTimer);
+          this.searchGifAvailabilityTimer = null;
+        }
+
+        this.searchGifAvailabilityTimer = setTimeout(() => {
+          fetch("https://api.giphy.com/v1/gifs/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.gifsSearch, {
+            method: 'GET',
+          })
+              .then(response=>{
+                if(response.ok){
+                  response.json().then(data=>{
+                    this.gifs = data.data
+                  })
+                }
+          })
+        }, 500);
+
       }
       else{
         //Load trending gifs
@@ -168,11 +183,35 @@ export default {
       }
     },
     LoadMoreGifs(){
-
+      //if is search
+      if(this.gifsSearch.length > 0){
+        fetch("https://api.giphy.com/v1/gifs/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.gifsSearch+"&offset="+(this.gifs.length - 1), {
+          method: 'GET',
+        })
+            .then(response=>{
+              if(response.ok){
+                response.json().then(data=>{
+                  this.gifs = this.gifs.concat(data.data)
+                })
+              }
+            })
+      }
+      else{
+        fetch("https://api.giphy.com/v1/gifs/trending?limit=15&rating=g&api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&offset="+(this.gifs.length - 1), {
+          method: 'GET',
+        })
+            .then(response=>{
+              if(response.ok){
+                response.json().then(data=>{
+                  this.gifs = this.gifs.concat(data.data)
+                })
+              }
+            })
+      }
     },
     LoadStickers(){
       this.stickers = []
-      fetch("https://api.giphy.com/v1/stickers/trending?api_key="+process.env.VUE_APP_GIPHY_API_KEY, {
+      fetch("https://api.giphy.com/v1/stickers/trending?limit=15&api_key="+process.env.VUE_APP_GIPHY_API_KEY, {
         method: 'GET',
       })
           .then(response=>{
@@ -183,19 +222,30 @@ export default {
             }
           })
     },
-    SearchStickers(){
+    async SearchStickers(){
+      this.stickers = []
       if(this.stickersSearch.length > 0){
-        this.stickers = []
-        fetch("https://api.giphy.com/v1/stickers/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.gifsSearch, {
-          method: 'GET',
-        })
-            .then(response=>{
-              if(response.ok){
-                response.json().then(data=>{
-                  this.stickers = data.data
-                })
-              }
-            })
+
+        if (this.searchStickerAvailabilityTimer) {
+          clearTimeout(this.searchStickerAvailabilityTimer);
+          this.searchStickerAvailabilityTimer = null;
+        }
+
+        this.searchStickerAvailabilityTimer = setTimeout(() => {
+          fetch("https://api.giphy.com/v1/stickers/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.stickersSearch, {
+            method: 'GET',
+          })
+              .then(response=>{
+                if(response.ok){
+                  response.json().then(data=>{
+                    this.stickers = data.data
+                  })
+                }
+              })
+        }, 500);
+
+
+
       }
       else{
         //Load trending stickers
@@ -204,6 +254,31 @@ export default {
     },
     LoadMoreStickers(){
 
+       //if is search
+       if(this.stickersSearch.length > 0){
+         fetch("https://api.giphy.com/v1/stickers/search?api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&q="+this.stickersSearch+"&offset="+(this.stickersSearch.length - 1), {
+           method: 'GET',
+         })
+             .then(response=>{
+               if(response.ok){
+                 response.json().then(data=>{
+                   this.stickers = this.stickers.concat(data.data)
+                 })
+               }
+             })
+       }
+       else{
+         fetch("https://api.giphy.com/v1/stickers/trending?limit=15&api_key="+process.env.VUE_APP_GIPHY_API_KEY+"&offset="+(this.stickersSearch.length - 1), {
+           method: 'GET',
+         })
+             .then(response=>{
+               if(response.ok){
+                 response.json().then(data=>{
+                   this.stickers = this.stickers.concat(data.data)
+                 })
+               }
+             })
+       }
     },
     GifClicked(gifId){
       var model = {
@@ -211,7 +286,21 @@ export default {
       };
 
       console.log("GIF Clicked:", model)
-      //this.MessageSubmit(model)
+    },
+    HandleGifScroll(){
+      let gifsMenu = this.$refs.gifsMenu
+
+      //When scroll down ended
+      if(gifsMenu.scrollHeight - gifsMenu.scrollTop ==  gifsMenu.clientHeight){
+        this.LoadMoreGifs()
+      }
+    },
+    HandleStickersScroll(){
+      let stickersMenu = this.$refs.stickersMenu
+      //When scroll down ended
+      if(stickersMenu.scrollHeight - stickersMenu.scrollTop ==  stickersMenu.clientHeight){
+        this.LoadMoreStickers()
+      }
     }
   }
 }
