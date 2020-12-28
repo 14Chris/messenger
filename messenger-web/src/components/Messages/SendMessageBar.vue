@@ -52,9 +52,9 @@
                 </span>
       </button>
     </div>
-    <div id="gif-menu" ref="gifsMenu">
-      <div class="gif-search">
-        <input class="input" v-model="gifsSearch" @keyup="SearchGifs">
+    <div id="gif-menu" ref="gifsMenu" class="advanced-message-menu" @clickout="CloseGifDisplay">
+      <div class="gif-search advanced-message-search-box">
+        <input class="input" v-model="gifsSearch" @keyup="SearchGifs" :placeholder="$t('searchGifPlaceholder')">
       </div>
       <div class="gif-results">
         <div v-for="(gif, index) in gifs" :key="index" @click="GifClicked(gif)">
@@ -63,9 +63,9 @@
       </div>
     </div>
 
-    <div id="stickers-menu" ref="stickersMenu">
-      <div class="stickers-search">
-        <input class="input" v-model="stickersSearch" @keyup="SearchStickers">
+    <div id="stickers-menu" ref="stickersMenu" class="advanced-message-menu" @clickout="CloseStickerDisplay">
+      <div class="stickers-search advanced-message-search-box">
+        <input class="input" v-model="stickersSearch" @keyup="SearchStickers" :placeholder="$t('searchStickerPlaceholder')">
       </div>
       <div class="stickers-results">
         <div v-for="(sticker, index) in stickers" :key="index" @click="StickerClicked(sticker)">
@@ -77,6 +77,9 @@
 </template>
 
 <script>
+
+
+
 export default {
   name: "SendMessageBar",
   data() {
@@ -109,6 +112,14 @@ export default {
         this.MessageSubmit(model)
         this.message = ""
       }
+    },
+    CloseGifDisplay(){
+      const gifMenu = document.getElementById('gif-menu')
+      gifMenu.classList.remove('show')
+    },
+    CloseStickerDisplay(){
+      const stickersMenu = document.getElementById('stickers-menu')
+      stickersMenu.classList.remove('show')
     },
     ChangeGifDisplay(e) {
       const gifMenu = document.getElementById('gif-menu')
@@ -325,33 +336,34 @@ export default {
   outline: none;
 }
 
-
-#gif-menu {
+.advanced-message-menu{
+  padding: 5px;
   display: none;
   position: absolute;
-  width: 200px;
-  height: 400px;
-  z-index: 3;
-  background-color: whitesmoke;
+  width: 250px;
+  height: 350px;
+  background-color: white;
   overflow-y: scroll;
+  border-radius: 5px;
+  box-shadow: 2px 2px 30px lightgrey;
+}
+
+#gif-menu {
+
 }
 
 .show {
   display: block !important;
 }
 
-.gif-results {
-
+#stickers-menu {
 }
 
-#stickers-menu {
-  display: none;
-  position: absolute;
-  width: 200px;
-  height: 400px;
-  z-index: 3;
+
+
+.advanced-message-search-box{
+  margin-bottom: 10px;
   background-color: whitesmoke;
-  overflow-y: scroll;
 }
 
 </style>
@@ -359,10 +371,14 @@ export default {
 <i18n>
 {
   "en": {
-    "newMessagePlaceholder": "Type your message"
+    "newMessagePlaceholder": "Type your message",
+    "searchGifPlaceholder": "Search GIFs...",
+    "searchStickerPlaceholder": "Search stickers..."
   },
   "fr": {
-    "newMessagePlaceholder": "Taper votre message"
+    "newMessagePlaceholder": "Taper votre message",
+    "searchGifPlaceholder": "Rechercher des GIFs...",
+    "searchStickerPlaceholder": "Rechercher des stickers..."
   }
 }
 </i18n>

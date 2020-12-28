@@ -203,7 +203,7 @@ export default {
 
 .conversation-change-color-selector {
   position: absolute;
-  background-color: #349cfc;
+  background-color: #38B09D;
   width: 15px;
   height: 15px;
   right:5px;

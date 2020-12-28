@@ -139,7 +139,7 @@ export default {
 }
 
 .sender {
-  background-color: #349cfc;
+  background-color: #38B09D;
   border-bottom-right-radius: 0px;
   color: white;
 }
